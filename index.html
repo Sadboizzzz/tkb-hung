@@ -20,81 +20,87 @@
 
 <body class="bg-slate-950 text-slate-100 min-h-screen p-3 md:p-6 font-sans antialiased pb-20">
 
+    <!-- Iframe YouTube ẩn để phát nhạc -->
+    <div id="youtube-player-container" class="hidden"></div>
+
     <div class="max-w-7xl mx-auto">
         <!-- Header -->
         <header class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 bg-slate-900/90 backdrop-blur p-4 rounded-2xl border border-slate-800 shadow-xl gap-3">
             <div>
-                <h1 class="text-lg md:text-2xl font-black text-emerald-400 tracking-wide flex items-center gap-2">
-                    ⚡ TKB & LỊCH THI <span class="text-xs bg-emerald-500/10 text-emerald-400 px-2 py-0.5 rounded-full font-normal border border-emerald-500/20">🔥 Firebase Fast Sync</span>
+                <h1 class="text-xl md:text-3xl font-black text-emerald-400 tracking-wide flex items-center gap-2">
+                    ⚡ <span data-i18n="appTitle">TKB & LỊCH THI</span> <span class="text-xs bg-emerald-500/10 text-emerald-400 px-2.5 py-1 rounded-full font-normal border border-emerald-500/20">🔥 Firebase Fast Sync</span>
                 </h1>
-                <p id="user-info-display" class="text-xs text-slate-400 mt-0.5"></p>
+                <p id="user-info-display" class="text-sm text-slate-300 mt-1 font-medium"></p>
             </div>
             <div class="flex items-center gap-2 w-full sm:w-auto flex-wrap">
                 <!-- Nút Reload Đồng Bộ Mobile -->
-                <button onclick="forceReloadSyncMobile()" class="sm:hidden bg-indigo-600/20 text-indigo-400 border border-indigo-500/30 hover:bg-indigo-600 hover:text-white text-xs px-3 py-2 rounded-xl font-bold transition flex items-center gap-1">
+                <button onclick="forceReloadSyncMobile()" class="sm:hidden bg-indigo-600/20 text-indigo-400 border border-indigo-500/30 hover:bg-indigo-600 hover:text-white text-sm px-3.5 py-2.5 rounded-xl font-bold transition flex items-center gap-1">
                     🔄 Reload Đồng Bộ
                 </button>
                 
-                <button onclick="openFirebaseModal()" id="btn-firebase-status" class="bg-amber-600/20 text-amber-400 border border-amber-500/30 hover:bg-amber-600 hover:text-white text-xs px-3 py-2 rounded-xl font-bold transition">
+                <button onclick="openSettingsModal()" class="bg-violet-600/20 text-violet-300 border border-violet-500/30 hover:bg-violet-600 hover:text-white text-sm px-3.5 py-2.5 rounded-xl font-bold transition flex items-center gap-1">
+                    ⚙️ <span data-i18n="btnSettings">Cài Đặt</span>
+                </button>
+                <button onclick="openFirebaseModal()" id="btn-firebase-status" class="bg-amber-600/20 text-amber-400 border border-amber-500/30 hover:bg-amber-600 hover:text-white text-sm px-3.5 py-2.5 rounded-xl font-bold transition">
                     🔥 Cấu Hình Firebase
                 </button>
-                <button onclick="openTelegramModal()" id="btn-telegram-status" class="bg-sky-600/20 text-sky-400 border border-sky-500/30 hover:bg-sky-600 hover:text-white text-xs px-3 py-2 rounded-xl font-bold transition">
+                <button onclick="openTelegramModal()" id="btn-telegram-status" class="bg-sky-600/20 text-sky-400 border border-sky-500/30 hover:bg-sky-600 hover:text-white text-sm px-3.5 py-2.5 rounded-xl font-bold transition">
                     ✈️ Telegram
                 </button>
-                <button onclick="openUserInfoModal()" class="bg-slate-800 hover:bg-slate-700 text-xs px-3 py-2 rounded-xl font-bold transition">⚙️ Hồ sơ</button>
+                <button onclick="openUserInfoModal()" class="bg-slate-800 hover:bg-slate-700 text-sm px-3.5 py-2.5 rounded-xl font-bold transition">👤 <span data-i18n="btnProfile">Hồ sơ</span></button>
             </div>
         </header>
 
         <!-- Navigation Tabs -->
         <div class="flex border-b border-slate-800 mb-4 gap-2">
-            <button id="tab-btn-tkb" onclick="switchTab('tkb')" class="flex-1 sm:flex-none px-4 py-2.5 font-bold text-xs sm:text-sm rounded-t-xl transition bg-slate-900 text-emerald-400 border-t border-x border-slate-800 text-center">
-                📌 TKB 1 Ngày Của Hưng
+            <button id="tab-btn-tkb" onclick="switchTab('tkb')" class="flex-1 sm:flex-none px-5 py-3 font-bold text-sm sm:text-base rounded-t-xl transition bg-slate-900 text-emerald-400 border-t border-x border-slate-800 text-center">
+                📌 <span data-i18n="tabTkb">TKB 1 Ngày Của Hưng</span>
             </button>
-            <button id="tab-btn-exam" onclick="switchTab('exam')" class="flex-1 sm:flex-none px-4 py-2.5 font-bold text-xs sm:text-sm rounded-t-xl transition bg-slate-950 text-slate-400 hover:text-slate-200 text-center">
-                📝 Lịch Thi & Báo Nhắc
+            <button id="tab-btn-exam" onclick="switchTab('exam')" class="flex-1 sm:flex-none px-5 py-3 font-bold text-sm sm:text-base rounded-t-xl transition bg-slate-950 text-slate-400 hover:text-slate-200 text-center">
+                📝 <span data-i18n="tabExam">Lịch Thi & Báo Nhắc</span>
             </button>
         </div>
 
         <!-- SECTION 1: TKB 1 NGÀY CỦA HƯNG -->
         <div id="section-tkb">
             <!-- Thanh Công Cụ -->
-            <div class="flex flex-col lg:flex-row justify-between items-center mb-4 gap-3 bg-slate-900/60 p-3 rounded-xl border border-slate-800">
-                <div class="flex items-center justify-between w-full lg:w-auto gap-2">
-                    <button onclick="changeWeek(-1)" class="bg-slate-800 hover:bg-slate-700 px-3 py-1.5 rounded-lg text-xs font-bold transition">&larr; Tuần trước</button>
+            <div class="flex flex-col lg:flex-row justify-between items-center mb-4 gap-3 bg-slate-900/60 p-3.5 rounded-xl border border-slate-800">
+                <div class="flex items-center justify-between w-full lg:w-auto gap-3">
+                    <button onclick="changeWeek(-1)" class="bg-slate-800 hover:bg-slate-700 px-4 py-2 rounded-lg text-sm font-bold transition">&larr; <span data-i18n="prevWeek">Tuần trước</span></button>
                     <div class="text-center">
-                        <span id="week-counter-label" class="font-bold text-sm text-emerald-300 block"></span>
-                        <span id="week-title-info" class="text-[10px] text-slate-400 block"></span>
+                        <span id="week-counter-label" class="font-black text-base text-emerald-300 block"></span>
+                        <span id="week-title-info" class="text-xs text-slate-400 block font-medium"></span>
                     </div>
-                    <button onclick="changeWeek(1)" class="bg-slate-800 hover:bg-slate-700 px-3 py-1.5 rounded-lg text-xs font-bold transition">Tuần sau &rarr;</button>
+                    <button onclick="changeWeek(1)" class="bg-slate-800 hover:bg-slate-700 px-4 py-2 rounded-lg text-sm font-bold transition"><span data-i18n="nextWeek">Tuần sau</span> &rarr;</button>
                 </div>
 
                 <div class="flex flex-wrap items-center gap-2 w-full lg:w-auto justify-end">
-                    <button onclick="openCopyWeekModal()" class="flex-1 sm:flex-none bg-sky-600/20 hover:bg-sky-600 text-sky-400 hover:text-white border border-sky-500/30 text-xs px-3 py-2 rounded-xl font-bold transition">
-                        📋 Copy Lịch
+                    <button onclick="openCopyWeekModal()" class="flex-1 sm:flex-none bg-sky-600/20 hover:bg-sky-600 text-sky-400 hover:text-white border border-sky-500/30 text-sm px-4 py-2.5 rounded-xl font-bold transition">
+                        📋 <span data-i18n="btnCopyWeek">Copy Lịch</span>
                     </button>
-                    <button onclick="clearCurrentWeekData()" class="flex-1 sm:flex-none bg-rose-600/20 hover:bg-rose-600 text-rose-400 hover:text-white border border-rose-500/30 text-xs px-3 py-2 rounded-xl font-bold transition">
-                        🧹 Xóa Sạch Tuần
+                    <button onclick="clearCurrentWeekData()" class="flex-1 sm:flex-none bg-rose-600/20 hover:bg-rose-600 text-rose-400 hover:text-white border border-rose-500/30 text-sm px-4 py-2.5 rounded-xl font-bold transition">
+                        🧹 <span data-i18n="btnClearWeek">Xóa Sạch Tuần</span>
                     </button>
-                    <button onclick="openModalForAdd()" class="flex-1 sm:flex-none bg-indigo-600 hover:bg-indigo-500 text-xs px-4 py-2 rounded-xl font-bold transition shadow-lg shadow-indigo-600/20 text-center">
-                        + Thêm sự kiện
+                    <button onclick="openModalForAdd()" class="flex-1 sm:flex-none bg-indigo-600 hover:bg-indigo-500 text-sm px-5 py-2.5 rounded-xl font-bold transition shadow-lg shadow-indigo-600/20 text-center">
+                        + <span data-i18n="btnAddEvent">Thêm sự kiện</span>
                     </button>
                 </div>
             </div>
 
-            <!-- BẢNG MATRIX GIAO DIỆN ĐẸP MẮT -->
+            <!-- BẢNG MATRIX GIAO DIỆN CHỮ TO ĐẸP MẮT -->
             <div class="bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden shadow-2xl">
                 <div class="overflow-x-auto">
-                    <table class="w-full border-collapse text-left text-sm min-w-[1100px]">
+                    <table class="w-full border-collapse text-left text-base min-w-[1100px]">
                         <thead>
-                            <tr class="bg-slate-950 text-slate-400 text-xs uppercase tracking-wider border-b border-slate-800">
-                                <th class="p-3.5 border-r border-slate-800 w-32 text-center">Khung Giờ</th>
-                                <th class="p-3.5 border-r border-slate-800">Thứ Hai</th>
-                                <th class="p-3.5 border-r border-slate-800">Thứ Ba</th>
-                                <th class="p-3.5 border-r border-slate-800">Thứ Tư</th>
-                                <th class="p-3.5 border-r border-slate-800">Thứ Năm</th>
-                                <th class="p-3.5 border-r border-slate-800">Thứ Sáu</th>
-                                <th class="p-3.5 border-r border-slate-800">Thứ Bảy</th>
-                                <th class="p-3.5">Chủ Nhật</th>
+                            <tr class="bg-slate-950 text-slate-300 text-sm uppercase tracking-wider border-b border-slate-800 font-bold">
+                                <th class="p-4 border-r border-slate-800 w-36 text-center" data-i18n="thTime">Khung Giờ</th>
+                                <th class="p-4 border-r border-slate-800" data-i18n="dayMon">Thứ Hai</th>
+                                <th class="p-4 border-r border-slate-800" data-i18n="dayTue">Thứ Ba</th>
+                                <th class="p-4 border-r border-slate-800" data-i18n="dayWed">Thứ Tư</th>
+                                <th class="p-4 border-r border-slate-800" data-i18n="dayThu">Thứ Năm</th>
+                                <th class="p-4 border-r border-slate-800" data-i18n="dayFri">Thứ Sáu</th>
+                                <th class="p-4 border-r border-slate-800" data-i18n="daySat">Thứ Bảy</th>
+                                <th class="p-4" data-i18n="daySun">Chủ Nhật</th>
                             </tr>
                         </thead>
                         <tbody id="schedule-matrix-body" class="divide-y divide-slate-800/60"></tbody>
@@ -105,14 +111,53 @@
 
         <!-- SECTION 2: LỊCH THI -->
         <div id="section-exam" class="hidden">
-            <div class="flex justify-between items-center mb-4 bg-slate-900/60 p-3 rounded-xl border border-slate-800">
+            <div class="flex justify-between items-center mb-4 bg-slate-900/60 p-4 rounded-xl border border-slate-800">
                 <div>
-                    <h2 class="font-bold text-sm sm:text-base text-amber-400">Danh Sách Lịch Thi</h2>
-                    <p class="text-[11px] text-slate-400">Đồng bộ Firebase Realtime + Nhắc Telegram</p>
+                    <h2 class="font-bold text-base sm:text-lg text-amber-400" data-i18n="examListTitle">Danh Sách Lịch Thi</h2>
+                    <p class="text-xs text-slate-400">Đồng bộ Firebase Realtime + Nhắc Telegram</p>
                 </div>
-                <button onclick="openExamModal()" class="bg-amber-600 hover:bg-amber-500 text-xs px-3.5 py-2 rounded-xl font-bold transition">+ Thêm Lịch Thi</button>
+                <button onclick="openExamModal()" class="bg-amber-600 hover:bg-amber-500 text-sm px-4 py-2.5 rounded-xl font-bold transition">+ <span data-i18n="btnAddExam">Thêm Lịch Thi</span></button>
             </div>
             <div id="exam-cards-container" class="space-y-3"></div>
+        </div>
+    </div>
+
+    <!-- Modal Cài Đặt (Setting: Ngôn ngữ + Nhạc Youtube + Âm lượng) -->
+    <div id="settingsModal" class="fixed inset-0 bg-black/80 hidden justify-center items-center p-4 z-50 backdrop-blur-sm">
+        <div class="bg-slate-900 border border-slate-800 p-6 rounded-2xl w-full max-w-md shadow-2xl space-y-5">
+            <h3 class="text-lg font-bold text-violet-400 flex items-center gap-2">⚙️ <span data-i18n="settingsTitle">Cài Đặt Hệ Thống</span></h3>
+            
+            <form onsubmit="handleSaveSettings(event)" class="space-y-4">
+                <!-- Chọn ngôn ngữ -->
+                <div>
+                    <label class="block text-xs font-bold text-slate-400 uppercase mb-1.5" data-i18n="lblLanguage">Ngôn Ngữ (Language)</label>
+                    <select id="settingLanguageSelect" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-sm text-slate-200 font-bold">
+                        <option value="vi">🇻🇳 Tiếng Việt</option>
+                        <option value="zh">🇨🇳 中文 (Tiếng Trung)</option>
+                        <option value="en">🇬🇧 English (Tiếng Anh)</option>
+                    </select>
+                </div>
+
+                <!-- Link Nhạc YouTube -->
+                <div>
+                    <label class="block text-xs font-bold text-slate-400 uppercase mb-1.5" data-i18n="lblMusicUrl">Link Nhạc YouTube (Background Music)</label>
+                    <input type="text" id="settingMusicUrlInput" placeholder="https://www.youtube.com/watch?v=..." class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-sm text-slate-200">
+                </div>
+
+                <!-- Thanh Kéo Âm Lượng -->
+                <div>
+                    <div class="flex justify-between items-center mb-1.5">
+                        <label class="text-xs font-bold text-slate-400 uppercase flex items-center gap-1" data-i18n="lblVolume">🔊 Âm Lượng Nhạc</label>
+                        <span id="volumeValueLabel" class="text-xs font-bold text-violet-400 font-mono">50%</span>
+                    </div>
+                    <input type="range" id="settingVolumeRange" min="0" max="100" value="50" oninput="updateVolumeLabel(this.value)" class="w-full accent-violet-500 h-2 bg-slate-950 rounded-lg cursor-pointer">
+                </div>
+
+                <div class="flex justify-end gap-2 pt-2 border-t border-slate-800">
+                    <button type="button" onclick="closeSettingsModal()" class="bg-slate-800 hover:bg-slate-700 px-4 py-2.5 rounded-xl text-sm font-bold" data-i18n="btnCancel">Hủy</button>
+                    <button type="submit" class="bg-violet-600 hover:bg-violet-500 px-5 py-2.5 rounded-xl text-sm font-bold" data-i18n="btnSave">Lưu Cài Đặt</button>
+                </div>
+            </form>
         </div>
     </div>
 
@@ -131,8 +176,8 @@
                     <input type="text" id="fbApiKeyInput" placeholder="AIzaSyC..." required class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-xs text-slate-200">
                 </div>
                 <div class="flex justify-end gap-2 pt-2">
-                    <button type="button" onclick="closeFirebaseModal()" class="bg-slate-800 hover:bg-slate-700 px-4 py-2 rounded-xl text-xs font-bold">Hủy</button>
-                    <button type="submit" class="bg-amber-600 hover:bg-amber-500 px-4 py-2 rounded-xl text-xs font-bold">Lưu Cấu Hình</button>
+                    <button type="button" onclick="closeFirebaseModal()" class="bg-slate-800 hover:bg-slate-700 px-4 py-2 rounded-xl text-xs font-bold" data-i18n="btnCancel">Hủy</button>
+                    <button type="submit" class="bg-amber-600 hover:bg-amber-500 px-4 py-2 rounded-xl text-xs font-bold" data-i18n="btnSave">Lưu Cấu Hình</button>
                 </div>
             </form>
         </div>
@@ -154,7 +199,7 @@
             </div>
 
             <div class="flex justify-end gap-2 pt-2 border-t border-slate-800">
-                <button type="button" onclick="closeCopyWeekModal()" class="bg-slate-800 hover:bg-slate-700 px-4 py-2 rounded-xl text-xs font-bold">Hủy</button>
+                <button type="button" onclick="closeCopyWeekModal()" class="bg-slate-800 hover:bg-slate-700 px-4 py-2 rounded-xl text-xs font-bold" data-i18n="btnCancel">Hủy</button>
                 <button type="button" onclick="confirmCopyWeekData()" class="bg-sky-600 hover:bg-sky-500 px-4 py-2 rounded-xl text-xs font-bold">Xác Nhận Copy Lịch</button>
             </div>
         </div>
@@ -176,15 +221,15 @@
                 <div class="flex justify-between items-center pt-2">
                     <button type="button" onclick="testTelegramMessage()" class="bg-sky-600/20 text-sky-400 hover:bg-sky-600 hover:text-white px-3 py-2 rounded-xl text-xs font-bold transition">🧪 Bấm Thử Bot</button>
                     <div class="flex gap-2">
-                        <button type="button" onclick="closeTelegramModal()" class="bg-slate-800 hover:bg-slate-700 px-4 py-2 rounded-xl text-xs font-bold">Hủy</button>
-                        <button type="submit" class="bg-sky-600 hover:bg-sky-500 px-4 py-2 rounded-xl text-xs font-bold">Lưu Cấu Hình</button>
+                        <button type="button" onclick="closeTelegramModal()" class="bg-slate-800 hover:bg-slate-700 px-4 py-2 rounded-xl text-xs font-bold" data-i18n="btnCancel">Hủy</button>
+                        <button type="submit" class="bg-sky-600 hover:bg-sky-500 px-4 py-2 rounded-xl text-xs font-bold" data-i18n="btnSave">Lưu Cấu Hình</button>
                     </div>
                 </div>
             </form>
         </div>
     </div>
 
-    <!-- Modal Thêm/Sửa TKB (Bổ sung trường Ghi Chú) -->
+    <!-- Modal Thêm/Sửa TKB -->
     <div id="taskModal" class="fixed inset-0 bg-black/80 hidden justify-center items-center p-4 z-50 backdrop-blur-sm">
         <div class="bg-slate-900 border border-slate-800 p-5 rounded-2xl w-full max-w-md shadow-2xl space-y-4">
             <h3 id="modal-title" class="text-base font-bold text-emerald-400">Thêm thời gian biểu</h3>
@@ -216,7 +261,6 @@
                     <label class="block text-xs text-slate-400 mb-1">Nội dung công việc</label>
                     <input type="text" id="taskContent" required placeholder="Học bài, chơi game..." class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-xs text-slate-200">
                 </div>
-                <!-- Trường Ghi Chú mới bổ sung -->
                 <div>
                     <label class="block text-xs text-slate-400 mb-1">Ghi chú / Địa điểm (không bắt buộc)</label>
                     <input type="text" id="taskNote" placeholder="Phòng A101, mang máy tính..." class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-xs text-slate-200">
@@ -239,8 +283,8 @@
                 <div class="flex justify-between items-center pt-2">
                     <button type="button" id="btn-delete-modal" onclick="deleteCurrentEditingTask()" class="bg-rose-600/20 hover:bg-rose-600 text-rose-400 hover:text-white px-3 py-2 rounded-xl text-xs font-bold transition hidden">Xóa lịch này</button>
                     <div class="flex gap-2 ml-auto">
-                        <button type="button" onclick="closeModal()" class="bg-slate-800 hover:bg-slate-700 px-4 py-2 rounded-xl text-xs font-bold">Hủy</button>
-                        <button type="submit" class="bg-indigo-600 hover:bg-indigo-500 px-4 py-2 rounded-xl text-xs font-bold">Lưu lại</button>
+                        <button type="button" onclick="closeModal()" class="bg-slate-800 hover:bg-slate-700 px-4 py-2 rounded-xl text-xs font-bold" data-i18n="btnCancel">Hủy</button>
+                        <button type="submit" class="bg-indigo-600 hover:bg-indigo-500 px-4 py-2 rounded-xl text-xs font-bold" data-i18n="btnSave">Lưu lại</button>
                     </div>
                 </div>
             </form>
@@ -296,8 +340,8 @@
                     </div>
                 </div>
                 <div class="flex justify-end gap-2 pt-2">
-                    <button type="button" onclick="closeExamModal()" class="bg-slate-800 hover:bg-slate-700 px-4 py-2 rounded-xl text-xs font-bold">Hủy</button>
-                    <button type="submit" class="bg-amber-600 hover:bg-amber-500 px-4 py-2 rounded-xl text-xs font-bold">Lưu Môn Thi</button>
+                    <button type="button" onclick="closeExamModal()" class="bg-slate-800 hover:bg-slate-700 px-4 py-2 rounded-xl text-xs font-bold" data-i18n="btnCancel">Hủy</button>
+                    <button type="submit" class="bg-amber-600 hover:bg-amber-500 px-4 py-2 rounded-xl text-xs font-bold" data-i18n="btnSave">Lưu Môn Thi</button>
                 </div>
             </form>
         </div>
@@ -317,17 +361,100 @@
                     <input type="text" id="userGoalInput" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-xs text-slate-200">
                 </div>
                 <div class="flex justify-end gap-2 pt-2">
-                    <button type="button" onclick="closeUserModal()" class="bg-slate-800 hover:bg-slate-700 px-4 py-2 rounded-xl text-xs font-bold">Hủy</button>
-                    <button type="submit" class="bg-emerald-600 hover:bg-emerald-500 px-4 py-2 rounded-xl text-xs font-bold">Lưu Thông Tin</button>
+                    <button type="button" onclick="closeUserModal()" class="bg-slate-800 hover:bg-slate-700 px-4 py-2 rounded-xl text-xs font-bold" data-i18n="btnCancel">Hủy</button>
+                    <button type="submit" class="bg-emerald-600 hover:bg-emerald-500 px-4 py-2 rounded-xl text-xs font-bold" data-i18n="btnSave">Lưu Thông Tin</button>
                 </div>
             </form>
         </div>
     </div>
 
+    <!-- YOUTUBE IFRAME API -->
+    <script src="https://www.youtube.com/iframe_api"></script>
+
     <!-- FIREBASE SDK & CORE LOGIC -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
         import { getDatabase, ref, set, onValue, get } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-database.js";
+
+        // TỪ ĐIỂN ĐA NGÔN NGỮ (VI / ZH / EN)
+        const translations = {
+            vi: {
+                appTitle: "TKB & LỊCH THI",
+                btnSettings: "Cài Đặt",
+                btnProfile: "Hồ sơ",
+                tabTkb: "TKB 1 Ngày Của Hưng",
+                tabExam: "Lịch Thi & Báo Nhắc",
+                prevWeek: "Tuần trước",
+                nextWeek: "Tuần sau",
+                btnCopyWeek: "Copy Lịch",
+                btnClearWeek: "Xóa Sạch Tuần",
+                btnAddEvent: "Thêm sự kiện",
+                thTime: "Khung Giờ",
+                dayMon: "Thứ Hai", dayTue: "Thứ Ba", dayWed: "Thứ Tư", dayThu: "Thứ Năm", dayFri: "Thứ Sáu", daySat: "Thứ Bảy", daySun: "Chủ Nhật",
+                examListTitle: "Danh Sách Lịch Thi",
+                btnAddExam: "Thêm Lịch Thi",
+                settingsTitle: "Cài Đặt Hệ Thống",
+                lblLanguage: "Ngôn Ngữ (Language)",
+                lblMusicUrl: "Link Nhạc YouTube (Background Music)",
+                lblVolume: "🔊 Âm Lượng Nhạc",
+                btnCancel: "Hủy",
+                btnSave: "Lưu Lại"
+            },
+            zh: {
+                appTitle: "课程表 & 考试日程",
+                btnSettings: "设置",
+                btnProfile: "个人资料",
+                tabTkb: "阿兴的每日课程表",
+                tabExam: "考试日程 & 提醒",
+                prevWeek: "上一周",
+                nextWeek: "下一周",
+                btnCopyWeek: "复制日程",
+                btnClearWeek: "清空本周",
+                btnAddEvent: "添加日程",
+                thTime: "时间段",
+                dayMon: "星期一", dayTue: "星期二", dayWed: "星期三", dayThu: "星期四", dayFri: "星期五", daySat: "星期六", daySun: "星期日",
+                examListTitle: "考试日程列表",
+                btnAddExam: "添加考试日程",
+                settingsTitle: "系统设置",
+                lblLanguage: "语言 (Language)",
+                lblMusicUrl: "YouTube 背景音乐链接",
+                lblVolume: "🔊 音乐音量",
+                btnCancel: "取消",
+                btnSave: "保存"
+            },
+            en: {
+                appTitle: "SCHEDULE & EXAMS",
+                btnSettings: "Settings",
+                btnProfile: "Profile",
+                tabTkb: "Hung's Daily Schedule",
+                tabExam: "Exams & Reminders",
+                prevWeek: "Prev Week",
+                nextWeek: "Next Week",
+                btnCopyWeek: "Copy Schedule",
+                btnClearWeek: "Clear Week",
+                btnAddEvent: "Add Event",
+                thTime: "Time Slot",
+                dayMon: "Monday", dayTue: "Tuesday", dayWed: "Wednesday", dayThu: "Thursday", dayFri: "Friday", daySat: "Saturday", daySun: "Sunday",
+                examListTitle: "Exam List",
+                btnAddExam: "Add Exam",
+                settingsTitle: "System Settings",
+                lblLanguage: "Language",
+                lblMusicUrl: "YouTube Music Link",
+                lblVolume: "🔊 Music Volume",
+                btnCancel: "Cancel",
+                btnSave: "Save"
+            }
+        };
+
+        window.currentLang = localStorage.getItem('app_lang') || 'vi';
+
+        window.applyLanguageUI = function() {
+            let dict = translations[window.currentLang] || translations.vi;
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                let key = el.getAttribute('data-i18n');
+                if (dict[key]) el.innerText = dict[key];
+            });
+        };
 
         const startDate = new Date('2026-09-07T00:00:00');
 
@@ -342,11 +469,9 @@
         const currentRealWeekNum = getCurrentWeekNumber();
         window.selectedWeekNum = currentRealWeekNum;
 
-        // DÙNG KHUNG GIỜ TỪ 6H TỚI 23H CHO BẢNG MATRIX GIAO DIỆN
         window.hoursList = [];
         for (let i = 6; i <= 23; i++) { window.hoursList.push(String(i).padStart(2, '0') + ":00"); }
 
-        // SINH KHUNG CHỌN THỜI GIAN LINH HOẠT THEO BƯỚC NHẢY 5 PHÚT
         window.timeSelectOptions = [];
         for (let h = 6; h <= 23; h++) {
             for (let m = 0; m < 60; m += 5) {
@@ -402,16 +527,116 @@
                             window.renderExams();
                         }
                     });
+
+                    // Lắng nghe cấu hình Settings trên Cloud
+                    onValue(ref(window.db, 'settings'), (snapshot) => {
+                        if (isLocalUpdate) return;
+                        const cloudSettings = snapshot.val();
+                        if (cloudSettings) {
+                            localStorage.setItem('app_settings', JSON.stringify(cloudSettings));
+                            applySettings(cloudSettings);
+                        }
+                    });
                 } catch(e) { console.error("Firebase Err:", e); }
             } else {
                 updateFirebaseButtonUI(false);
             }
         }
 
+        // YOUTUBE PLAYER CONTROLLER
+        window.ytPlayer = null;
+        function extractYouTubeId(url) {
+            if (!url) return null;
+            let regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+            let match = url.match(regExp);
+            return (match && match[2].length === 11) ? match[2] : null;
+        }
+
+        window.onYouTubeIframeAPIReady = function() {
+            let settings = getSystemSettings();
+            let videoId = extractYouTubeId(settings.musicUrl);
+            if (videoId) {
+                window.ytPlayer = new YT.Player('youtube-player-container', {
+                    height: '0', width: '0', videoId: videoId,
+                    playerVars: { 'autoplay': 1, 'loop': 1, 'playlist': videoId },
+                    events: {
+                        'onReady': (event) => {
+                            event.target.setVolume(settings.volume);
+                            event.target.playVideo();
+                        }
+                    }
+                });
+            }
+        };
+
+        function getSystemSettings() {
+            return JSON.parse(localStorage.getItem('app_settings') || '{"lang": "vi", "musicUrl": "", "volume": 50}');
+        }
+
+        function applySettings(settings) {
+            if (settings.lang) {
+                window.currentLang = settings.lang;
+                localStorage.setItem('app_lang', settings.lang);
+                window.applyLanguageUI();
+            }
+
+            let volume = settings.volume !== undefined ? settings.volume : 50;
+            if (window.ytPlayer && typeof window.ytPlayer.setVolume === 'function') {
+                window.ytPlayer.setVolume(volume);
+            }
+
+            let videoId = extractYouTubeId(settings.musicUrl);
+            if (videoId && window.ytPlayer && typeof window.ytPlayer.loadVideoById === 'function') {
+                window.ytPlayer.loadVideoById(videoId);
+            }
+        }
+
+        window.updateVolumeLabel = function(val) {
+            document.getElementById('volumeValueLabel').innerText = `${val}%`;
+            if (window.ytPlayer && typeof window.ytPlayer.setVolume === 'function') {
+                window.ytPlayer.setVolume(val);
+            }
+        };
+
+        window.openSettingsModal = function() {
+            let s = getSystemSettings();
+            document.getElementById('settingLanguageSelect').value = s.lang || 'vi';
+            document.getElementById('settingMusicUrlInput').value = s.musicUrl || '';
+            document.getElementById('settingVolumeRange').value = s.volume !== undefined ? s.volume : 50;
+            document.getElementById('volumeValueLabel').innerText = `${s.volume !== undefined ? s.volume : 50}%`;
+            document.getElementById('settingsModal').classList.remove('hidden');
+            document.getElementById('settingsModal').classList.add('flex');
+        };
+
+        window.closeSettingsModal = function() {
+            document.getElementById('settingsModal').classList.add('hidden');
+            document.getElementById('settingsModal').classList.remove('flex');
+        };
+
+        window.handleSaveSettings = function(e) {
+            e.preventDefault();
+            let newSettings = {
+                lang: document.getElementById('settingLanguageSelect').value,
+                musicUrl: document.getElementById('settingMusicUrlInput').value.trim(),
+                volume: Number(document.getElementById('settingVolumeRange').value)
+            };
+
+            localStorage.setItem('app_settings', JSON.stringify(newSettings));
+            applySettings(newSettings);
+            window.closeSettingsModal();
+
+            if (window.db) {
+                isLocalUpdate = true;
+                set(ref(window.db, 'settings'), newSettings).finally(() => {
+                    setTimeout(() => { isLocalUpdate = false; }, 300);
+                });
+            }
+        };
+
         // FORCE RELOAD MOBILE
         window.forceReloadSyncMobile = function() {
             if (!window.db) {
-                alert("Chưa kết nối Firebase! Vui lòng cấu hình Firebase trước.");
+                alert("Chưa kết nối Firebase!");
                 return;
             }
 
@@ -426,19 +651,19 @@
                     localStorage.setItem('firebase_cached_schedule', JSON.stringify(cloudData));
                 }
                 window.render();
-                alert("🔄 Đã xóa cache Mobile và đồng bộ dữ liệu mới nhất từ PC thành công!");
+                alert("🔄 Đã xóa cache Mobile và đồng bộ thành công!");
             }).catch((err) => {
-                alert("Lỗi khi kéo dữ liệu từ Firebase: " + err.message);
+                alert("Lỗi khi kéo dữ liệu Firebase: " + err.message);
             });
         };
 
         function updateFirebaseButtonUI(connected) {
             let btn = document.getElementById('btn-firebase-status');
             if (connected) {
-                btn.className = "bg-emerald-600/20 text-emerald-400 border border-emerald-500/30 text-xs px-3 py-2 rounded-xl font-bold flex items-center justify-center gap-1 cursor-default";
+                btn.className = "bg-emerald-600/20 text-emerald-400 border border-emerald-500/30 text-sm px-3.5 py-2.5 rounded-xl font-bold flex items-center justify-center gap-1 cursor-default";
                 btn.innerHTML = "🔥 Cloud Online";
             } else {
-                btn.className = "bg-amber-600/20 text-amber-400 border border-amber-500/30 hover:bg-amber-600 hover:text-white text-xs px-3 py-2 rounded-xl font-bold transition";
+                btn.className = "bg-amber-600/20 text-amber-400 border border-amber-500/30 hover:bg-amber-600 hover:text-white text-sm px-3.5 py-2.5 rounded-xl font-bold transition";
                 btn.innerHTML = "🔥 Cấu Hình Firebase";
             }
         }
@@ -531,7 +756,7 @@
             return `${weekStart.toLocaleDateString('vi-VN', opt)} đến ${weekEnd.toLocaleDateString('vi-VN', opt)}`;
         }
 
-        // RENDER TKB VỚI THIẾT KẾ CARD NÂNG CẤP ĐẸP MẮT
+        // RENDER TKB CHỮ TO RÕ NÉT
         window.render = function() {
             document.getElementById('week-counter-label').innerText = `TUẦN ${window.selectedWeekNum}`;
             let dateRangeStr = getWeekDatesText(window.selectedWeekNum);
@@ -553,7 +778,7 @@
                 let currentHourNum = parseInt(currentHour.split(':')[0]);
 
                 let rowHtml = `<tr class="hover:bg-slate-900/40 transition">`;
-                rowHtml += `<td class="p-3 border-r border-slate-800 bg-slate-950/40 text-center font-mono text-xs font-bold text-amber-400 align-middle">${currentHour} - ${nextHour}</td>`;
+                rowHtml += `<td class="p-3 border-r border-slate-800 bg-slate-950/40 text-center font-mono text-sm font-black text-amber-400 align-middle">${currentHour} - ${nextHour}</td>`;
 
                 days.forEach(day => {
                     if (skipCells[day][i]) return;
@@ -575,21 +800,21 @@
 
                         rowHtml += `
                             <td rowspan="${spanCount}" onclick="openModalForEdit('${day}', ${task.id})" class="p-2 border-r border-slate-800/60 align-top cursor-pointer transition select-none group">
-                                <div class="bg-gradient-to-br from-slate-900 to-indigo-950/80 hover:from-slate-850 hover:to-indigo-900/90 border-l-4 ${task.done ? 'border-slate-600' : 'border-emerald-400'} border-y border-r border-slate-800/80 p-2.5 rounded-xl shadow-lg transition duration-200">
-                                    <div class="flex justify-between items-center mb-1 gap-1">
-                                        <span class="text-[10px] font-mono font-black text-indigo-300 bg-indigo-950/80 px-1.5 py-0.5 rounded border border-indigo-500/20">${task.start} - ${task.end}</span>
-                                        <div class="flex items-center gap-1">
-                                            ${task.notify ? '<span class="text-[10px]" title="Đã bật Telegram">✈️</span>' : ''}
-                                            <input type="checkbox" ${task.done ? 'checked' : ''} onclick="toggleTaskDone('${day}', ${task.id}, event)" class="w-3.5 h-3.5 rounded cursor-pointer accent-emerald-500">
+                                <div class="bg-gradient-to-br from-slate-900 to-indigo-950/90 hover:from-slate-850 hover:to-indigo-900 border-l-4 ${task.done ? 'border-slate-600' : 'border-emerald-400'} border-y border-r border-slate-800 p-3 rounded-xl shadow-lg transition duration-200">
+                                    <div class="flex justify-between items-center mb-1.5 gap-1">
+                                        <span class="text-xs font-mono font-black text-indigo-300 bg-indigo-950 px-2 py-0.5 rounded-md border border-indigo-500/30">${task.start} - ${task.end}</span>
+                                        <div class="flex items-center gap-1.5">
+                                            ${task.notify ? '<span class="text-xs" title="Đã bật Telegram">✈️</span>' : ''}
+                                            <input type="checkbox" ${task.done ? 'checked' : ''} onclick="toggleTaskDone('${day}', ${task.id}, event)" class="w-4 h-4 rounded cursor-pointer accent-emerald-500">
                                         </div>
                                     </div>
-                                    <div class="text-xs font-bold ${task.done ? 'completed text-slate-400' : 'text-slate-100'} mt-1 leading-snug">${task.text}</div>
-                                    ${task.note ? `<div class="text-[10px] text-slate-400 italic mt-1 flex items-center gap-1"><span class="text-amber-400/80">📌</span> ${task.note}</div>` : ''}
+                                    <div class="text-sm font-bold ${task.done ? 'completed text-slate-400' : 'text-slate-100'} mt-1 leading-snug">${task.text}</div>
+                                    ${task.note ? `<div class="text-xs text-slate-300 italic mt-1.5 flex items-center gap-1 font-medium"><span class="text-amber-400">📌</span> ${task.note}</div>` : ''}
                                 </div>
                             </td>
                         `;
                     } else {
-                        rowHtml += `<td class="p-3 border-r border-slate-800/60 text-slate-800 text-xs text-center select-none">-</td>`;
+                        rowHtml += `<td class="p-3 border-r border-slate-800/60 text-slate-800 text-sm text-center select-none">-</td>`;
                     }
                 });
                 rowHtml += `</tr>`;
@@ -599,6 +824,7 @@
             window.renderExams();
             renderUserInfo();
             updateTelegramButtonUI();
+            window.applyLanguageUI();
         };
 
         // COPY LỊCH
@@ -672,13 +898,13 @@
             if (tab === 'tkb') {
                 document.getElementById('section-tkb').classList.remove('hidden');
                 document.getElementById('section-exam').classList.add('hidden');
-                document.getElementById('tab-btn-tkb').className = "flex-1 sm:flex-none px-4 py-2.5 font-bold text-xs sm:text-sm rounded-t-xl transition bg-slate-900 text-emerald-400 border-t border-x border-slate-800 text-center";
-                document.getElementById('tab-btn-exam').className = "flex-1 sm:flex-none px-4 py-2.5 font-bold text-xs sm:text-sm rounded-t-xl transition bg-slate-950 text-slate-400 hover:text-slate-200 text-center";
+                document.getElementById('tab-btn-tkb').className = "flex-1 sm:flex-none px-5 py-3 font-bold text-sm sm:text-base rounded-t-xl transition bg-slate-900 text-emerald-400 border-t border-x border-slate-800 text-center";
+                document.getElementById('tab-btn-exam').className = "flex-1 sm:flex-none px-5 py-3 font-bold text-sm sm:text-base rounded-t-xl transition bg-slate-950 text-slate-400 hover:text-slate-200 text-center";
             } else {
                 document.getElementById('section-tkb').classList.add('hidden');
                 document.getElementById('section-exam').classList.remove('hidden');
-                document.getElementById('tab-btn-exam').className = "flex-1 sm:flex-none px-4 py-2.5 font-bold text-xs sm:text-sm rounded-t-xl transition bg-slate-900 text-amber-400 border-t border-x border-slate-800 text-center";
-                document.getElementById('tab-btn-tkb').className = "flex-1 sm:flex-none px-4 py-2.5 font-bold text-xs sm:text-sm rounded-t-xl transition bg-slate-950 text-slate-400 hover:text-slate-200 text-center";
+                document.getElementById('tab-btn-exam').className = "flex-1 sm:flex-none px-5 py-3 font-bold text-sm sm:text-base rounded-t-xl transition bg-slate-900 text-amber-400 border-t border-x border-slate-800 text-center";
+                document.getElementById('tab-btn-tkb').className = "flex-1 sm:flex-none px-5 py-3 font-bold text-sm sm:text-base rounded-t-xl transition bg-slate-950 text-slate-400 hover:text-slate-200 text-center";
             }
         };
 
@@ -702,7 +928,7 @@
             container.innerHTML = '';
 
             if (exams.length === 0) {
-                container.innerHTML = `<div class="p-6 text-center text-xs text-slate-500 bg-slate-900 rounded-2xl border border-slate-800">Chưa có lịch thi nào được khởi tạo.</div>`;
+                container.innerHTML = `<div class="p-6 text-center text-sm text-slate-500 bg-slate-900 rounded-2xl border border-slate-800">Chưa có lịch thi nào được khởi tạo.</div>`;
                 return;
             }
 
@@ -713,13 +939,13 @@
                     <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 shadow-lg">
                         <div class="space-y-1">
                             <div class="flex items-center gap-2">
-                                <h3 class="font-bold text-sm text-amber-300">${ex.subject}</h3>
-                                ${ex.notify ? `<span class="text-[10px] bg-amber-500/10 text-amber-400 px-2 py-0.5 rounded-full border border-amber-500/20">✈️ Báo Telegram trước ${ex.advanceHours}h (${intervalLabel})</span>` : '<span class="text-[10px] bg-slate-800 text-slate-500 px-2 py-0.5 rounded-full">Tắt Telegram</span>'}
+                                <h3 class="font-bold text-base text-amber-300">${ex.subject}</h3>
+                                ${ex.notify ? `<span class="text-xs bg-amber-500/10 text-amber-400 px-2.5 py-0.5 rounded-full border border-amber-500/20">✈️ Báo Telegram trước ${ex.advanceHours}h (${intervalLabel})</span>` : '<span class="text-xs bg-slate-800 text-slate-500 px-2 py-0.5 rounded-full">Tắt Telegram</span>'}
                             </div>
-                            <p class="text-xs text-slate-300 font-mono">📅 Ngày thi: <span class="text-emerald-400 font-bold">${ex.date}</span> lúc <span class="text-amber-400 font-bold">${ex.time}</span></p>
-                            <p class="text-[11px] text-slate-400">📍 Ghi chú: ${ex.note || 'Không có'}</p>
+                            <p class="text-sm text-slate-300 font-mono">📅 Ngày thi: <span class="text-emerald-400 font-bold">${ex.date}</span> lúc <span class="text-amber-400 font-bold">${ex.time}</span></p>
+                            <p class="text-xs text-slate-400">📍 Ghi chú: ${ex.note || 'Không có'}</p>
                         </div>
-                        <button onclick="deleteExam(${idx})" class="self-end sm:self-center text-xs text-rose-400 hover:text-rose-300 font-bold bg-rose-500/10 px-3 py-1.5 rounded-xl border border-rose-500/20">Xóa lịch thi</button>
+                        <button onclick="deleteExam(${idx})" class="self-end sm:self-center text-xs text-rose-400 hover:text-rose-300 font-bold bg-rose-500/10 px-3.5 py-2 rounded-xl border border-rose-500/20">Xóa lịch thi</button>
                     </div>
                 `;
             });
@@ -782,7 +1008,7 @@
             let cfg = getTelegramConfig();
             let btn = document.getElementById('btn-telegram-status');
             if (cfg.token && cfg.chatId) {
-                btn.className = "bg-emerald-600/20 text-emerald-400 border border-emerald-500/30 text-xs px-3 py-2 rounded-xl font-bold flex items-center justify-center gap-1 cursor-default";
+                btn.className = "bg-emerald-600/20 text-emerald-400 border border-emerald-500/30 text-sm px-3.5 py-2.5 rounded-xl font-bold flex items-center justify-center gap-1 cursor-default";
                 btn.innerHTML = "✅ Đã Lắp Telegram";
             }
         }
@@ -982,6 +1208,7 @@
         };
 
         initFirebase();
+        applySettings(getSystemSettings());
         window.render();
     </script>
 </body>
