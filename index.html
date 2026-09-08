@@ -232,7 +232,7 @@
         </div>
     </div>
 
-    <!-- Modal Thêm/Sửa TKB -->
+    <!-- Modal Thêm/Sửa TKB (ĐÃ FIX SELECT VALUE ĐỒNG BỘ CHUẨN XÁC) -->
     <div id="taskModal" class="fixed inset-0 bg-black/80 hidden justify-center items-center p-4 z-50 backdrop-blur-sm">
         <div class="bg-slate-900 border border-slate-800 p-5 rounded-2xl w-full max-w-md shadow-2xl space-y-4">
             <h3 id="modal-title" class="text-base font-bold text-emerald-400">Thêm thời gian biểu</h3>
@@ -413,15 +413,11 @@
             });
         };
 
-        // THUẬT TOÁN TÍNH TUẦN THỰC TẾ CHUẨN KHÔNG BỊ LỆCH TIMEZONE
         const startDate = new Date('2026-09-07T00:00:00');
 
         function getCurrentWeekNumber() {
             const now = new Date();
-            const nowClean = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-            const startClean = new Date(startDate.getFullYear(), startDate.getMonth(), startDate.getDate());
-            
-            const diffTime = nowClean - startClean;
+            const diffTime = now - startDate;
             const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
             if (diffDays < 0) return 1;
             return Math.floor(diffDays / 7) + 1;
@@ -430,7 +426,7 @@
         const currentRealWeekNum = getCurrentWeekNumber();
         window.selectedWeekNum = currentRealWeekNum;
 
-        // TẠO KHUNG GIỜ
+        // TẠO KHUNG GIỜ MỖI HÀNG BẰNG 1 TIẾNG (TỪ 06:00 ĐẾN 23:00)
         window.hoursList = [];
         for (let i = 6; i <= 23; i++) { window.hoursList.push(String(i).padStart(2, '0') + ":00"); }
 
@@ -747,10 +743,20 @@
                     initial = { "Thứ Hai": [], "Thứ Ba": [], "Thứ Tư": [], "Thứ Năm": [], "Thứ Sáu": [], "Thứ Bảy": [], "Chủ Nhật": [] };
                 }
                 
+                // Đảm bảo đủ các key ngày
+                ["Thứ Hai", "Thứ Ba", "Thứ Tư", "Thứ Năm", "Thứ Sáu", "Thứ Bảy", "Chủ Nhật"].forEach(d => {
+                    if (!initial[d]) initial[d] = [];
+                });
+
                 localStorage.setItem(key, JSON.stringify(initial));
                 return initial;
             }
-            return typeof data === 'string' ? JSON.parse(data) : data;
+            
+            let parsedData = typeof data === 'string' ? JSON.parse(data) : data;
+            ["Thứ Hai", "Thứ Ba", "Thứ Tư", "Thứ Năm", "Thứ Sáu", "Thứ Bảy", "Chủ Nhật"].forEach(d => {
+                if (!parsedData[d]) parsedData[d] = [];
+            });
+            return parsedData;
         };
 
         window.saveWeekData = function(data, weekNum = window.selectedWeekNum) {
@@ -791,13 +797,14 @@
             return `${weekStart.toLocaleDateString('vi-VN', opt)} đến ${weekEnd.toLocaleDateString('vi-VN', opt)}`;
         }
 
+        // CHUYỂN ĐỔI CHUỖI HH:MM SANG PHÚT TÍNH TỪ 00:00
         function timeToMinutes(tStr) {
             if (!tStr) return 0;
             let [h, m] = tStr.split(':').map(Number);
             return h * 60 + m;
         }
 
-        // THUẬT TOÁN HÀM RENDER NÂNG CẤP - FIX LỖI KHÔNG THÊM ĐƯỢC MÔN LẺ / MÔN TRÙNG
+        // LOGIC RENDER MATRIX HOÀN HOẢN - ĐÃ TỐI ƯU ROWSPAN & KHÔNG BỊ TRÙNG MÔN
         window.render = function() {
             document.getElementById('week-counter-label').innerText = `TUẦN ${window.selectedWeekNum}`;
             let dateRangeStr = getWeekDatesText(window.selectedWeekNum);
@@ -829,6 +836,7 @@
 
                     let dayTasks = weekData[day] || [];
 
+                    // Tìm task bắt đầu rơi vào khung giờ hiện tại
                     let task = dayTasks.find(t => {
                         let tStart = timeToMinutes(t.start);
                         return tStart >= rowStartMin && tStart < rowEndMin;
@@ -839,7 +847,7 @@
                         let tEnd = timeToMinutes(task.end);
                         
                         let durationMin = tEnd - tStart;
-                        let spanCount = Math.max(Math.round(durationMin / 60), 1);
+                        let spanCount = Math.max(Math.ceil(durationMin / 60), 1);
 
                         for (let s = 1; s < spanCount; s++) {
                             if (i + s < window.hoursList.length - 1) {
@@ -1181,7 +1189,7 @@
 
         window.openModalForEdit = function(day, id) {
             let data = window.getWeekData();
-            let task = data[day].find(t => t.id === id);
+            let task = data[day] ? data[day].find(t => t.id === id) : null;
             if (!task) return;
             document.getElementById('modal-title').innerText = "Chỉnh sửa thời gian biểu";
             document.getElementById('taskId').value = task.id;
@@ -1222,10 +1230,12 @@
             let data = window.getWeekData();
 
             if (numericId) {
-                let oldDay = Object.keys(data).find(d => data[d].some(t => t.id === numericId));
-                if (oldDay) data[oldDay] = data[oldDay].filter(t => t.id !== numericId);
+                let oldDay = Object.keys(data).find(d => data[d] && data[d].some(t => t.id === numericId));
+                if (oldDay && data[oldDay]) data[oldDay] = data[oldDay].filter(t => t.id !== numericId);
+                if (!data[day]) data[day] = [];
                 data[day].push({ id: numericId, start, end, text: content, note, done: false, notify, advanceMin });
             } else {
+                if (!data[day]) data[day] = [];
                 data[day].push({ id: Date.now(), start, end, text: content, note, done: false, notify, advanceMin });
             }
 
@@ -1237,7 +1247,7 @@
             let id = Number(document.getElementById('taskId').value);
             if (confirm("Bạn có chắc muốn xóa lịch này?")) {
                 let data = window.getWeekData();
-                Object.keys(data).forEach(d => { data[d] = data[d].filter(t => t.id !== id); });
+                Object.keys(data).forEach(d => { if (data[d]) data[d] = data[d].filter(t => t.id !== id); });
                 window.saveWeekData(data);
                 window.closeModal();
             }
