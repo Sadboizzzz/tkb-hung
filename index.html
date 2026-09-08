@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>TKB & Lịch Thi - Hưng Realtime Cloud Pro</title>
 
-    <link rel="manifest" href="data:application/json;base64,ewogICJuYW1lIjogIlRLQiBD4bunYSBIxrBuZyIsCiAgInNob3J0X25hbWUiOiAiVEtCICBIxrBuZyIsCiAgInN0YXJ0X3VybCI6ICIuIiwKICAiZGlzcGxheSI6ICJzdGFuZGFsb25lIiwKICAiYmFja2dyb3VuZF9jb2xvciI6ICIjMDkxZTJhIiwKICAidGhlbWVfY29sb3IiOiAiIzA5MWUyYSIKZX0=">
+    <link rel="manifest" href="data:application/json;base64,ewogICJuYW1lIjogIlRLQiBD4bunYSBIxrBuZyIsCiAgInNob3J0X25hbWUiOiAiVEtCICBIxrBuZyIsCiAgInNob3J0X3VybCI6ICIuIiwKICAiZGlzcGxheSI6ICJzdGFuZGFsb25lIiwKICAiYmFja2dyb3VuZF9jb2xvciI6ICIjMDkxZTJhIiwKICAidGhlbWVfY29sb3IiOiAiIzA5MWUyYSIKZX0=">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="TKB Hưng">
@@ -367,7 +367,6 @@
                     window.db = getDatabase(app);
                     updateFirebaseButtonUI(true);
 
-                    // Lắng nghe dữ liệu TKB Realtime
                     onValue(ref(window.db, 'schedule'), (snapshot) => {
                         const cloudData = snapshot.val();
                         if (cloudData) {
@@ -376,7 +375,6 @@
                         }
                     });
 
-                    // Lắng nghe dữ liệu Lịch thi Realtime
                     onValue(ref(window.db, 'exams'), (snapshot) => {
                         const cloudExams = snapshot.val();
                         if (cloudExams) {
@@ -424,7 +422,7 @@
             alert("Đã kết nối Firebase Realtime!");
         };
 
-        // DỮ LIỆU TUẦN & LƯU LẠI
+        // DỮ LIỆU TUẦN & LOGIC CHỈ TỰ ĐỘNG COPY KHI ĐẾN MỐC CHUYỂN TUẦN
         window.getWeekData = function(weekNum = window.selectedWeekNum) {
             let cached = JSON.parse(localStorage.getItem('firebase_cached_schedule') || '{}');
             let key = `matrix_edit_${weekNum}`;
@@ -432,13 +430,20 @@
 
             if (!data) {
                 let initial;
-                if (weekNum > 1) {
+                let realNowWeek = getCurrentWeekNumber();
+
+                // Chỉ tự động copy nếu tuần được xem đã diễn ra hoặc đang diễn ra (đã qua mốc 00:00 sáng Thứ Hai)
+                if (weekNum > 1 && weekNum <= realNowWeek) {
                     let prevWeekData = window.getWeekData(weekNum - 1);
                     initial = JSON.parse(JSON.stringify(prevWeekData));
                     Object.keys(initial).forEach(d => initial[d].forEach(t => t.done = false));
-                } else {
+                } else if (weekNum === 1) {
                     initial = JSON.parse(JSON.stringify(defaultWeekData));
+                } else {
+                    // Tuần trong tương lai (chưa tới mốc 00:00) thì để trống
+                    initial = { "Thứ Hai": [], "Thứ Ba": [], "Thứ Tư": [], "Thứ Năm": [], "Thứ Sáu": [], "Thứ Bảy": [], "Chủ Nhật": [] };
                 }
+                
                 window.saveWeekData(initial, weekNum);
                 return initial;
             }
@@ -449,14 +454,12 @@
             let key = `matrix_edit_${weekNum}`;
             localStorage.setItem(key, JSON.stringify(data));
 
-            // Đẩy trực tiếp lên Firebase Realtime
             if (window.db) {
                 set(ref(window.db, `schedule/${key}`), data);
             }
             window.render();
         };
 
-        // HÀM XÓA SẠCH LỊCH TRONG TUẦN
         window.clearCurrentWeekData = function() {
             if (confirm(`Bạn có chắc chắn muốn XÓA SẠCH toàn bộ lịch của Tuần ${window.selectedWeekNum} không?`)) {
                 let emptyData = { "Thứ Hai": [], "Thứ Ba": [], "Thứ Tư": [], "Thứ Năm": [], "Thứ Sáu": [], "Thứ Bảy": [], "Chủ Nhật": [] };
@@ -615,7 +618,7 @@
             }
         };
 
-        // QUẢN LÝ LỊCH THI (THÊM / XÓA LỊCH THI)
+        // LỊCH THI
         function getExams() { return JSON.parse(localStorage.getItem('user_exams') || '[]'); }
         function saveExams(exams) {
             localStorage.setItem('user_exams', JSON.stringify(exams));
@@ -671,7 +674,6 @@
             window.closeExamModal();
         };
 
-        // HÀM XÓA CỤ THỂ 1 MÔN THI
         window.deleteExam = function(idx) {
             if (confirm("Bạn có chắc chắn muốn xóa môn thi này khỏi danh sách?")) {
                 let exams = getExams();
@@ -887,7 +889,6 @@
             window.closeModal();
         };
 
-        // HÀM XÓA 1 CÔNG VIỆC CỤ THỂ TRONG TKB
         window.deleteCurrentEditingTask = function() {
             let id = Number(document.getElementById('taskId').value);
             if (confirm("Bạn có chắc muốn xóa lịch này?")) {
