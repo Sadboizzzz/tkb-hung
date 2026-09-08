@@ -3,136 +3,136 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Thời Khóa Biểu & Lịch Thi - TKB 1 ngày của Hưng</title>
-    <!-- Web App Manifest cho iOS/PWA -->
-    <link rel="manifest"
-        href="data:application/json;base64,ewogICJuYW1lIjogIlRLQiBD4bunYSBIxrBuZyIsCiAgInNob3J0X25hbWUiOiAiVEtCICBIxrBuZyIsCiAgInN0YXJ0X3VybCI6ICIuIiwKICAiZGlzcGxheSI6ICJzdGFuZGFsb25lIiwKICAiYmFja2dyb3VuZF9jb2xvciI6ICIjMGYxNzJhIiwKICAidGhlbWVfY29sb3IiOiAiIzBmMTcyYSIKZX0=">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>TKB & Lịch Thi - Hưng Telegram Pro</title>
+
+    <link rel="manifest" href="data:application/json;base64,ewogICJuYW1lIjogIlRLQiBD4bunYSBIxrBuZyIsCiAgInNob3J0X25hbWUiOiAiVEtCICBIxrBuZyIsCiAgInN0YXJ0X3VybCI6ICIuIiwKICAiZGlzcGxheSI6ICJzdGFuZGFsb25lIiwKICAiYmFja2dyb3VuZF9jb2xvciI6ICIjMDkxZTJhIiwKICAidGhlbWVfY29sb3IiOiAiIzA5MWUyYSIKZX0=">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="TKB Hưng">
 
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <style>
-        .completed {
-            text-decoration: line-through;
-            opacity: 0.4;
-        }
+        .completed { text-decoration: line-through; opacity: 0.4; }
+        body { -webkit-overflow-scrolling: touch; }
     </style>
 </head>
 
-<body class="bg-slate-950 text-slate-100 min-h-screen p-4 md:p-6 font-sans">
+<body class="bg-slate-950 text-slate-100 min-h-screen p-3 md:p-6 font-sans antialiased pb-20">
 
     <div class="max-w-7xl mx-auto">
         <!-- Header -->
-        <header
-            class="flex flex-col md:flex-row justify-between items-center mb-6 bg-slate-900 p-5 rounded-2xl border border-slate-800 shadow-xl gap-4">
+        <header class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 bg-slate-900/90 backdrop-blur p-4 rounded-2xl border border-slate-800 shadow-xl gap-3">
             <div>
-                <h1 class="text-xl md:text-2xl font-black text-emerald-400 tracking-wider">🗓️ QUẢN LÝ LỊCH CÁ NHÂN</h1>
-                <p id="user-info-display" class="text-xs text-slate-400 mt-1"></p>
-                <p id="week-title-info" class="text-xs md:text-sm text-slate-300 mt-0.5 font-medium"></p>
+                <h1 class="text-lg md:text-2xl font-black text-emerald-400 tracking-wide flex items-center gap-2">
+                    ⚡ TKB & LỊCH THI <span class="text-xs bg-sky-500/10 text-sky-400 px-2 py-0.5 rounded-full font-normal border border-sky-500/20">Telegram Sync</span>
+                </h1>
+                <p id="user-info-display" class="text-xs text-slate-400 mt-0.5"></p>
             </div>
-            <div class="flex items-center gap-2">
-                <button onclick="requestNotificationPermission()"
-                    class="bg-amber-600 hover:bg-amber-500 text-xs px-3 py-2 rounded-xl font-bold transition">🔔 Bật
-                    Thông Báo</button>
-                <button onclick="openUserInfoModal()"
-                    class="bg-slate-800 hover:bg-slate-700 text-xs px-3 py-2 rounded-xl font-bold transition">⚙️ Hồ sơ
-                    Hưng</button>
+            <div class="flex items-center gap-2 w-full sm:w-auto">
+                <button onclick="openTelegramModal()" id="btn-telegram-status" class="flex-1 sm:flex-initial bg-sky-600/20 text-sky-400 border border-sky-500/30 hover:bg-sky-600 hover:text-white text-xs px-3 py-2 rounded-xl font-bold transition flex items-center justify-center gap-1">
+                    ✈️ Cấu Hình Telegram Bot
+                </button>
+                <button onclick="openUserInfoModal()" class="bg-slate-800 hover:bg-slate-700 text-xs px-3 py-2 rounded-xl font-bold transition">⚙️ Hồ sơ</button>
             </div>
         </header>
 
-        <!-- Thanh chuyển Tab Navigation -->
-        <div class="flex border-b border-slate-800 mb-6 gap-2">
-            <button id="tab-btn-tkb" onclick="switchTab('tkb')"
-                class="px-5 py-2.5 font-bold text-sm rounded-t-xl transition bg-slate-900 text-emerald-400 border-t border-x border-slate-800">
+        <!-- Navigation Tabs -->
+        <div class="flex border-b border-slate-800 mb-4 gap-2">
+            <button id="tab-btn-tkb" onclick="switchTab('tkb')" class="flex-1 sm:flex-none px-4 py-2.5 font-bold text-xs sm:text-sm rounded-t-xl transition bg-slate-900 text-emerald-400 border-t border-x border-slate-800 text-center">
                 📌 TKB 1 Ngày Của Hưng
             </button>
-            <button id="tab-btn-exam" onclick="switchTab('exam')"
-                class="px-5 py-2.5 font-bold text-sm rounded-t-xl transition bg-slate-950 text-slate-400 hover:text-slate-200">
-                📝 Lịch Thi
+            <button id="tab-btn-exam" onclick="switchTab('exam')" class="flex-1 sm:flex-none px-4 py-2.5 font-bold text-xs sm:text-sm rounded-t-xl transition bg-slate-950 text-slate-400 hover:text-slate-200 text-center">
+                📝 Lịch Thi & Báo Nhắc
             </button>
         </div>
 
         <!-- SECTION 1: TKB 1 NGÀY CỦA HƯNG -->
         <div id="section-tkb">
-            <div
-                class="flex flex-wrap justify-between items-center mb-6 gap-4 bg-slate-900/60 p-4 rounded-xl border border-slate-800">
-                <div class="flex items-center gap-3">
-                    <button onclick="changeWeek(-1)"
-                        class="bg-slate-800 hover:bg-slate-700 px-3 py-1.5 rounded-lg text-sm transition">&larr; Tuần
-                        trước</button>
-                    <span id="week-counter-label" class="font-bold text-base text-emerald-300 px-2"></span>
-                    <button onclick="changeWeek(1)"
-                        class="bg-slate-800 hover:bg-slate-700 px-3 py-1.5 rounded-lg text-sm transition">Tuần sau
-                        &rarr;</button>
+            <div class="flex flex-col sm:flex-row justify-between items-center mb-4 gap-3 bg-slate-900/60 p-3 rounded-xl border border-slate-800">
+                <div class="flex items-center justify-between w-full sm:w-auto gap-2">
+                    <button onclick="changeWeek(-1)" class="bg-slate-800 hover:bg-slate-700 px-3 py-1.5 rounded-lg text-xs font-bold transition">&larr; Tuần trước</button>
+                    <div class="text-center">
+                        <span id="week-counter-label" class="font-bold text-sm text-emerald-300 block"></span>
+                        <span id="week-title-info" class="text-[10px] text-slate-400 block"></span>
+                    </div>
+                    <button onclick="changeWeek(1)" class="bg-slate-800 hover:bg-slate-700 px-3 py-1.5 rounded-lg text-xs font-bold transition">Tuần sau &rarr;</button>
                 </div>
-                <button onclick="openModalForAdd()"
-                    class="bg-indigo-600 hover:bg-indigo-500 text-sm px-4 py-2 rounded-xl font-bold transition shadow-lg shadow-indigo-600/20">+
-                    Thêm sự kiện lịch</button>
+                <button onclick="openModalForAdd()" class="w-full sm:w-auto bg-indigo-600 hover:bg-indigo-500 text-xs px-4 py-2.5 rounded-xl font-bold transition shadow-lg shadow-indigo-600/20 text-center">+ Thêm sự kiện lịch</button>
             </div>
 
-            <!-- BẢNG THỜI KHÓA BIỂU -->
-            <div class="bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden shadow-2xl">
+            <!-- Desktop View -->
+            <div class="hidden md:block bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden shadow-2xl">
                 <div class="overflow-x-auto">
-                    <table class="w-full border-collapse text-left text-sm min-w-[1100px]">
+                    <table class="w-full border-collapse text-left text-sm min-w-[1000px]">
                         <thead>
-                            <tr
-                                class="bg-slate-950 text-slate-400 text-xs uppercase tracking-wider border-b border-slate-800">
-                                <th class="p-3.5 border-r border-slate-800 w-36 text-center">Khung Giờ</th>
-                                <th class="p-3.5 border-r border-slate-800">Thứ Hai</th>
-                                <th class="p-3.5 border-r border-slate-800">Thứ Ba</th>
-                                <th class="p-3.5 border-r border-slate-800">Thứ Tư</th>
-                                <th class="p-3.5 border-r border-slate-800">Thứ Năm</th>
-                                <th class="p-3.5 border-r border-slate-800">Thứ Sáu</th>
-                                <th class="p-3.5 border-r border-slate-800">Thứ Bảy</th>
-                                <th class="p-3.5">Chủ Nhật</th>
+                            <tr class="bg-slate-950 text-slate-400 text-xs uppercase tracking-wider border-b border-slate-800">
+                                <th class="p-3 border-r border-slate-800 w-32 text-center">Khung Giờ</th>
+                                <th class="p-3 border-r border-slate-800">Thứ Hai</th>
+                                <th class="p-3 border-r border-slate-800">Thứ Ba</th>
+                                <th class="p-3 border-r border-slate-800">Thứ Tư</th>
+                                <th class="p-3 border-r border-slate-800">Thứ Năm</th>
+                                <th class="p-3 border-r border-slate-800">Thứ Sáu</th>
+                                <th class="p-3 border-r border-slate-800">Thứ Bảy</th>
+                                <th class="p-3">Chủ Nhật</th>
                             </tr>
                         </thead>
-                        <tbody id="schedule-matrix-body" class="divide-y divide-slate-800/60">
-                        </tbody>
+                        <tbody id="schedule-matrix-body" class="divide-y divide-slate-800/60"></tbody>
                     </table>
                 </div>
             </div>
+
+            <!-- Mobile View -->
+            <div id="mobile-schedule-container" class="md:hidden space-y-4"></div>
         </div>
 
         <!-- SECTION 2: LỊCH THI -->
         <div id="section-exam" class="hidden">
-            <div class="flex justify-between items-center mb-6 bg-slate-900/60 p-4 rounded-xl border border-slate-800">
-                <h2 class="font-bold text-lg text-amber-400"> Danh Sách Lịch Thi Môn Học</h2>
-                <button onclick="openExamModal()"
-                    class="bg-amber-600 hover:bg-amber-500 text-sm px-4 py-2 rounded-xl font-bold transition">+ Thêm
-                    Lịch Thi</button>
+            <div class="flex justify-between items-center mb-4 bg-slate-900/60 p-3 rounded-xl border border-slate-800">
+                <div>
+                    <h2 class="font-bold text-sm sm:text-base text-amber-400">Danh Sách Lịch Thi</h2>
+                    <p class="text-[11px] text-slate-400">Tự động đẩy tin nhắn Telegram nhắc trước khi thi</p>
+                </div>
+                <button onclick="openExamModal()" class="bg-amber-600 hover:bg-amber-500 text-xs px-3.5 py-2 rounded-xl font-bold transition">+ Thêm Lịch Thi</button>
             </div>
+            <div id="exam-cards-container" class="space-y-3"></div>
+        </div>
+    </div>
 
-            <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 overflow-x-auto">
-                <table class="w-full text-left text-sm">
-                    <thead>
-                        <tr class="text-xs uppercase text-slate-400 border-b border-slate-800">
-                            <th class="p-3">Môn Thi</th>
-                            <th class="p-3">Ngày Thi</th>
-                            <th class="p-3">Giờ Thi</th>
-                            <th class="p-3">Phòng Thi / Ghi Chú</th>
-                            <th class="p-3 text-right">Thao Tác</th>
-                        </tr>
-                    </thead>
-                    <tbody id="exam-list-body" class="divide-y divide-slate-800">
-                    </tbody>
-                </table>
-            </div>
+    <!-- Modal Cấu hình Telegram -->
+    <div id="telegramModal" class="fixed inset-0 bg-black/80 hidden justify-center items-center p-4 z-50 backdrop-blur-sm">
+        <div class="bg-slate-900 border border-slate-800 p-5 rounded-2xl w-full max-w-md shadow-2xl space-y-4">
+            <h3 class="text-base font-bold text-sky-400 flex items-center gap-2">✈️ Cấu Hình Telegram Bot</h3>
+            <p class="text-xs text-slate-400">Nhập thông tin Bot để nhận thông báo ting-ting trực tiếp về điện thoại mà không lo bị tắt app.</p>
+            <form onsubmit="handleSaveTelegramConfig(event)" class="space-y-3">
+                <div>
+                    <label class="block text-xs text-slate-400 mb-1">Bot Token (từ @BotFather)</label>
+                    <input type="text" id="tgTokenInput" placeholder="123456789:ABCdefGhIJK..." required class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-xs text-slate-200">
+                </div>
+                <div>
+                    <label class="block text-xs text-slate-400 mb-1">Chat ID Cá Nhân (từ @userinfobot)</label>
+                    <input type="text" id="tgChatIdInput" placeholder="987654321" required class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-xs text-slate-200">
+                </div>
+                <div class="flex justify-between items-center pt-2">
+                    <button type="button" onclick="testTelegramMessage()" class="bg-sky-600/20 text-sky-400 hover:bg-sky-600 hover:text-white px-3 py-2 rounded-xl text-xs font-bold transition">🧪 Bấm Thử Bot</button>
+                    <div class="flex gap-2">
+                        <button type="button" onclick="closeTelegramModal()" class="bg-slate-800 hover:bg-slate-700 px-4 py-2 rounded-xl text-xs font-bold">Hủy</button>
+                        <button type="submit" class="bg-sky-600 hover:bg-sky-500 px-4 py-2 rounded-xl text-xs font-bold">Lưu Cấu Hình</button>
+                    </div>
+                </div>
+            </form>
         </div>
     </div>
 
     <!-- Modal Thêm/Sửa TKB -->
-    <div id="taskModal" class="fixed inset-0 bg-black/70 hidden justify-center items-center p-4 z-50">
-        <div class="bg-slate-900 border border-slate-800 p-6 rounded-2xl w-full max-w-md shadow-2xl">
-            <h3 id="modal-title" class="text-lg font-bold mb-4 text-emerald-400">Thêm khoảng thời gian biểu</h3>
-            <form id="taskForm" onsubmit="handleSaveTask(event)" class="space-y-4">
+    <div id="taskModal" class="fixed inset-0 bg-black/80 hidden justify-center items-center p-4 z-50 backdrop-blur-sm">
+        <div class="bg-slate-900 border border-slate-800 p-5 rounded-2xl w-full max-w-md shadow-2xl space-y-4">
+            <h3 id="modal-title" class="text-base font-bold text-emerald-400">Thêm thời gian biểu</h3>
+            <form id="taskForm" onsubmit="handleSaveTask(event)" class="space-y-3">
                 <input type="hidden" id="taskId">
                 <div>
                     <label class="block text-xs text-slate-400 mb-1">Chọn ngày</label>
-                    <select id="taskDay"
-                        class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-sm text-slate-200">
+                    <select id="taskDay" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-xs text-slate-200">
                         <option value="Thứ Hai">Thứ Hai</option>
                         <option value="Thứ Ba">Thứ Ba</option>
                         <option value="Thứ Tư">Thứ Tư</option>
@@ -144,102 +144,122 @@
                 </div>
                 <div class="grid grid-cols-2 gap-2">
                     <div>
-                        <label class="block text-xs text-slate-400 mb-1">Bắt đầu từ giờ</label>
-                        <select id="taskStartHour"
-                            class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-sm text-slate-200"></select>
+                        <label class="block text-xs text-slate-400 mb-1">Bắt đầu</label>
+                        <select id="taskStartHour" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-xs text-slate-200"></select>
                     </div>
                     <div>
-                        <label class="block text-xs text-slate-400 mb-1">Kết thúc đến giờ</label>
-                        <select id="taskEndHour"
-                            class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-sm text-slate-200"></select>
+                        <label class="block text-xs text-slate-400 mb-1">Kết thúc</label>
+                        <select id="taskEndHour" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-xs text-slate-200"></select>
                     </div>
                 </div>
                 <div>
                     <label class="block text-xs text-slate-400 mb-1">Nội dung công việc</label>
-                    <input type="text" id="taskContent" required placeholder="Nội dung..."
-                        class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-sm text-slate-200">
+                    <input type="text" id="taskContent" required placeholder="Học bài, chơi game..." class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-xs text-slate-200">
+                </div>
+                <div class="bg-slate-950/60 p-3 rounded-xl border border-slate-800/80 space-y-2">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-bold text-slate-300">✈️ Gửi Telegram task này</span>
+                        <input type="checkbox" id="taskNotifyEnable" checked class="w-4 h-4 accent-emerald-500 rounded cursor-pointer">
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <label class="text-[11px] text-slate-400">Báo trước:</label>
+                        <select id="taskNotifyAdvance" class="bg-slate-900 text-xs border border-slate-800 rounded-lg p-1.5 text-slate-200">
+                            <option value="0">Đúng giờ bắt đầu</option>
+                            <option value="5">Trước 5 phút</option>
+                            <option value="15">Trước 15 phút</option>
+                            <option value="30">Trước 30 phút</option>
+                        </select>
+                    </div>
                 </div>
                 <div class="flex justify-between items-center pt-2">
-                    <button type="button" id="btn-delete-modal" onclick="deleteCurrentEditingTask()"
-                        class="bg-rose-600/20 hover:bg-rose-600 text-rose-400 hover:text-white px-3 py-2 rounded-xl text-sm transition hidden">Xóa</button>
+                    <button type="button" id="btn-delete-modal" onclick="deleteCurrentEditingTask()" class="bg-rose-600/20 hover:bg-rose-600 text-rose-400 hover:text-white px-3 py-2 rounded-xl text-xs font-bold transition hidden">Xóa lịch</button>
                     <div class="flex gap-2 ml-auto">
-                        <button type="button" onclick="closeModal()"
-                            class="bg-slate-800 hover:bg-slate-700 px-4 py-2 rounded-xl text-sm">Hủy</button>
-                        <button type="submit"
-                            class="bg-indigo-600 hover:bg-indigo-500 px-4 py-2 rounded-xl text-sm font-bold">Lưu
-                            lại</button>
+                        <button type="button" onclick="closeModal()" class="bg-slate-800 hover:bg-slate-700 px-4 py-2 rounded-xl text-xs font-bold">Hủy</button>
+                        <button type="submit" class="bg-indigo-600 hover:bg-indigo-500 px-4 py-2 rounded-xl text-xs font-bold">Lưu lại</button>
                     </div>
                 </div>
             </form>
         </div>
     </div>
 
-    <!-- Modal Thêm Lịch Thi -->
-    <div id="examModal" class="fixed inset-0 bg-black/70 hidden justify-center items-center p-4 z-50">
-        <div class="bg-slate-900 border border-slate-800 p-6 rounded-2xl w-full max-w-md shadow-2xl">
-            <h3 class="text-lg font-bold mb-4 text-amber-400">Thêm Môn Thi Mới</h3>
-            <form onsubmit="handleSaveExam(event)" class="space-y-4">
+    <!-- Modal Lịch Thi -->
+    <div id="examModal" class="fixed inset-0 bg-black/80 hidden justify-center items-center p-4 z-50 backdrop-blur-sm">
+        <div class="bg-slate-900 border border-slate-800 p-5 rounded-2xl w-full max-w-md shadow-2xl space-y-4">
+            <h3 class="text-base font-bold text-amber-400">Thiết Lập Môn Thi Mới</h3>
+            <form onsubmit="handleSaveExam(event)" class="space-y-3">
                 <div>
-                    <label class="block text-xs text-slate-400 mb-1">Tên môn thi</label>
-                    <input type="text" id="examSubject" required placeholder="Cấu trúc dữ liệu..."
-                        class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-sm">
+                    <label class="block text-xs text-slate-400 mb-1">Môn thi</label>
+                    <input type="text" id="examSubject" required placeholder="Cấu trúc dữ liệu..." class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-xs text-slate-200">
                 </div>
                 <div class="grid grid-cols-2 gap-2">
                     <div>
                         <label class="block text-xs text-slate-400 mb-1">Ngày thi</label>
-                        <input type="date" id="examDate" required
-                            class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-sm text-slate-200">
+                        <input type="date" id="examDate" required class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-xs text-slate-200">
                     </div>
                     <div>
                         <label class="block text-xs text-slate-400 mb-1">Giờ thi</label>
-                        <input type="time" id="examTime" required
-                            class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-sm text-slate-200">
+                        <input type="time" id="examTime" required class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-xs text-slate-200">
                     </div>
                 </div>
                 <div>
                     <label class="block text-xs text-slate-400 mb-1">Phòng thi / Ghi chú</label>
-                    <input type="text" id="examNote" placeholder="Phòng A102..."
-                        class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-sm">
+                    <input type="text" id="examNote" placeholder="Phòng A102..." class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-xs text-slate-200">
+                </div>
+                <div class="bg-slate-950/60 p-3 rounded-xl border border-slate-800/80 space-y-2">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-bold text-slate-300">✈️ Gửi Telegram nhắc thi</span>
+                        <input type="checkbox" id="examNotifyEnable" checked class="w-4 h-4 accent-amber-500 rounded cursor-pointer">
+                    </div>
+                    <div class="grid grid-cols-2 gap-2">
+                        <div>
+                            <label class="text-[11px] text-slate-400 block mb-1">Báo trước:</label>
+                            <select id="examNotifyAdvance" class="w-full bg-slate-900 text-xs border border-slate-800 rounded-lg p-1.5 text-slate-200">
+                                <option value="24">Trước 1 ngày (24h)</option>
+                                <option value="12">Trước 12 tiếng</option>
+                                <option value="48">Trước 2 ngày (48h)</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="text-[11px] text-slate-400 block mb-1">Tần suất nhắc:</label>
+                            <select id="examNotifyInterval" class="w-full bg-slate-900 text-xs border border-slate-800 rounded-lg p-1.5 text-slate-200">
+                                <option value="5">Mỗi 5 tiếng 1 lần</option>
+                                <option value="3">Mỗi 3 tiếng 1 lần</option>
+                                <option value="1">Mỗi 1 tiếng 1 lần</option>
+                            </select>
+                        </div>
+                    </div>
                 </div>
                 <div class="flex justify-end gap-2 pt-2">
-                    <button type="button" onclick="closeExamModal()"
-                        class="bg-slate-800 hover:bg-slate-700 px-4 py-2 rounded-xl text-sm">Hủy</button>
-                    <button type="submit"
-                        class="bg-amber-600 hover:bg-amber-500 px-4 py-2 rounded-xl text-sm font-bold">Lưu Lịch
-                        Thi</button>
+                    <button type="button" onclick="closeExamModal()" class="bg-slate-800 hover:bg-slate-700 px-4 py-2 rounded-xl text-xs font-bold">Hủy</button>
+                    <button type="submit" class="bg-amber-600 hover:bg-amber-500 px-4 py-2 rounded-xl text-xs font-bold">Lưu Môn Thi</button>
                 </div>
             </form>
         </div>
     </div>
 
-    <!-- Modal Hồ Sơ Người Dùng -->
-    <div id="userModal" class="fixed inset-0 bg-black/70 hidden justify-center items-center p-4 z-50">
-        <div class="bg-slate-900 border border-slate-800 p-6 rounded-2xl w-full max-w-md shadow-2xl">
-            <h3 class="text-lg font-bold mb-4 text-emerald-400">Cập Nhật Hồ Sơ Hưng</h3>
-            <form onsubmit="handleSaveUserInfo(event)" class="space-y-4">
+    <!-- Modal Hồ Sơ -->
+    <div id="userModal" class="fixed inset-0 bg-black/80 hidden justify-center items-center p-4 z-50 backdrop-blur-sm">
+        <div class="bg-slate-900 border border-slate-800 p-5 rounded-2xl w-full max-w-md shadow-2xl space-y-4">
+            <h3 class="text-base font-bold text-emerald-400">Cập Nhật Hồ Sơ Hưng</h3>
+            <form onsubmit="handleSaveUserInfo(event)" class="space-y-3">
                 <div>
                     <label class="block text-xs text-slate-400 mb-1">Họ tên</label>
-                    <input type="text" id="userNameInput" required
-                        class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-sm">
+                    <input type="text" id="userNameInput" required class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-xs text-slate-200">
                 </div>
                 <div>
                     <label class="block text-xs text-slate-400 mb-1">Mục tiêu cá nhân</label>
-                    <input type="text" id="userGoalInput"
-                        class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-sm">
+                    <input type="text" id="userGoalInput" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-xs text-slate-200">
                 </div>
                 <div class="flex justify-end gap-2 pt-2">
-                    <button type="button" onclick="closeUserModal()"
-                        class="bg-slate-800 hover:bg-slate-700 px-4 py-2 rounded-xl text-sm">Hủy</button>
-                    <button type="submit"
-                        class="bg-emerald-600 hover:bg-emerald-500 px-4 py-2 rounded-xl text-sm font-bold">Lưu Thông
-                        Tin</button>
+                    <button type="button" onclick="closeUserModal()" class="bg-slate-800 hover:bg-slate-700 px-4 py-2 rounded-xl text-xs font-bold">Hủy</button>
+                    <button type="submit" class="bg-emerald-600 hover:bg-emerald-500 px-4 py-2 rounded-xl text-xs font-bold">Lưu Thông Tin</button>
                 </div>
             </form>
         </div>
     </div>
 
     <script>
-        const startDate = new Date('2026-09-07T00:00:00'); // Thứ Hai, 07/09/2026 là Tuần 1
+        const startDate = new Date('2026-09-07T00:00:00');
 
         function getCurrentWeekNumber() {
             const now = new Date();
@@ -253,37 +273,30 @@
         let selectedWeekNum = currentRealWeekNum;
 
         const hoursList = [];
-        for (let i = 6; i <= 23; i++) {
-            hoursList.push(String(i).padStart(2, '0') + ":00");
-        }
+        for (let i = 6; i <= 23; i++) { hoursList.push(String(i).padStart(2, '0') + ":00"); }
 
         const selStart = document.getElementById('taskStartHour');
         const selEnd = document.getElementById('taskEndHour');
         hoursList.forEach((h, index) => {
             if (index < hoursList.length - 1) {
-                let opt1 = document.createElement('option');
-                opt1.value = h; opt1.innerText = h;
-                selStart.appendChild(opt1);
+                let opt1 = document.createElement('option'); opt1.value = h; opt1.innerText = h; selStart.appendChild(opt1);
             }
             if (index > 0) {
-                let opt2 = document.createElement('option');
-                opt2.value = h; opt2.innerText = h;
-                selEnd.appendChild(opt2);
+                let opt2 = document.createElement('option'); opt2.value = h; opt2.innerText = h; selEnd.appendChild(opt2);
             }
         });
         selEnd.value = "12:00";
 
         const defaultWeekData = {
-            "Thứ Hai": [{ id: 1, start: "09:00", end: "10:00", text: "Học CNXHKH (ngồi im)", done: false }],
-            "Thứ Ba": [{ id: 5, start: "07:00", end: "12:00", text: "Học DSA trên trường", done: false }],
-            "Thứ Tư": [{ id: 8, start: "08:00", end: "11:00", text: "Giải bài tập LeetCode / thuật toán", done: false }],
-            "Thứ Năm": [{ id: 13, start: "09:00", end: "11:00", text: "Học Lập trình trên web", done: false }],
-            "Thứ Sáu": [{ id: 16, start: "09:00", end: "11:00", text: "Tiếng Anh giao tiếp trên trường", done: false }],
-            "Thứ Bảy": [{ id: 19, start: "07:00", end: "09:00", text: "Học Hệ điều hành", done: false }],
-            "Chủ Nhật": [{ id: 22, start: "09:00", end: "11:00", text: "Học tiếng Anh căn bản", done: false }]
+            "Thứ Hai": [{ id: 1, start: "09:00", end: "10:00", text: "Học CNXHKH (ngồi im)", done: false, notify: true, advanceMin: 5 }],
+            "Thứ Ba": [{ id: 5, start: "07:00", end: "12:00", text: "Học DSA trên trường", done: false, notify: true, advanceMin: 15 }],
+            "Thứ Tư": [{ id: 8, start: "08:00", end: "11:00", text: "Giải bài tập LeetCode", done: false, notify: true, advanceMin: 0 }],
+            "Thứ Năm": [{ id: 13, start: "09:00", end: "11:00", text: "Học Lập trình trên web", done: false, notify: true, advanceMin: 10 }],
+            "Thứ Sáu": [{ id: 16, start: "09:00", end: "11:00", text: "Tiếng Anh giao tiếp", done: false, notify: true, advanceMin: 5 }],
+            "Thứ Bảy": [{ id: 19, start: "07:00", end: "09:00", text: "Học Hệ điều hành", done: false, notify: true, advanceMin: 5 }],
+            "Chủ Nhật": [{ id: 22, start: "09:00", end: "11:00", text: "Học tiếng Anh căn bản", done: false, notify: false, advanceMin: 0 }]
         };
 
-        // Bỏ việc tự động xóa tuần cũ -> Lưu trữ lịch sử toàn bộ tuần
         function getWeekData() {
             let key = `matrix_edit_${selectedWeekNum}`;
             let data = localStorage.getItem(key);
@@ -304,10 +317,7 @@
             e.stopPropagation();
             let data = getWeekData();
             let task = data[day].find(t => t.id === id);
-            if (task) {
-                task.done = !task.done;
-                saveWeekData(data);
-            }
+            if (task) { task.done = !task.done; saveWeekData(data); }
         }
 
         function getWeekDatesText(weekNum) {
@@ -317,15 +327,7 @@
             return `${weekStart.toLocaleDateString('vi-VN', opt)} đến ${weekEnd.toLocaleDateString('vi-VN', opt)}`;
         }
 
-        function getDateOfSpecificDayInWeek(weekNum, dayName) {
-            const dayMap = { "Thứ Hai": 0, "Thứ Ba": 1, "Thứ Tư": 2, "Thứ Năm": 3, "Thứ Sáu": 4, "Thứ Bảy": 5, "Chủ Nhật": 6 };
-            let weekStart = new Date(startDate.getTime() + (weekNum - 1) * 7 * 24 * 60 * 60 * 1000);
-            let targetDate = new Date(weekStart.getTime() + dayMap[dayName] * 24 * 60 * 60 * 1000);
-            return targetDate.toLocaleDateString('vi-VN');
-        }
-
         function render() {
-            // Tự động điều chỉnh tuần đang chọn đúng theo thời gian thực nếu vừa qua tuần mới
             document.getElementById('week-counter-label').innerText = `TUẦN ${selectedWeekNum}`;
             let dateRangeStr = getWeekDatesText(selectedWeekNum);
             document.getElementById('week-title-info').innerText = selectedWeekNum === currentRealWeekNum
@@ -333,10 +335,11 @@
                 : `📅 Kế hoạch (${dateRangeStr})`;
 
             let weekData = getWeekData();
+            const days = ["Thứ Hai", "Thứ Ba", "Thứ Tư", "Thứ Năm", "Thứ Sáu", "Thứ Bảy", "Chủ Nhật"];
+
+            // 1. DESKTOP MATRIX
             let tbody = document.getElementById('schedule-matrix-body');
             tbody.innerHTML = '';
-
-            const days = ["Thứ Hai", "Thứ Ba", "Thứ Tư", "Thứ Năm", "Thứ Sáu", "Thứ Bảy", "Chủ Nhật"];
             let skipCells = {};
             days.forEach(d => skipCells[d] = {});
 
@@ -344,92 +347,120 @@
                 let currentHour = hoursList[i];
                 let nextHour = hoursList[i + 1];
                 let rowHtml = `<tr class="hover:bg-slate-900/40 transition">`;
-
-                rowHtml += `<td class="p-3.5 border-r border-slate-800 bg-slate-950/40 text-center font-mono text-xs font-bold text-amber-400 align-middle">${currentHour} - ${nextHour}</td>`;
+                rowHtml += `<td class="p-3 border-r border-slate-800 bg-slate-950/40 text-center font-mono text-xs font-bold text-amber-400 align-middle">${currentHour} - ${nextHour}</td>`;
 
                 days.forEach(day => {
                     if (skipCells[day][i]) return;
-
                     let task = (weekData[day] || []).find(t => t.start === currentHour);
 
                     if (task) {
                         let startIndex = hoursList.indexOf(task.start);
                         let endIndex = hoursList.indexOf(task.end);
                         let spanCount = (endIndex > startIndex) ? (endIndex - startIndex) : 1;
-
-                        for (let s = 1; s < spanCount; s++) {
-                            skipCells[day][i + s] = true;
-                        }
+                        for (let s = 1; s < spanCount; s++) skipCells[day][i + s] = true;
 
                         rowHtml += `
-                            <td rowspan="${spanCount}" onclick="openModalForEdit('${day}', ${task.id})" class="p-3 border-r border-slate-800/60 align-top cursor-pointer bg-slate-900/80 hover:bg-slate-800 transition select-none border-b border-slate-800/60 group">
+                            <td rowspan="${spanCount}" onclick="openModalForEdit('${day}', ${task.id})" class="p-2.5 border-r border-slate-800/60 align-top cursor-pointer bg-slate-900/80 hover:bg-slate-800 transition select-none border-b border-slate-800/60 group">
                                 <div class="flex justify-between items-start mb-1">
-                                    <span class="text-[10px] font-mono text-indigo-400">${task.start} - ${task.end}</span>
-                                    <div class="flex items-center gap-1.5">
-                                        <input type="checkbox" ${task.done ? 'checked' : ''} onclick="toggleTaskDone('${day}', ${task.id}, event)" class="w-4 h-4 rounded cursor-pointer accent-emerald-500">
-                                        <span class="text-[10px] text-slate-500 group-hover:text-amber-300">✏️</span>
+                                    <span class="text-[10px] font-mono text-indigo-400">${task.start}-${task.end}</span>
+                                    <div class="flex items-center gap-1">
+                                        ${task.notify ? '<span class="text-[9px]" title="Đã bật Telegram">✈️</span>' : ''}
+                                        <input type="checkbox" ${task.done ? 'checked' : ''} onclick="toggleTaskDone('${day}', ${task.id}, event)" class="w-3.5 h-3.5 rounded cursor-pointer accent-emerald-500">
                                     </div>
                                 </div>
-                                <div class="text-xs text-slate-100 ${task.done ? 'completed text-slate-500 font-normal' : 'font-medium'}">
-                                    ${task.text}
-                                </div>
+                                <div class="text-xs text-slate-100 ${task.done ? 'completed text-slate-500' : 'font-medium'}">${task.text}</div>
                             </td>
                         `;
                     } else {
-                        rowHtml += `<td class="p-3 border-r border-slate-800/60 align-top text-slate-700/30 text-xs text-center">-</td>`;
+                        rowHtml += `<td class="p-2.5 border-r border-slate-800/60 text-slate-700/30 text-xs text-center">-</td>`;
                     }
                 });
-
                 rowHtml += `</tr>`;
                 tbody.innerHTML += rowHtml;
             }
+
+            // 2. MOBILE CARD VIEW
+            let mobileContainer = document.getElementById('mobile-schedule-container');
+            mobileContainer.innerHTML = '';
+
+            days.forEach(day => {
+                let tasks = weekData[day] || [];
+                let dayCard = document.createElement('div');
+                dayCard.className = "bg-slate-900 border border-slate-800 rounded-2xl p-3.5 shadow-lg";
+
+                let tasksHtml = tasks.length === 0 
+                    ? `<p class="text-xs text-slate-600 italic py-1">Không có lịch trình</p>`
+                    : tasks.map(t => `
+                        <div onclick="openModalForEdit('${day}', ${t.id})" class="flex items-center justify-between p-2.5 bg-slate-950/60 rounded-xl border border-slate-800/80 active:scale-[0.99] transition">
+                            <div class="flex items-center gap-3">
+                                <input type="checkbox" ${t.done ? 'checked' : ''} onclick="toggleTaskDone('${day}', ${t.id}, event)" class="w-4 h-4 accent-emerald-500 rounded cursor-pointer">
+                                <div>
+                                    <p class="text-xs font-semibold ${t.done ? 'completed text-slate-500' : 'text-slate-100'}">${t.text}</p>
+                                    <p class="text-[10px] font-mono text-indigo-400">${t.start} - ${t.end} ${t.notify ? '• ✈️ Telegram ' + (t.advanceMin || 0) + 'p' : ''}</p>
+                                </div>
+                            </div>
+                            <span class="text-xs text-slate-500">✏️</span>
+                        </div>
+                    `).join('<div class="h-2"></div>');
+
+                dayCard.innerHTML = `
+                    <div class="flex justify-between items-center mb-2.5 pb-2 border-b border-slate-800/80">
+                        <h3 class="font-bold text-xs text-emerald-400 uppercase tracking-wide">${day}</h3>
+                        <span class="text-[10px] text-slate-500 font-mono">${tasks.length} công việc</span>
+                    </div>
+                    <div class="space-y-2">${tasksHtml}</div>
+                `;
+                mobileContainer.appendChild(dayCard);
+            });
+
             renderExams();
             renderUserInfo();
+            updateTelegramButtonUI();
         }
 
-        // TAB SYSTEM
+        // TAB SWITCH
         function switchTab(tab) {
             if (tab === 'tkb') {
                 document.getElementById('section-tkb').classList.remove('hidden');
                 document.getElementById('section-exam').classList.add('hidden');
-                document.getElementById('tab-btn-tkb').className = "px-5 py-2.5 font-bold text-sm rounded-t-xl transition bg-slate-900 text-emerald-400 border-t border-x border-slate-800";
-                document.getElementById('tab-btn-exam').className = "px-5 py-2.5 font-bold text-sm rounded-t-xl transition bg-slate-950 text-slate-400 hover:text-slate-200";
+                document.getElementById('tab-btn-tkb').className = "flex-1 sm:flex-none px-4 py-2.5 font-bold text-xs sm:text-sm rounded-t-xl transition bg-slate-900 text-emerald-400 border-t border-x border-slate-800 text-center";
+                document.getElementById('tab-btn-exam').className = "flex-1 sm:flex-none px-4 py-2.5 font-bold text-xs sm:text-sm rounded-t-xl transition bg-slate-950 text-slate-400 hover:text-slate-200 text-center";
             } else {
                 document.getElementById('section-tkb').classList.add('hidden');
                 document.getElementById('section-exam').classList.remove('hidden');
-                document.getElementById('tab-btn-exam').className = "px-5 py-2.5 font-bold text-sm rounded-t-xl transition bg-slate-900 text-amber-400 border-t border-x border-slate-800";
-                document.getElementById('tab-btn-tkb').className = "px-5 py-2.5 font-bold text-sm rounded-t-xl transition bg-slate-950 text-slate-400 hover:text-slate-200";
+                document.getElementById('tab-btn-exam').className = "flex-1 sm:flex-none px-4 py-2.5 font-bold text-xs sm:text-sm rounded-t-xl transition bg-slate-900 text-amber-400 border-t border-x border-slate-800 text-center";
+                document.getElementById('tab-btn-tkb').className = "flex-1 sm:flex-none px-4 py-2.5 font-bold text-xs sm:text-sm rounded-t-xl transition bg-slate-950 text-slate-400 hover:text-slate-200 text-center";
             }
         }
 
-        // QUẢN LÝ LỊCH THI
-        function getExams() {
-            return JSON.parse(localStorage.getItem('user_exams') || '[]');
-        }
-
-        function saveExams(exams) {
-            localStorage.setItem('user_exams', JSON.stringify(exams));
-            renderExams();
-        }
+        // LỊCH THI
+        function getExams() { return JSON.parse(localStorage.getItem('user_exams') || '[]'); }
+        function saveExams(exams) { localStorage.setItem('user_exams', JSON.stringify(exams)); renderExams(); }
 
         function renderExams() {
             let exams = getExams();
-            let tbody = document.getElementById('exam-list-body');
-            tbody.innerHTML = '';
+            let container = document.getElementById('exam-cards-container');
+            container.innerHTML = '';
+
             if (exams.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="5" class="p-4 text-center text-slate-500">Chưa có lịch thi nào được lập.</td></tr>`;
+                container.innerHTML = `<div class="p-6 text-center text-xs text-slate-500 bg-slate-900 rounded-2xl border border-slate-800">Chưa có lịch thi nào được khởi tạo.</div>`;
                 return;
             }
+
             exams.sort((a, b) => new Date(`${a.date}T${a.time}`) - new Date(`${b.date}T${b.time}`));
             exams.forEach((ex, idx) => {
-                tbody.innerHTML += `
-                    <tr class="hover:bg-slate-800/40">
-                        <td class="p-3 font-bold text-amber-300">${ex.subject}</td>
-                        <td class="p-3">${ex.date}</td>
-                        <td class="p-3 font-mono text-emerald-400">${ex.time}</td>
-                        <td class="p-3 text-slate-400">${ex.note || '-'}</td>
-                        <td class="p-3 text-right"><button onclick="deleteExam(${idx})" class="text-rose-400 hover:text-rose-300 text-xs font-bold">Xóa</button></td>
-                    </tr>
+                container.innerHTML += `
+                    <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+                        <div class="space-y-1">
+                            <div class="flex items-center gap-2">
+                                <h3 class="font-bold text-sm text-amber-300">${ex.subject}</h3>
+                                ${ex.notify ? `<span class="text-[10px] bg-amber-500/10 text-amber-400 px-2 py-0.5 rounded-full border border-amber-500/20">✈️ Báo Telegram trước ${ex.advanceHours}h (${ex.intervalHours}h/lần)</span>` : '<span class="text-[10px] bg-slate-800 text-slate-500 px-2 py-0.5 rounded-full">Tắt Telegram</span>'}
+                            </div>
+                            <p class="text-xs text-slate-300 font-mono">📅 Ngày thi: <span class="text-emerald-400">${ex.date}</span> lúc <span class="text-amber-400">${ex.time}</span></p>
+                            <p class="text-[11px] text-slate-400">📍 Ghi chú: ${ex.note || 'Không có'}</p>
+                        </div>
+                        <button onclick="deleteExam(${idx})" class="self-end sm:self-center text-xs text-rose-400 hover:text-rose-300 font-bold bg-rose-500/10 px-3 py-1.5 rounded-xl border border-rose-500/20">Xóa lịch thi</button>
+                    </div>
                 `;
             });
         }
@@ -444,7 +475,10 @@
                 subject: document.getElementById('examSubject').value,
                 date: document.getElementById('examDate').value,
                 time: document.getElementById('examTime').value,
-                note: document.getElementById('examNote').value
+                note: document.getElementById('examNote').value,
+                notify: document.getElementById('examNotifyEnable').checked,
+                advanceHours: Number(document.getElementById('examNotifyAdvance').value),
+                intervalHours: Number(document.getElementById('examNotifyInterval').value)
             });
             saveExams(exams);
             closeExamModal();
@@ -456,16 +490,12 @@
             saveExams(exams);
         }
 
-        // HỒ SƠ NGUỜI DÙNG
-        function getUserInfo() {
-            return JSON.parse(localStorage.getItem('user_profile') || '{"name": "Hưng", "goal": "Quyết tâm qua môn & Master Code"}');
-        }
-
+        // HỒ SƠ NGƯỜI DÙNG
+        function getUserInfo() { return JSON.parse(localStorage.getItem('user_profile') || '{"name": "Hưng", "goal": "Quyết tâm qua môn & Master Code"}'); }
         function renderUserInfo() {
             let u = getUserInfo();
-            document.getElementById('user-info-display').innerText = `👤 ${u.name} | 🎯 Target: ${u.goal}`;
+            document.getElementById('user-info-display').innerText = `👤 ${u.name} | 🎯 Mục tiêu: ${u.goal}`;
         }
-
         function openUserInfoModal() {
             let u = getUserInfo();
             document.getElementById('userNameInput').value = u.name;
@@ -474,96 +504,145 @@
             document.getElementById('userModal').classList.add('flex');
         }
         function closeUserModal() { document.getElementById('userModal').classList.add('hidden'); document.getElementById('userModal').classList.remove('flex'); }
-
         function handleSaveUserInfo(e) {
             e.preventDefault();
-            let u = {
+            localStorage.setItem('user_profile', JSON.stringify({
                 name: document.getElementById('userNameInput').value,
                 goal: document.getElementById('userGoalInput').value
-            };
-            localStorage.setItem('user_profile', JSON.stringify(u));
+            }));
             closeUserModal();
             renderUserInfo();
         }
 
-        // HỆ THỐNG THÔNG BÁO VÀ TỰ ĐỘNG LÊN LỊCH REMINDER
-        function requestNotificationPermission() {
-            if ("Notification" in window) {
-                Notification.requestPermission().then(permission => {
-                    if (permission === "granted") {
-                        alert("Đã bật thông báo thành công!");
-                        checkAndSendNotifications();
-                    }
-                });
-            } else {
-                alert("Trình duyệt không hỗ trợ thông báo.");
+        // TELEGRAM BOT SYSTEM
+        function getTelegramConfig() {
+            return JSON.parse(localStorage.getItem('telegram_config') || '{"token": "", "chatId": ""}');
+        }
+
+        function updateTelegramButtonUI() {
+            let cfg = getTelegramConfig();
+            let btn = document.getElementById('btn-telegram-status');
+            if (cfg.token && cfg.chatId) {
+                btn.className = "flex-1 sm:flex-initial bg-emerald-600/20 text-emerald-400 border border-emerald-500/30 text-xs px-3 py-2 rounded-xl font-bold flex items-center justify-center gap-1";
+                btn.innerHTML = "✅ Đã Lắp Telegram Bot";
             }
         }
 
-        function checkAndSendNotifications() {
-            if (!("Notification" in window) || Notification.permission !== "granted") return;
+        function openTelegramModal() {
+            let cfg = getTelegramConfig();
+            document.getElementById('tgTokenInput').value = cfg.token;
+            document.getElementById('tgChatIdInput').value = cfg.chatId;
+            document.getElementById('telegramModal').classList.remove('hidden');
+            document.getElementById('telegramModal').classList.add('flex');
+        }
+
+        function closeTelegramModal() {
+            document.getElementById('telegramModal').classList.add('hidden');
+            document.getElementById('telegramModal').classList.remove('flex');
+        }
+
+        function sendTelegramApi(message) {
+            let cfg = getTelegramConfig();
+            if (!cfg.token || !cfg.chatId) return Promise.reject("Chưa cấu hình Telegram Bot");
+            let url = `https://api.telegram.org/bot${cfg.token}/sendMessage`;
+            return fetch(url, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ chat_id: cfg.chatId, text: message, parse_mode: 'HTML' })
+            });
+        }
+
+        function testTelegramMessage() {
+            let token = document.getElementById('tgTokenInput').value;
+            let chatId = document.getElementById('tgChatIdInput').value;
+            if (!token || !chatId) { alert("Vui lòng điền đầy đủ Token và Chat ID!"); return; }
+
+            localStorage.setItem('telegram_config', JSON.stringify({ token, chatId }));
+            sendTelegramApi("🧪 <b>KẾT NỐI THÀNH CÔNG!</b>\n\nBot Telegram đã sẵn sàng gửi thông báo TKB và Lịch thi cho Hưng.")
+                .then(res => res.json())
+                .then(data => {
+                    if (data.ok) alert("Đã gửi tin nhắn thử nghiệm vào Telegram của bạn! Hãy kiểm tra app.");
+                    else alert("Lỗi kết nối Bot: " + data.description);
+                })
+                .catch(err => alert("Không thể kết nối Telegram API. Kiểm tra lại Token/Chat ID!"));
+        }
+
+        function handleSaveTelegramConfig(e) {
+            e.preventDefault();
+            let token = document.getElementById('tgTokenInput').value;
+            let chatId = document.getElementById('tgChatIdInput').value;
+            localStorage.setItem('telegram_config', JSON.stringify({ token, chatId }));
+            closeTelegramModal();
+            updateTelegramButtonUI();
+            alert("Đã lưu cấu hình Telegram Bot!");
+        }
+
+        function checkTelegramNotifications() {
+            let cfg = getTelegramConfig();
+            if (!cfg.token || !cfg.chatId) return;
 
             const now = new Date();
             const daysMap = ["Chủ Nhật", "Thứ Hai", "Thứ Ba", "Thứ Tư", "Thứ Năm", "Thứ Sáu", "Thứ Bảy"];
             const currentDayName = daysMap[now.getDay()];
-            const currentHourStr = String(now.getHours()).padStart(2, '0') + ":00";
 
-            // 1. Kiểm tra TKB quá giờ chưa tick
+            // 1. Quét TKB
             let weekData = getWeekData();
             let todayTasks = weekData[currentDayName] || [];
+
             todayTasks.forEach(task => {
-                if (task.start <= currentHourStr && !task.done) {
-                    new Notification("⚠️ TKB Chưa Hoàn Thành!", {
-                        body: `Hưng ơi, công việc "${task.text}" (${task.start} - ${task.end}) chưa được đánh dấu hoàn thành!`,
-                        icon: "https://cdn-icons-png.flaticon.com/512/3652/3652191.png"
-                    });
+                if (!task.notify || task.done) return;
+
+                let [startH, startM] = task.start.split(':').map(Number);
+                let taskTime = new Date(now.getFullYear(), now.getMonth(), now.getDate(), startH, startM);
+                let advanceMs = (task.advanceMin || 0) * 60 * 1000;
+                let notifyTime = new Date(taskTime.getTime() - advanceMs);
+
+                let diffMs = now - notifyTime;
+                if (diffMs >= 0 && diffMs <= 2 * 60 * 1000) {
+                    let notiKey = `tg_task_${task.id}_${now.toDateString()}_${task.start}`;
+                    if (!localStorage.getItem(notiKey)) {
+                        let msg = task.advanceMin > 0
+                            ? `⏰ <b>SẮP ĐẾN GIỜ TKB!</b>\n\n- Công việc: <b>${task.text}</b>\n- Khung giờ: ${task.start} - ${task.end}\n- Bắt đầu sau: <b>${task.advanceMin} phút</b> nữa!`
+                            : `⏰ <b>ĐÃ ĐẾN GIỜ TKB!</b>\n\n- Công việc: <b>${task.text}</b>\n- Khung giờ: ${task.start} - ${task.end}\n- Bắt tay vào làm ngay thôi Hưng ơi!`;
+                        
+                        sendTelegramApi(msg);
+                        localStorage.setItem(notiKey, "true");
+                    }
                 }
             });
 
-            // 2. Nhắc Lịch Thi trước 1 ngày (mỗi 5 tiếng nhắc 1 lần)
+            // 2. Quét Lịch Thi
             let exams = getExams();
             exams.forEach(ex => {
+                if (!ex.notify) return;
+
                 let examDateTime = new Date(`${ex.date}T${ex.time}`);
                 let diffHours = (examDateTime - now) / (1000 * 60 * 60);
 
-                // Kiểm tra nằm trong khoảng 24 tiếng trước giờ thi
-                if (diffHours > 0 && diffHours <= 24) {
-                    let lastNotified = localStorage.getItem(`notified_exam_${ex.subject}_${ex.date}`);
-                    let nowTimestamp = now.getTime();
-                    // Nhắc lại mỗi 5 tiếng (5 * 60 * 60 * 1000 ms)
-                    if (!lastNotified || (nowTimestamp - parseInt(lastNotified)) >= 5 * 60 * 60 * 1000) {
-                        new Notification("🚨 SẮP ĐẾN GIỜ THI!", {
-                            body: `Môn thi [${ex.subject}] sẽ diễn ra vào lúc ${ex.time} ngày ${ex.date}. Chuẩn bị bài kỹ nhé!`,
-                            icon: "https://cdn-icons-png.flaticon.com/512/2232/2232688.png"
-                        });
-                        localStorage.setItem(`notified_exam_${ex.subject}_${ex.date}`, nowTimestamp.toString());
+                let advanceHours = ex.advanceHours || 24;
+                let intervalHours = ex.intervalHours || 5;
+
+                if (diffHours > 0 && diffHours <= advanceHours) {
+                    let lastNotified = localStorage.getItem(`tg_exam_${ex.subject}_${ex.date}`);
+                    let nowMs = now.getTime();
+
+                    if (!lastNotified || (nowMs - parseInt(lastNotified)) >= intervalHours * 60 * 60 * 1000) {
+                        let msg = `🚨 <b>CẢNH BÁO LỊCH THI MÔN!</b>\n\n- Môn thi: <b>${ex.subject}</b>\n- Ngày thi: <b>${ex.date}</b> lúc <b>${ex.time}</b>\n- Phòng thi/Ghi chú: ${ex.note || 'Không có'}\n\n⚠️ Chuẩn bị bài kỹ càng nhé Hưng!`;
+                        sendTelegramApi(msg);
+                        localStorage.setItem(`tg_exam_${ex.subject}_${ex.date}`, nowMs.toString());
                     }
                 }
             });
         }
 
-        // Chạy kiểm tra thông báo mỗi 15 phút
-        setInterval(checkAndSendNotifications, 15 * 60 * 1000);
+        setInterval(checkTelegramNotifications, 30 * 1000);
 
         // MODAL TKB HELPERS
-        function checkOverlap(day, start, end, excludeId = null) {
-            let data = getWeekData();
-            let tasks = data[day] || [];
-            let s1 = hoursList.indexOf(start);
-            let e1 = hoursList.indexOf(end);
-            for (let t of tasks) {
-                if (excludeId && t.id === excludeId) continue;
-                let s2 = hoursList.indexOf(t.start);
-                let e2 = hoursList.indexOf(t.end);
-                if (Math.max(s1, s2) < Math.min(e1, e2)) return t;
-            }
-            return null;
-        }
-
         function openModalForAdd() {
             document.getElementById('modal-title').innerText = "Thêm khoảng thời gian biểu";
             document.getElementById('taskId').value = "";
             document.getElementById('taskForm').reset();
+            document.getElementById('taskNotifyEnable').checked = true;
             document.getElementById('btn-delete-modal').classList.add('hidden');
             document.getElementById('taskModal').classList.remove('hidden');
             document.getElementById('taskModal').classList.add('flex');
@@ -573,12 +652,14 @@
             let data = getWeekData();
             let task = data[day].find(t => t.id === id);
             if (!task) return;
-            document.getElementById('modal-title').innerText = "Chỉnh sửa lịch trình";
+            document.getElementById('modal-title').innerText = "Chỉnh sửa thời gian biểu";
             document.getElementById('taskId').value = task.id;
             document.getElementById('taskDay').value = day;
             document.getElementById('taskStartHour').value = task.start;
             document.getElementById('taskEndHour').value = task.end;
             document.getElementById('taskContent').value = task.text;
+            document.getElementById('taskNotifyEnable').checked = task.notify !== false;
+            document.getElementById('taskNotifyAdvance').value = task.advanceMin || 0;
             document.getElementById('btn-delete-modal').classList.remove('hidden');
             document.getElementById('taskModal').classList.remove('hidden');
             document.getElementById('taskModal').classList.add('flex');
@@ -593,6 +674,8 @@
             let start = document.getElementById('taskStartHour').value;
             let end = document.getElementById('taskEndHour').value;
             let content = document.getElementById('taskContent').value;
+            let notify = document.getElementById('taskNotifyEnable').checked;
+            let advanceMin = Number(document.getElementById('taskNotifyAdvance').value);
 
             if (hoursList.indexOf(end) <= hoursList.indexOf(start)) {
                 alert("Giờ kết thúc phải lớn hơn giờ bắt đầu!");
@@ -600,21 +683,14 @@
             }
 
             let numericId = id ? Number(id) : null;
-            let overlappingTask = checkOverlap(day, start, end, numericId);
-
-            if (overlappingTask) {
-                let exactDateStr = getDateOfSpecificDayInWeek(selectedWeekNum, day);
-                alert(`⚠️ TRÙNG LỊCH!\n\n- Tuần: ${selectedWeekNum}\n- Ngày: ${exactDateStr} (${day})\n- Trùng việc: "${overlappingTask.text}" (${overlappingTask.start} - ${overlappingTask.end})`);
-                return;
-            }
-
             let data = getWeekData();
+
             if (numericId) {
                 let oldDay = Object.keys(data).find(d => data[d].some(t => t.id === numericId));
                 if (oldDay) data[oldDay] = data[oldDay].filter(t => t.id !== numericId);
-                data[day].push({ id: numericId, start: start, end: end, text: content, done: false });
+                data[day].push({ id: numericId, start, end, text: content, done: false, notify, advanceMin });
             } else {
-                data[day].push({ id: Date.now(), start: start, end: end, text: content, done: false });
+                data[day].push({ id: Date.now(), start, end, text: content, done: false, notify, advanceMin });
             }
 
             saveWeekData(data);
@@ -623,7 +699,7 @@
 
         function deleteCurrentEditingTask() {
             let id = Number(document.getElementById('taskId').value);
-            if (confirm("Bạn có chắc muốn xóa sự kiện này không?")) {
+            if (confirm("Xóa sự kiện này khỏi lịch?")) {
                 let data = getWeekData();
                 Object.keys(data).forEach(d => { data[d] = data[d].filter(t => t.id !== id); });
                 saveWeekData(data);
