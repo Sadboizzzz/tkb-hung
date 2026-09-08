@@ -20,10 +20,13 @@
 
 <body class="bg-slate-950 text-slate-100 min-h-screen p-3 md:p-6 font-sans antialiased pb-24">
 
-    <!-- Iframe YouTube chứa nhạc nền (Kích thước 1x1px để không bị trình duyệt chặn) -->
+    <!-- Trình phát Audio HTML5 (Phát file MP3 trực tiếp - 0% Quảng cáo) -->
+    <audio id="direct-audio-player" loop class="hidden"></audio>
+
+    <!-- Iframe YouTube ẩn -->
     <div id="youtube-player-container" class="fixed bottom-0 right-0 w-1 h-1 opacity-0 pointer-events-none"></div>
 
-    <!-- Thanh Điều Khiển Nhạc Nền Nổi Trực Quan -->
+    <!-- Thanh Điều Khiển Nhạc Nổi -->
     <div id="music-control-bar" class="fixed bottom-3 right-3 bg-slate-900/90 border border-slate-700/80 backdrop-blur-md px-4 py-2.5 rounded-2xl shadow-2xl flex items-center gap-3 z-40 hidden">
         <span class="text-xs font-bold text-violet-400 flex items-center gap-1">🎵 <span id="music-status-text">Đang phát nhạc</span></span>
         <button onclick="togglePlayMusic()" id="btn-toggle-play" class="bg-violet-600 hover:bg-violet-500 text-white text-xs px-3 py-1.5 rounded-xl font-bold transition">
@@ -41,7 +44,6 @@
                 <p id="user-info-display" class="text-sm text-slate-300 mt-1 font-medium"></p>
             </div>
             <div class="flex items-center gap-2 w-full sm:w-auto flex-wrap">
-                <!-- Nút Reload Đồng Bộ Mobile -->
                 <button onclick="forceReloadSyncMobile()" class="sm:hidden bg-indigo-600/20 text-indigo-400 border border-indigo-500/30 hover:bg-indigo-600 hover:text-white text-sm px-3.5 py-2.5 rounded-xl font-bold transition flex items-center gap-1">
                     🔄 Reload Đồng Bộ
                 </button>
@@ -144,8 +146,9 @@
                 </div>
 
                 <div>
-                    <label class="block text-xs font-bold text-slate-400 uppercase mb-1.5" data-i18n="lblMusicUrl">Link Nhạc YouTube (Background Music)</label>
-                    <input type="text" id="settingMusicUrlInput" placeholder="https://www.youtube.com/watch?v=..." class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-sm text-slate-200">
+                    <label class="block text-xs font-bold text-slate-400 uppercase mb-1" data-i18n="lblMusicUrl">Link Nhạc (Hỗ trợ MP3 / YouTube)</label>
+                    <input type="text" id="settingMusicUrlInput" placeholder="https://domain.com/nhac.mp3 hoặc Link YouTube..." class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-sm text-slate-200">
+                    <p class="text-[11px] text-emerald-400 mt-1">💡 <b>Mẹo chống QC:</b> Nên dán trực tiếp link đuôi <b>.mp3</b> để không bao giờ có quảng cáo!</p>
                 </div>
 
                 <div>
@@ -164,7 +167,7 @@
         </div>
     </div>
 
-    <!-- Modal Cấu hình Firebase -->
+    <!-- Các Modal khác giữ nguyên -->
     <div id="firebaseModal" class="fixed inset-0 bg-black/80 hidden justify-center items-center p-4 z-50 backdrop-blur-sm">
         <div class="bg-slate-900 border border-slate-800 p-5 rounded-2xl w-full max-w-md shadow-2xl space-y-4">
             <h3 class="text-base font-bold text-amber-400 flex items-center gap-2">🔥 Kết Nối Firebase Realtime</h3>
@@ -186,7 +189,6 @@
         </div>
     </div>
 
-    <!-- Modal Copy Lịch -->
     <div id="copyWeekModal" class="fixed inset-0 bg-black/80 hidden justify-center items-center p-4 z-50 backdrop-blur-sm">
         <div class="bg-slate-900 border border-slate-800 p-5 rounded-2xl w-full max-w-2xl shadow-2xl space-y-4 max-h-[90vh] overflow-y-auto">
             <h3 class="text-base font-bold text-sky-400 flex items-center gap-2">📋 Copy Lịch Sang Tuần <span id="target-copy-week-label"></span></h3>
@@ -205,7 +207,6 @@
         </div>
     </div>
 
-    <!-- Modal Telegram -->
     <div id="telegramModal" class="fixed inset-0 bg-black/80 hidden justify-center items-center p-4 z-50 backdrop-blur-sm">
         <div class="bg-slate-900 border border-slate-800 p-5 rounded-2xl w-full max-w-md shadow-2xl space-y-4">
             <h3 class="text-base font-bold text-sky-400 flex items-center gap-2">✈️ Cấu Hình Telegram Bot</h3>
@@ -229,7 +230,6 @@
         </div>
     </div>
 
-    <!-- Modal Thêm/Sửa TKB -->
     <div id="taskModal" class="fixed inset-0 bg-black/80 hidden justify-center items-center p-4 z-50 backdrop-blur-sm">
         <div class="bg-slate-900 border border-slate-800 p-5 rounded-2xl w-full max-w-md shadow-2xl space-y-4">
             <h3 id="modal-title" class="text-base font-bold text-emerald-400">Thêm thời gian biểu</h3>
@@ -291,7 +291,6 @@
         </div>
     </div>
 
-    <!-- Modal Lịch Thi -->
     <div id="examModal" class="fixed inset-0 bg-black/80 hidden justify-center items-center p-4 z-50 backdrop-blur-sm">
         <div class="bg-slate-900 border border-slate-800 p-5 rounded-2xl w-full max-w-md shadow-2xl space-y-4">
             <h3 class="text-base font-bold text-amber-400">Thiết Lập Môn Thi Mới</h3>
@@ -347,7 +346,6 @@
         </div>
     </div>
 
-    <!-- Modal Hồ Sơ -->
     <div id="userModal" class="fixed inset-0 bg-black/80 hidden justify-center items-center p-4 z-50 backdrop-blur-sm">
         <div class="bg-slate-900 border border-slate-800 p-5 rounded-2xl w-full max-w-md shadow-2xl space-y-4">
             <h3 class="text-base font-bold text-emerald-400">Cập Nhật Hồ Sơ Hưng</h3>
@@ -382,21 +380,21 @@
                 prevWeek: "Tuần trước", nextWeek: "Tuần sau", btnCopyWeek: "Copy Lịch", btnClearWeek: "Xóa Sạch Tuần", btnAddEvent: "Thêm sự kiện",
                 thTime: "Khung Giờ", dayMon: "Thứ Hai", dayTue: "Thứ Ba", dayWed: "Thứ Tư", dayThu: "Thứ Năm", dayFri: "Thứ Sáu", daySat: "Thứ Bảy", daySun: "Chủ Nhật",
                 examListTitle: "Danh Sách Lịch Thi", btnAddExam: "Thêm Lịch Thi", settingsTitle: "Cài Đặt Hệ Thống", lblLanguage: "Ngôn Ngữ (Language)",
-                lblMusicUrl: "Link Nhạc YouTube (Background Music)", lblVolume: "🔊 Âm Lượng Nhạc", btnCancel: "Hủy", btnSave: "Lưu Lại"
+                lblMusicUrl: "Link Nhạc (Hỗ trợ MP3 / YouTube)", lblVolume: "🔊 Âm Lượng Nhạc", btnCancel: "Hủy", btnSave: "Lưu Lại"
             },
             zh: {
                 appTitle: "课程表 & 考试日程", btnSettings: "设置", btnProfile: "个人资料", tabTkb: "阿兴的每日课程表", tabExam: "考试日程 & 提醒",
                 prevWeek: "上一周", nextWeek: "下一周", btnCopyWeek: "复制日程", btnClearWeek: "清空本周", btnAddEvent: "添加日程",
                 thTime: "时间段", dayMon: "星期一", dayTue: "星期二", dayWed: "星期三", dayThu: "星期四", dayFri: "星期五", daySat: "星期六", daySun: "星期日",
                 examListTitle: "考试日程列表", btnAddExam: "添加考试日程", settingsTitle: "系统设置", lblLanguage: "语言 (Language)",
-                lblMusicUrl: "YouTube 背景音乐链接", lblVolume: "🔊 音乐音量", btnCancel: "取消", btnSave: "保存"
+                lblMusicUrl: "音乐链接 (支持 MP3 / YouTube)", lblVolume: "🔊 音乐音量", btnCancel: "取消", btnSave: "保存"
             },
             en: {
                 appTitle: "SCHEDULE & EXAMS", btnSettings: "Settings", btnProfile: "Profile", tabTkb: "Hung's Daily Schedule", tabExam: "Exams & Reminders",
                 prevWeek: "Prev Week", nextWeek: "Next Week", btnCopyWeek: "Copy Schedule", btnClearWeek: "Clear Week", btnAddEvent: "Add Event",
                 thTime: "Time Slot", dayMon: "Monday", dayTue: "Tuesday", dayWed: "Wednesday", dayThu: "Thursday", dayFri: "Friday", daySat: "Saturday", daySun: "Sunday",
                 examListTitle: "Exam List", btnAddExam: "Add Exam", settingsTitle: "System Settings", lblLanguage: "Language",
-                lblMusicUrl: "YouTube Music Link", lblVolume: "🔊 Music Volume", btnCancel: "Cancel", btnSave: "Save"
+                lblMusicUrl: "Music Link (MP3 / YouTube)", lblVolume: "🔊 Music Volume", btnCancel: "Cancel", btnSave: "Save"
             }
         };
 
@@ -496,9 +494,10 @@
             }
         }
 
-        // TÁCH YOUTUBE VIDEO ID CHUẨN XÁC
+        // HỆ THỐNG TRÌNH PHÁT ĐA NGUỒN (XỬ LÝ ĐƯỢC CẢ LINK MP3 TRỰC TIẾP LẪN YOUTUBE)
         window.ytPlayer = null;
         window.isPlayerReady = false;
+        window.currentMusicMode = null; // 'mp3' hoặc 'youtube'
 
         function extractYouTubeId(url) {
             if (!url) return null;
@@ -507,58 +506,9 @@
             return (match && match[2].length === 11) ? match[2] : null;
         }
 
-        window.onYouTubeIframeAPIReady = function() {
-            let settings = getSystemSettings();
-            let videoId = extractYouTubeId(settings.musicUrl);
-
-            if (videoId) {
-                document.getElementById('music-control-bar').classList.remove('hidden');
-                
-                window.ytPlayer = new YT.Player('youtube-player-container', {
-                    height: '1', width: '1', videoId: videoId,
-                    playerVars: { 'autoplay': 1, 'controls': 0, 'loop': 1, 'playlist': videoId },
-                    events: {
-                        'onReady': (event) => {
-                            window.isPlayerReady = true;
-                            event.target.setVolume(settings.volume);
-                            event.target.playVideo();
-                        },
-                        'onStateChange': (event) => {
-                            let btn = document.getElementById('btn-toggle-play');
-                            let txt = document.getElementById('music-status-text');
-                            if (event.data === YT.PlayerState.PLAYING) {
-                                btn.innerText = "⏸️ Tạm dừng";
-                                txt.innerText = "Đang phát nhạc";
-                            } else {
-                                btn.innerText = "▶️ Phát nhạc";
-                                txt.innerText = "Đã dừng nhạc";
-                            }
-                        }
-                    }
-                });
-            }
-        };
-
-        // BỎ CHẶN AUTOPLAY TRÊN BẤT KỲ CÚ CLICK NÀO CỦA NGƯỜI DÙNG
-        document.addEventListener('click', () => {
-            if (window.ytPlayer && window.isPlayerReady && typeof window.ytPlayer.getPlayerState === 'function') {
-                if (window.ytPlayer.getPlayerState() !== YT.PlayerState.PLAYING) {
-                    window.ytPlayer.playVideo();
-                }
-            }
-        }, { once: true });
-
-        window.togglePlayMusic = function() {
-            if (!window.ytPlayer || typeof window.ytPlayer.getPlayerState !== 'function') return;
-            if (window.ytPlayer.getPlayerState() === YT.PlayerState.PLAYING) {
-                window.ytPlayer.pauseVideo();
-            } else {
-                window.ytPlayer.playVideo();
-            }
-        };
-
-        function getSystemSettings() {
-            return JSON.parse(localStorage.getItem('app_settings') || '{"lang": "vi", "musicUrl": "", "volume": 50}');
+        function isDirectAudioUrl(url) {
+            if (!url) return false;
+            return url.match(/\.(mp3|wav|ogg|m4a)($|\?)/i) || (!url.includes('youtube.com') && !url.includes('youtu.be'));
         }
 
         function applySettings(settings) {
@@ -569,30 +519,123 @@
             }
 
             let volume = settings.volume !== undefined ? settings.volume : 50;
-            if (window.ytPlayer && typeof window.ytPlayer.setVolume === 'function') {
-                window.ytPlayer.setVolume(volume);
+            let url = settings.musicUrl ? settings.musicUrl.trim() : '';
+            let bar = document.getElementById('music-control-bar');
+            let audioElem = document.getElementById('direct-audio-player');
+
+            if (!url) {
+                if (bar) bar.classList.add('hidden');
+                if (audioElem) { audioElem.pause(); audioElem.src = ''; }
+                if (window.ytPlayer && typeof window.ytPlayer.stopVideo === 'function') window.ytPlayer.stopVideo();
+                return;
             }
 
-            let videoId = extractYouTubeId(settings.musicUrl);
-            let bar = document.getElementById('music-control-bar');
-            
-            if (videoId) {
-                if (bar) bar.classList.remove('hidden');
-                if (window.ytPlayer && typeof window.ytPlayer.loadVideoById === 'function') {
-                    window.ytPlayer.loadVideoById(videoId);
-                } else if (!window.ytPlayer && typeof YT !== 'undefined' && YT.Player) {
-                    window.onYouTubeIframeAPIReady();
-                }
+            if (bar) bar.classList.remove('hidden');
+
+            // KIỂM TRA LÀ LINK MP3 TRỰC TIẾP HAY LINK YOUTUBE
+            if (isDirectAudioUrl(url)) {
+                window.currentMusicMode = 'mp3';
+                if (window.ytPlayer && typeof window.ytPlayer.stopVideo === 'function') window.ytPlayer.stopVideo();
+
+                audioElem.src = url;
+                audioElem.volume = volume / 100;
+                audioElem.play().then(() => {
+                    updateMusicStatusUI(true);
+                }).catch(() => {
+                    updateMusicStatusUI(false);
+                });
             } else {
-                if (bar) bar.classList.add('hidden');
-                if (window.ytPlayer && typeof window.ytPlayer.stopVideo === 'function') {
-                    window.ytPlayer.stopVideo();
+                window.currentMusicMode = 'youtube';
+                if (audioElem) { audioElem.pause(); audioElem.src = ''; }
+
+                let videoId = extractYouTubeId(url);
+                if (videoId) {
+                    if (window.ytPlayer && typeof window.ytPlayer.loadVideoById === 'function') {
+                        window.ytPlayer.setVolume(volume);
+                        window.ytPlayer.loadVideoById(videoId);
+                    } else if (typeof YT !== 'undefined' && YT.Player) {
+                        window.onYouTubeIframeAPIReady();
+                    }
                 }
             }
         }
 
+        window.onYouTubeIframeAPIReady = function() {
+            let settings = getSystemSettings();
+            let url = settings.musicUrl ? settings.musicUrl.trim() : '';
+            let videoId = extractYouTubeId(url);
+
+            if (videoId && isDirectAudioUrl(url) === false) {
+                window.ytPlayer = new YT.Player('youtube-player-container', {
+                    height: '1', width: '1', videoId: videoId,
+                    playerVars: { 'autoplay': 1, 'controls': 0, 'loop': 1, 'playlist': videoId },
+                    events: {
+                        'onReady': (event) => {
+                            window.isPlayerReady = true;
+                            event.target.setVolume(settings.volume);
+                            event.target.playVideo();
+                        },
+                        'onStateChange': (event) => {
+                            if (window.currentMusicMode === 'youtube') {
+                                updateMusicStatusUI(event.data === YT.PlayerState.PLAYING);
+                            }
+                        }
+                    }
+                });
+            }
+        };
+
+        function updateMusicStatusUI(isPlaying) {
+            let btn = document.getElementById('btn-toggle-play');
+            let txt = document.getElementById('music-status-text');
+            if (isPlaying) {
+                btn.innerText = "⏸️ Tạm dừng";
+                txt.innerText = "Đang phát nhạc";
+            } else {
+                btn.innerText = "▶️ Phát nhạc";
+                txt.innerText = "Đã dừng nhạc";
+            }
+        }
+
+        // BỎ CHẶN AUTOPLAY TRÊN BẤT KỲ CÚ CLICK NÀO CỦA NGƯỜI DÙNG
+        document.addEventListener('click', () => {
+            let audioElem = document.getElementById('direct-audio-player');
+            if (window.currentMusicMode === 'mp3' && audioElem && audioElem.paused && audioElem.src) {
+                audioElem.play().then(() => updateMusicStatusUI(true));
+            } else if (window.currentMusicMode === 'youtube' && window.ytPlayer && window.isPlayerReady && typeof window.ytPlayer.getPlayerState === 'function') {
+                if (window.ytPlayer.getPlayerState() !== YT.PlayerState.PLAYING) {
+                    window.ytPlayer.playVideo();
+                }
+            }
+        }, { once: true });
+
+        window.togglePlayMusic = function() {
+            let audioElem = document.getElementById('direct-audio-player');
+            if (window.currentMusicMode === 'mp3' && audioElem) {
+                if (audioElem.paused) {
+                    audioElem.play();
+                    updateMusicStatusUI(true);
+                } else {
+                    audioElem.pause();
+                    updateMusicStatusUI(false);
+                }
+            } else if (window.currentMusicMode === 'youtube' && window.ytPlayer && typeof window.ytPlayer.getPlayerState === 'function') {
+                if (window.ytPlayer.getPlayerState() === YT.PlayerState.PLAYING) {
+                    window.ytPlayer.pauseVideo();
+                } else {
+                    window.ytPlayer.playVideo();
+                }
+            }
+        };
+
+        function getSystemSettings() {
+            return JSON.parse(localStorage.getItem('app_settings') || '{"lang": "vi", "musicUrl": "", "volume": 50}');
+        }
+
         window.updateVolumeLabel = function(val) {
             document.getElementById('volumeValueLabel').innerText = `${val}%`;
+            let audioElem = document.getElementById('direct-audio-player');
+            if (audioElem) audioElem.volume = val / 100;
             if (window.ytPlayer && typeof window.ytPlayer.setVolume === 'function') {
                 window.ytPlayer.setVolume(val);
             }
@@ -635,26 +678,17 @@
 
         // FORCE RELOAD MOBILE
         window.forceReloadSyncMobile = function() {
-            if (!window.db) {
-                alert("Chưa kết nối Firebase!");
-                return;
-            }
+            if (!window.db) { alert("Chưa kết nối Firebase!"); return; }
 
             localStorage.removeItem('firebase_cached_schedule');
-            for (let i = 1; i <= 52; i++) {
-                localStorage.removeItem(`matrix_edit_${i}`);
-            }
+            for (let i = 1; i <= 52; i++) { localStorage.removeItem(`matrix_edit_${i}`); }
 
             get(ref(window.db, 'schedule')).then((snapshot) => {
                 const cloudData = snapshot.val();
-                if (cloudData) {
-                    localStorage.setItem('firebase_cached_schedule', JSON.stringify(cloudData));
-                }
+                if (cloudData) localStorage.setItem('firebase_cached_schedule', JSON.stringify(cloudData));
                 window.render();
                 alert("🔄 Đã xóa cache Mobile và đồng bộ thành công!");
-            }).catch((err) => {
-                alert("Lỗi khi kéo dữ liệu Firebase: " + err.message);
-            });
+            }).catch((err) => alert("Lỗi khi kéo dữ liệu Firebase: " + err.message));
         };
 
         function updateFirebaseButtonUI(connected) {
@@ -719,7 +753,6 @@
 
         window.saveWeekData = function(data, weekNum = window.selectedWeekNum) {
             let key = `matrix_edit_${weekNum}`;
-            
             localStorage.setItem(key, JSON.stringify(data));
             let cached = JSON.parse(localStorage.getItem('firebase_cached_schedule') || '{}');
             cached[key] = data;
@@ -842,10 +875,7 @@
                 sel.appendChild(opt);
             }
 
-            if (sel.options.length === 0) {
-                alert("Không có tuần nào trong quá khứ để copy!");
-                return;
-            }
+            if (sel.options.length === 0) { alert("Không có tuần nào trong quá khứ để copy!"); return; }
 
             window.previewSourceWeekData();
             document.getElementById('copyWeekModal').classList.remove('hidden');
@@ -877,9 +907,7 @@
                 }
             });
 
-            if (container.innerHTML === '') {
-                container.innerHTML = `<span class="text-slate-500 italic">Tuần ${sourceWeekNum} đang trống hoàn toàn.</span>`;
-            }
+            if (container.innerHTML === '') container.innerHTML = `<span class="text-slate-500 italic">Tuần ${sourceWeekNum} đang trống hoàn toàn.</span>`;
         };
 
         window.confirmCopyWeekData = function() {
@@ -916,9 +944,7 @@
 
             if (window.db) {
                 isLocalUpdate = true;
-                set(ref(window.db, 'exams'), exams).finally(() => {
-                    setTimeout(() => { isLocalUpdate = false; }, 300);
-                });
+                set(ref(window.db, 'exams'), exams).finally(() => { setTimeout(() => { isLocalUpdate = false; }, 300); });
             }
         }
 
