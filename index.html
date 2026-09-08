@@ -418,7 +418,6 @@
 
         function getCurrentWeekNumber() {
             const now = new Date();
-            // Đưa cả 2 về chuẩn 00:00:00 để tính số ngày chính xác tuyệt đối
             const nowClean = new Date(now.getFullYear(), now.getMonth(), now.getDate());
             const startClean = new Date(startDate.getFullYear(), startDate.getMonth(), startDate.getDate());
             
@@ -830,11 +829,8 @@
 
                     let dayTasks = weekData[day] || [];
 
-                    // SỬA ĐỔI QUAN TRỌNG: Lấy task bắt đầu sớm nhất trong khung giờ này
                     let task = dayTasks.find(t => {
                         let tStart = timeToMinutes(t.start);
-                        let tEnd = timeToMinutes(t.end);
-                        // Chỉ chọn nếu thời gian bắt đầu thuộc hàng này, hoặc kéo dài đè vào hàng này
                         return tStart >= rowStartMin && tStart < rowEndMin;
                     });
 
@@ -842,7 +838,6 @@
                         let tStart = timeToMinutes(task.start);
                         let tEnd = timeToMinutes(task.end);
                         
-                        // Tối ưu spanCount giúp ghép hàng cực chuẩn
                         let durationMin = tEnd - tStart;
                         let spanCount = Math.max(Math.round(durationMin / 60), 1);
 
