@@ -30,7 +30,7 @@
                 <p id="user-info-display" class="text-xs text-slate-400 mt-0.5"></p>
             </div>
             <div class="flex items-center gap-2 w-full sm:w-auto flex-wrap">
-                <!-- Nút Reload Đồng Bộ Mobile (Chỉ hiện trên Mobile) -->
+                <!-- Nút Reload Đồng Bộ Mobile -->
                 <button onclick="forceReloadSyncMobile()" class="sm:hidden bg-indigo-600/20 text-indigo-400 border border-indigo-500/30 hover:bg-indigo-600 hover:text-white text-xs px-3 py-2 rounded-xl font-bold transition flex items-center gap-1">
                     🔄 Reload Đồng Bộ
                 </button>
@@ -81,13 +81,13 @@
                 </div>
             </div>
 
-            <!-- BẢNG MATRIX -->
+            <!-- BẢNG MATRIX GIAO DIỆN ĐẸP MẮT -->
             <div class="bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden shadow-2xl">
                 <div class="overflow-x-auto">
                     <table class="w-full border-collapse text-left text-sm min-w-[1100px]">
                         <thead>
                             <tr class="bg-slate-950 text-slate-400 text-xs uppercase tracking-wider border-b border-slate-800">
-                                <th class="p-3.5 border-r border-slate-800 w-36 text-center">Khung Giờ</th>
+                                <th class="p-3.5 border-r border-slate-800 w-32 text-center">Khung Giờ</th>
                                 <th class="p-3.5 border-r border-slate-800">Thứ Hai</th>
                                 <th class="p-3.5 border-r border-slate-800">Thứ Ba</th>
                                 <th class="p-3.5 border-r border-slate-800">Thứ Tư</th>
@@ -184,7 +184,7 @@
         </div>
     </div>
 
-    <!-- Modal Thêm/Sửa TKB -->
+    <!-- Modal Thêm/Sửa TKB (Bổ sung trường Ghi Chú) -->
     <div id="taskModal" class="fixed inset-0 bg-black/80 hidden justify-center items-center p-4 z-50 backdrop-blur-sm">
         <div class="bg-slate-900 border border-slate-800 p-5 rounded-2xl w-full max-w-md shadow-2xl space-y-4">
             <h3 id="modal-title" class="text-base font-bold text-emerald-400">Thêm thời gian biểu</h3>
@@ -192,7 +192,7 @@
                 <input type="hidden" id="taskId">
                 <div>
                     <label class="block text-xs text-slate-400 mb-1">Chọn ngày</label>
-                    <select id="taskDay" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-xs text-slate-200">
+                    <select id="taskDay" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-xs text-slate-200 font-bold">
                         <option value="Thứ Hai">Thứ Hai</option>
                         <option value="Thứ Ba">Thứ Ba</option>
                         <option value="Thứ Tư">Thứ Tư</option>
@@ -205,16 +205,21 @@
                 <div class="grid grid-cols-2 gap-2">
                     <div>
                         <label class="block text-xs text-slate-400 mb-1">Bắt đầu</label>
-                        <select id="taskStartHour" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-xs text-slate-200"></select>
+                        <select id="taskStartHour" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-xs text-slate-200 font-mono"></select>
                     </div>
                     <div>
                         <label class="block text-xs text-slate-400 mb-1">Kết thúc</label>
-                        <select id="taskEndHour" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-xs text-slate-200"></select>
+                        <select id="taskEndHour" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-xs text-slate-200 font-mono"></select>
                     </div>
                 </div>
                 <div>
                     <label class="block text-xs text-slate-400 mb-1">Nội dung công việc</label>
                     <input type="text" id="taskContent" required placeholder="Học bài, chơi game..." class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-xs text-slate-200">
+                </div>
+                <!-- Trường Ghi Chú mới bổ sung -->
+                <div>
+                    <label class="block text-xs text-slate-400 mb-1">Ghi chú / Địa điểm (không bắt buộc)</label>
+                    <input type="text" id="taskNote" placeholder="Phòng A101, mang máy tính..." class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-xs text-slate-200">
                 </div>
                 <div class="bg-slate-950/60 p-3 rounded-xl border border-slate-800/80 space-y-2">
                     <div class="flex items-center justify-between">
@@ -341,7 +346,7 @@
         window.hoursList = [];
         for (let i = 6; i <= 23; i++) { window.hoursList.push(String(i).padStart(2, '0') + ":00"); }
 
-        // SINH KHUNG CHỌN THỜI GIAN LINH HOẠT THEO BƯỚC NHẢY 5 PHÚT (TỪ 06:00 TỚI 23:55)
+        // SINH KHUNG CHỌN THỜI GIAN LINH HOẠT THEO BƯỚC NHẢY 5 PHÚT
         window.timeSelectOptions = [];
         for (let h = 6; h <= 23; h++) {
             for (let m = 0; m < 60; m += 5) {
@@ -352,20 +357,20 @@
 
         const selStart = document.getElementById('taskStartHour');
         const selEnd = document.getElementById('taskEndHour');
-        window.timeSelectOptions.forEach((timeStr, index) => {
+        window.timeSelectOptions.forEach((timeStr) => {
             let opt1 = document.createElement('option'); opt1.value = timeStr; opt1.innerText = timeStr; selStart.appendChild(opt1);
             let opt2 = document.createElement('option'); opt2.value = timeStr; opt2.innerText = timeStr; selEnd.appendChild(opt2);
         });
         selEnd.value = "12:00";
 
         const defaultWeekData = {
-            "Thứ Hai": [{ id: 1, start: "09:00", end: "10:00", text: "Học CNXHKH (ngồi im)", done: false, notify: true, advanceMin: 5 }],
-            "Thứ Ba": [{ id: 5, start: "07:00", end: "12:00", text: "Học DSA trên trường", done: false, notify: true, advanceMin: 15 }],
-            "Thứ Tư": [{ id: 8, start: "08:00", end: "11:00", text: "Giải bài tập LeetCode", done: false, notify: true, advanceMin: 0 }],
-            "Thứ Năm": [{ id: 13, start: "09:00", end: "11:00", text: "Học Lập trình trên web", done: false, notify: true, advanceMin: 10 }],
-            "Thứ Sáu": [{ id: 16, start: "09:00", end: "11:00", text: "Tiếng Anh giao tiếp", done: false, notify: true, advanceMin: 5 }],
-            "Thứ Bảy": [{ id: 19, start: "07:00", end: "09:00", text: "Học Hệ điều hành", done: false, notify: true, advanceMin: 5 }],
-            "Chủ Nhật": [{ id: 22, start: "09:00", end: "11:00", text: "Học tiếng Anh căn bản", done: false, notify: false, advanceMin: 0 }]
+            "Thứ Hai": [{ id: 1, start: "09:00", end: "10:00", text: "Học CNXHKH (ngồi im)", note: "Mang theo sách giáo khoa", done: false, notify: true, advanceMin: 5 }],
+            "Thứ Ba": [{ id: 5, start: "07:00", end: "12:00", text: "Học DSA trên trường", note: "Phòng máy B304", done: false, notify: true, advanceMin: 15 }],
+            "Thứ Tư": [{ id: 8, start: "08:00", end: "11:00", text: "Giải bài tập LeetCode", note: "Chủ đề DP & Graph", done: false, notify: true, advanceMin: 0 }],
+            "Thứ Năm": [{ id: 13, start: "09:00", end: "11:00", text: "Học Lập trình trên web", note: "Thực hành Tailwind CSS", done: false, notify: true, advanceMin: 10 }],
+            "Thứ Sáu": [{ id: 16, start: "09:00", end: "11:00", text: "Tiếng Anh giao tiếp", note: "Luyện Speaking", done: false, notify: true, advanceMin: 5 }],
+            "Thứ Bảy": [{ id: 19, start: "07:00", end: "09:00", text: "Học Hệ điều hành", note: "Làm bài tập lớn", done: false, notify: true, advanceMin: 5 }],
+            "Chủ Nhật": [{ id: 22, start: "09:00", end: "11:00", text: "Học tiếng Anh căn bản", note: "Luyện Từ vựng", done: false, notify: false, advanceMin: 0 }]
         };
 
         // FIREBASE INITIALIZATION
@@ -403,7 +408,7 @@
             }
         }
 
-        // HÀM FORCE RELOAD DÀNH RIÊNG CHO MOBILE
+        // FORCE RELOAD MOBILE
         window.forceReloadSyncMobile = function() {
             if (!window.db) {
                 alert("Chưa kết nối Firebase! Vui lòng cấu hình Firebase trước.");
@@ -526,6 +531,7 @@
             return `${weekStart.toLocaleDateString('vi-VN', opt)} đến ${weekEnd.toLocaleDateString('vi-VN', opt)}`;
         }
 
+        // RENDER TKB VỚI THIẾT KẾ CARD NÂNG CẤP ĐẸP MẮT
         window.render = function() {
             document.getElementById('week-counter-label').innerText = `TUẦN ${window.selectedWeekNum}`;
             let dateRangeStr = getWeekDatesText(window.selectedWeekNum);
@@ -547,12 +553,11 @@
                 let currentHourNum = parseInt(currentHour.split(':')[0]);
 
                 let rowHtml = `<tr class="hover:bg-slate-900/40 transition">`;
-                rowHtml += `<td class="p-3.5 border-r border-slate-800 bg-slate-950/40 text-center font-mono text-xs font-bold text-amber-400 align-middle">${currentHour} - ${nextHour}</td>`;
+                rowHtml += `<td class="p-3 border-r border-slate-800 bg-slate-950/40 text-center font-mono text-xs font-bold text-amber-400 align-middle">${currentHour} - ${nextHour}</td>`;
 
                 days.forEach(day => {
                     if (skipCells[day][i]) return;
                     
-                    // KHÁM PHÁ TASK NẰM TRONG KHUNG GIỜ NÀY
                     let task = (weekData[day] || []).find(t => {
                         let tStartH = parseInt(t.start.split(':')[0]);
                         return tStartH === currentHourNum;
@@ -569,19 +574,22 @@
                         for (let s = 1; s < spanCount; s++) skipCells[day][i + s] = true;
 
                         rowHtml += `
-                            <td rowspan="${spanCount}" onclick="openModalForEdit('${day}', ${task.id})" class="p-3 border-r border-slate-800/60 align-top cursor-pointer bg-slate-900/80 hover:bg-slate-800 transition select-none border-b border-slate-800/60 group">
-                                <div class="flex justify-between items-start mb-1">
-                                    <span class="text-[10px] font-mono text-indigo-400 font-bold">${task.start} - ${task.end}</span>
-                                    <div class="flex items-center gap-1">
-                                        ${task.notify ? '<span class="text-[9px]" title="Đã bật Telegram">✈️</span>' : ''}
-                                        <input type="checkbox" ${task.done ? 'checked' : ''} onclick="toggleTaskDone('${day}', ${task.id}, event)" class="w-3.5 h-3.5 rounded cursor-pointer accent-emerald-500">
+                            <td rowspan="${spanCount}" onclick="openModalForEdit('${day}', ${task.id})" class="p-2 border-r border-slate-800/60 align-top cursor-pointer transition select-none group">
+                                <div class="bg-gradient-to-br from-slate-900 to-indigo-950/80 hover:from-slate-850 hover:to-indigo-900/90 border-l-4 ${task.done ? 'border-slate-600' : 'border-emerald-400'} border-y border-r border-slate-800/80 p-2.5 rounded-xl shadow-lg transition duration-200">
+                                    <div class="flex justify-between items-center mb-1 gap-1">
+                                        <span class="text-[10px] font-mono font-black text-indigo-300 bg-indigo-950/80 px-1.5 py-0.5 rounded border border-indigo-500/20">${task.start} - ${task.end}</span>
+                                        <div class="flex items-center gap-1">
+                                            ${task.notify ? '<span class="text-[10px]" title="Đã bật Telegram">✈️</span>' : ''}
+                                            <input type="checkbox" ${task.done ? 'checked' : ''} onclick="toggleTaskDone('${day}', ${task.id}, event)" class="w-3.5 h-3.5 rounded cursor-pointer accent-emerald-500">
+                                        </div>
                                     </div>
+                                    <div class="text-xs font-bold ${task.done ? 'completed text-slate-400' : 'text-slate-100'} mt-1 leading-snug">${task.text}</div>
+                                    ${task.note ? `<div class="text-[10px] text-slate-400 italic mt-1 flex items-center gap-1"><span class="text-amber-400/80">📌</span> ${task.note}</div>` : ''}
                                 </div>
-                                <div class="text-xs text-slate-100 ${task.done ? 'completed text-slate-500' : 'font-medium'}">${task.text}</div>
                             </td>
                         `;
                     } else {
-                        rowHtml += `<td class="p-3 border-r border-slate-800/60 text-slate-700/30 text-xs text-center">-</td>`;
+                        rowHtml += `<td class="p-3 border-r border-slate-800/60 text-slate-800 text-xs text-center select-none">-</td>`;
                     }
                 });
                 rowHtml += `</tr>`;
@@ -633,7 +641,7 @@
             days.forEach(day => {
                 let tasks = sourceData[day] || [];
                 if (tasks.length > 0) {
-                    let taskListStr = tasks.map(t => `<span class="text-slate-300">• ${t.start}-${t.end}: <b>${t.text}</b></span>`).join('<br>');
+                    let taskListStr = tasks.map(t => `<span class="text-slate-300">• ${t.start}-${t.end}: <b>${t.text}</b> ${t.note ? `<i>(${t.note})</i>` : ''}</span>`).join('<br>');
                     container.innerHTML += `
                         <div class="pb-1 border-b border-slate-800">
                             <span class="text-emerald-400 font-bold">${day}:</span><br>
@@ -702,13 +710,13 @@
             exams.forEach((ex, idx) => {
                 let intervalLabel = ex.intervalHours <= 0.1 ? '🌋 Chấn động địa cầu (5p/lần)' : `${ex.intervalHours}h/lần`;
                 container.innerHTML += `
-                    <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+                    <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 shadow-lg">
                         <div class="space-y-1">
                             <div class="flex items-center gap-2">
                                 <h3 class="font-bold text-sm text-amber-300">${ex.subject}</h3>
                                 ${ex.notify ? `<span class="text-[10px] bg-amber-500/10 text-amber-400 px-2 py-0.5 rounded-full border border-amber-500/20">✈️ Báo Telegram trước ${ex.advanceHours}h (${intervalLabel})</span>` : '<span class="text-[10px] bg-slate-800 text-slate-500 px-2 py-0.5 rounded-full">Tắt Telegram</span>'}
                             </div>
-                            <p class="text-xs text-slate-300 font-mono">📅 Ngày thi: <span class="text-emerald-400">${ex.date}</span> lúc <span class="text-amber-400">${ex.time}</span></p>
+                            <p class="text-xs text-slate-300 font-mono">📅 Ngày thi: <span class="text-emerald-400 font-bold">${ex.date}</span> lúc <span class="text-amber-400 font-bold">${ex.time}</span></p>
                             <p class="text-[11px] text-slate-400">📍 Ghi chú: ${ex.note || 'Không có'}</p>
                         </div>
                         <button onclick="deleteExam(${idx})" class="self-end sm:self-center text-xs text-rose-400 hover:text-rose-300 font-bold bg-rose-500/10 px-3 py-1.5 rounded-xl border border-rose-500/20">Xóa lịch thi</button>
@@ -851,9 +859,10 @@
                 if (diffMs >= 0 && diffMs <= 2 * 60 * 1000) {
                     let notiKey = `tg_task_${task.id}_${now.toDateString()}_${task.start}`;
                     if (!localStorage.getItem(notiKey)) {
+                        let noteStr = task.note ? `\n- Ghi chú: ${task.note}` : '';
                         let msg = task.advanceMin > 0
-                            ? `⏰ <b>SẮP ĐẾN GIỜ TKB!</b>\n\n- Công việc: <b>${task.text}</b>\n- Khung giờ: ${task.start} - ${task.end}\n- Bắt đầu sau: <b>${task.advanceMin} phút</b> nữa!`
-                            : `⏰ <b>ĐÃ ĐẾN GIỜ TKB!</b>\n\n- Công việc: <b>${task.text}</b>\n- Khung giờ: ${task.start} - ${task.end}\n- Bắt tay vào làm ngay thôi Hưng ơi!`;
+                            ? `⏰ <b>SẮP ĐẾN GIỜ TKB!</b>\n\n- Công việc: <b>${task.text}</b>${noteStr}\n- Khung giờ: ${task.start} - ${task.end}\n- Bắt đầu sau: <b>${task.advanceMin} phút</b> nữa!`
+                            : `⏰ <b>ĐÃ ĐẾN GIỜ TKB!</b>\n\n- Công việc: <b>${task.text}</b>${noteStr}\n- Khung giờ: ${task.start} - ${task.end}\n- Bắt tay vào làm ngay thôi Hưng ơi!`;
 
                         sendTelegramApi(msg);
                         localStorage.setItem(notiKey, "true");
@@ -912,6 +921,7 @@
             document.getElementById('taskStartHour').value = task.start;
             document.getElementById('taskEndHour').value = task.end;
             document.getElementById('taskContent').value = task.text;
+            document.getElementById('taskNote').value = task.note || "";
             document.getElementById('taskNotifyEnable').checked = task.notify !== false;
             document.getElementById('taskNotifyAdvance').value = task.advanceMin || 0;
             document.getElementById('btn-delete-modal').classList.remove('hidden');
@@ -928,6 +938,7 @@
             let start = document.getElementById('taskStartHour').value;
             let end = document.getElementById('taskEndHour').value;
             let content = document.getElementById('taskContent').value;
+            let note = document.getElementById('taskNote').value;
             let notify = document.getElementById('taskNotifyEnable').checked;
             let advanceMin = Number(document.getElementById('taskNotifyAdvance').value);
 
@@ -945,9 +956,9 @@
             if (numericId) {
                 let oldDay = Object.keys(data).find(d => data[d].some(t => t.id === numericId));
                 if (oldDay) data[oldDay] = data[oldDay].filter(t => t.id !== numericId);
-                data[day].push({ id: numericId, start, end, text: content, done: false, notify, advanceMin });
+                data[day].push({ id: numericId, start, end, text: content, note, done: false, notify, advanceMin });
             } else {
-                data[day].push({ id: Date.now(), start, end, text: content, done: false, notify, advanceMin });
+                data[day].push({ id: Date.now(), start, end, text: content, note, done: false, notify, advanceMin });
             }
 
             window.saveWeekData(data);
