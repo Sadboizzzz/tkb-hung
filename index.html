@@ -101,7 +101,7 @@
                     <table class="w-full border-collapse text-left text-base min-w-[1100px]">
                         <thead>
                             <tr class="bg-slate-950 text-slate-300 text-sm uppercase tracking-wider border-b border-slate-800 font-bold">
-                                <th class="p-4 border-r border-slate-800 w-32 text-center" data-i18n="thTime">Khung Giờ</th>
+                                <th class="p-4 border-r border-slate-800 w-28 text-center" data-i18n="thTime">Buổi</th>
                                 <th class="p-4 border-r border-slate-800" data-i18n="dayMon">Thứ Hai</th>
                                 <th class="p-4 border-r border-slate-800" data-i18n="dayTue">Thứ Ba</th>
                                 <th class="p-4 border-r border-slate-800" data-i18n="dayWed">Thứ Tư</th>
@@ -386,21 +386,21 @@
             vi: {
                 appTitle: "TKB & LỊCH THI", btnSettings: "Cài Đặt", btnProfile: "Hồ sơ", tabTkb: "TKB 1 Ngày Của Hưng", tabExam: "Lịch Thi & Báo Nhắc",
                 prevWeek: "Tuần trước", nextWeek: "Tuần sau", btnCopyWeek: "Copy Lịch Tuần", btnClearWeek: "Xóa Sạch Tuần", btnAddEvent: "Thêm sự kiện",
-                thTime: "Khung Giờ", dayMon: "Thứ Hai", dayTue: "Thứ Ba", dayWed: "Thứ Tư", dayThu: "Thứ Năm", dayFri: "Thứ Sáu", daySat: "Thứ Bảy", daySun: "Chủ Nhật",
+                thTime: "Buổi", dayMon: "Thứ Hai", dayTue: "Thứ Ba", dayWed: "Thứ Tư", dayThu: "Thứ Năm", dayFri: "Thứ Sáu", daySat: "Thứ Bảy", daySun: "Chủ Nhật",
                 examListTitle: "Danh Sách Lịch Thi", btnAddExam: "Thêm Lịch Thi", settingsTitle: "Cài Đặt Hệ Thống", lblLanguage: "Ngôn Ngữ (Language)",
                 lblMusicUrl: "Link Nhạc (Hỗ trợ MP3 / YouTube)", lblVolume: "🔊 Âm Lượng Nhạc", btnCancel: "Hủy", btnSave: "Lưu Lại"
             },
             zh: {
                 appTitle: "课程表 & 考试日程", btnSettings: "设置", btnProfile: "个人资料", tabTkb: "阿兴的每日课程表", tabExam: "考试日程 & 提醒",
                 prevWeek: "上一周", nextWeek: "下一周", btnCopyWeek: "复制日程", btnClearWeek: "清空本周", btnAddEvent: "添加日程",
-                thTime: "时间段", dayMon: "星期一", dayTue: "星期二", dayWed: "星期三", dayThu: "星期四", dayFri: "星期五", daySat: "星期六", daySun: "星期日",
+                thTime: "时段", dayMon: "星期一", dayTue: "星期二", dayWed: "星期三", dayThu: "星期四", dayFri: "星期五", daySat: "星期六", daySun: "星期日",
                 examListTitle: "考试日程列表", btnAddExam: "添加考试日程", settingsTitle: "系统设置", lblLanguage: "语言 (Language)",
                 lblMusicUrl: "音乐链接 (支持 MP3 / YouTube)", lblVolume: "🔊 音乐音量", btnCancel: "取消", btnSave: "保存"
             },
             en: {
                 appTitle: "SCHEDULE & EXAMS", btnSettings: "Settings", btnProfile: "Profile", tabTkb: "Hung's Daily Schedule", tabExam: "Exams & Reminders",
                 prevWeek: "Prev Week", nextWeek: "Next Week", btnCopyWeek: "Copy Schedule", btnClearWeek: "Clear Week", btnAddEvent: "Add Event",
-                thTime: "Time Slot", dayMon: "Monday", dayTue: "Tuesday", dayWed: "Wednesday", dayThu: "Thursday", dayFri: "Friday", daySat: "Saturday", daySun: "Sunday",
+                thTime: "Session", dayMon: "Monday", dayTue: "Tuesday", dayWed: "Wednesday", dayThu: "Thursday", dayFri: "Friday", daySat: "Saturday", daySun: "Sunday",
                 examListTitle: "Exam List", btnAddExam: "Add Exam", settingsTitle: "System Settings", lblLanguage: "Language",
                 lblMusicUrl: "Music Link (MP3 / YouTube)", lblVolume: "🔊 Music Volume", btnCancel: "Cancel", btnSave: "Save"
             }
@@ -429,9 +429,13 @@
         const currentRealWeekNum = getCurrentWeekNumber();
         window.selectedWeekNum = currentRealWeekNum;
 
-        // TẠO KHUNG GIỜ MỖI HÀNG BẰNG 1 TIẾNG (TỪ 06:00 ĐẾN 23:00)
-        window.hoursList = [];
-        for (let i = 6; i <= 23; i++) { window.hoursList.push(String(i).padStart(2, '0') + ":00"); }
+        // DANH SÁCH KHUNG BUỔI MỚI (SÁNG / TRƯA / CHIỀU / TỐI)
+        window.sessionsList = [
+            { id: "sang", label: "🌅 Sáng", startMin: 6 * 60, endMin: 11 * 60 + 59 },
+            { id: "trua", label: "☀️ Trưa", startMin: 12 * 60, endMin: 13 * 60 + 59 },
+            { id: "chieu", label: "🌤️ Chiều", startMin: 14 * 60, endMin: 17 * 60 + 59 },
+            { id: "toi", label: "🌙 Tối", startMin: 18 * 60, endMin: 23 * 60 + 59 }
+        ];
 
         window.timeSelectOptions = [];
         for (let h = 6; h <= 23; h++) {
@@ -806,7 +810,7 @@
             return h * 60 + m;
         }
 
-        // LOGIC RENDER MATRIX ĐÃ FIX TỐI ƯU HIỂN THỊ CÁC CÔNG VIỆC SÁT NHAU
+        // LOGIC RENDER MATRIX MỚI THEO KHUNG BUỔI (SÁNG / TRƯA / CHIỀU / TỐI)
         window.render = function() {
             document.getElementById('week-counter-label').innerText = `TUẦN ${window.selectedWeekNum}`;
             let dateRangeStr = getWeekDatesText(window.selectedWeekNum);
@@ -820,32 +824,26 @@
             let tbody = document.getElementById('schedule-matrix-body');
             tbody.innerHTML = '';
 
-            for (let i = 0; i < window.hoursList.length - 1; i++) {
-                let currentHourStr = window.hoursList[i];
-                let nextHourStr = window.hoursList[i + 1];
-
-                let rowStartMin = timeToMinutes(currentHourStr);
-                let rowEndMin = timeToMinutes(nextHourStr);
-
+            window.sessionsList.forEach(session => {
                 let rowHtml = `<tr class="hover:bg-slate-900/40 transition">`;
-                rowHtml += `<td class="p-3 border-r border-slate-800 bg-slate-950/40 text-center font-mono text-sm font-black text-amber-400 align-top pt-4">${currentHourStr} - ${nextHourStr}</td>`;
+                rowHtml += `<td class="p-3 border-r border-slate-800 bg-slate-950/60 text-center font-bold text-sm text-amber-400 align-top pt-4 select-none">${session.label}</td>`;
 
                 days.forEach(day => {
                     let dayTasks = weekData[day] || [];
 
-                    // Lấy tất cả các task bắt đầu nằm trong khung giờ hiện tại
-                    let tasksInSlot = dayTasks.filter(t => {
+                    // Lọc các công việc thuộc ca tương ứng
+                    let tasksInSession = dayTasks.filter(t => {
                         let tStart = timeToMinutes(t.start);
-                        return tStart >= rowStartMin && tStart < rowEndMin;
+                        return tStart >= session.startMin && tStart <= session.endMin;
                     });
 
-                    // Sắp xếp các công việc theo mốc thời gian bắt đầu tăng dần
-                    tasksInSlot.sort((a, b) => timeToMinutes(a.start) - timeToMinutes(b.start));
+                    // Sắp xếp các công việc theo thời gian bắt đầu từ sớm tới muộn
+                    tasksInSession.sort((a, b) => timeToMinutes(a.start) - timeToMinutes(b.start));
 
-                    if (tasksInSlot.length > 0) {
-                        rowHtml += `<td class="p-1.5 border-r border-slate-800/60 align-top space-y-2">`;
+                    if (tasksInSession.length > 0) {
+                        rowHtml += `<td class="p-1.5 border-r border-slate-800/60 align-top space-y-2 min-h-[90px]">`;
                         
-                        tasksInSlot.forEach(task => {
+                        tasksInSession.forEach(task => {
                             rowHtml += `
                                 <div onclick="openModalForEdit('${day}', ${task.id})" class="bg-gradient-to-br from-slate-900 to-indigo-950/90 hover:from-slate-850 hover:to-indigo-900 border-l-4 ${task.done ? 'border-slate-600' : 'border-emerald-400'} border-y border-r border-slate-800 p-2.5 rounded-xl shadow-md transition duration-200 cursor-pointer group">
                                     <div class="flex justify-between items-center mb-1 gap-1">
@@ -863,12 +861,12 @@
 
                         rowHtml += `</td>`;
                     } else {
-                        rowHtml += `<td class="p-3 border-r border-slate-800/60 text-slate-800 text-sm text-center select-none align-middle">-</td>`;
+                        rowHtml += `<td class="p-3 border-r border-slate-800/60 text-slate-800 text-sm text-center select-none align-middle min-h-[90px]">-</td>`;
                     }
                 });
                 rowHtml += `</tr>`;
                 tbody.innerHTML += rowHtml;
-            }
+            });
 
             window.renderExams();
             renderUserInfo();
@@ -1201,11 +1199,11 @@
 
         // CHỨC NĂNG COPY LỊCH TRÌNH ĐANG SỬA THÀNH CÔNG VIỆC MỚI
         window.copyCurrentEditingTask = function() {
-            document.getElementById('taskId').value = ""; // Xóa ID để hệ thống nhận diện đây là TẠO MỚI
+            document.getElementById('taskId').value = "copy_mode";
             document.getElementById('modal-title').innerText = "📋 Copy lịch (Tạo mới từ bản sao)";
             document.getElementById('btn-delete-modal').classList.add('hidden');
             document.getElementById('btn-copy-modal').classList.add('hidden');
-            alert("Đã chuyển sang bản sao! Hãy chọn Ngày/Giờ mới rồi bấm 'Lưu lại' để thêm lịch.");
+            alert("Đã tạo bản sao! Hãy chọn lại Giờ hoặc Ngày mới rồi bấm 'Lưu lại'.");
         };
 
         window.closeModal = function() { document.getElementById('taskModal').classList.add('hidden'); document.getElementById('taskModal').classList.remove('flex'); };
@@ -1229,17 +1227,26 @@
                 return;
             }
 
-            let numericId = id ? Number(id) : null;
             let data = window.getWeekData();
 
-            if (numericId) {
+            if (!id || id === "copy_mode") {
+                if (!data[day]) data[day] = [];
+                data[day].push({ 
+                    id: Date.now() + Math.floor(Math.random() * 1000), 
+                    start, 
+                    end, 
+                    text: content, 
+                    note, 
+                    done: false, 
+                    notify, 
+                    advanceMin 
+                });
+            } else {
+                let numericId = Number(id);
                 let oldDay = Object.keys(data).find(d => data[d] && data[d].some(t => t.id === numericId));
                 if (oldDay && data[oldDay]) data[oldDay] = data[oldDay].filter(t => t.id !== numericId);
                 if (!data[day]) data[day] = [];
                 data[day].push({ id: numericId, start, end, text: content, note, done: false, notify, advanceMin });
-            } else {
-                if (!data[day]) data[day] = [];
-                data[day].push({ id: Date.now(), start, end, text: content, note, done: false, notify, advanceMin });
             }
 
             window.saveWeekData(data);
