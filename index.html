@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>TKB & Lịch Thi - Hưng Realtime Cloud Fast</title>
 
-    <link rel="manifest" href="data:application/json;base64,ewogICJuYW1lIjogIlRLQiBD4bunYSBIxrBuZyIsCiAgInNob3J0X25hbWUiOiAiVEtCICBIxrBuZyIsCiAgInNob3J0X3VybCI6ICIuIiwKICAiZGlzcGxheSI6ICJzdGFuZGFsb25lIiwKICAiYmFja2dyb3VuZF9jb2xvciI6ICIjMDkxZTJhIiwKICAidGhlbWVfY29sb3IiOiAiIzA5MWUyYSIKZX0=">
+    <link rel="manifest" href="data:application/json;base64,ewogICJuYW1lIjogIlRLQiBD4bunYSBIxrBuZyIsCiAgInNob3J0X3VybCI6ICIuIiwKICAiZGlzcGxheSI6ICJzdGFuZGFsb25lIiwKICAiYmFja2dyb3VuZF9jb2xvciI6ICIjMDkxZTJhIiwKICAidGhlbWVfY29sb3IiOiAiIzA5MWUyYSIKZX0=">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="TKB Hưng">
@@ -30,6 +30,11 @@
                 <p id="user-info-display" class="text-xs text-slate-400 mt-0.5"></p>
             </div>
             <div class="flex items-center gap-2 w-full sm:w-auto flex-wrap">
+                <!-- Nút Reload Đồng Bộ Mobile (Chỉ hiện trên Mobile) -->
+                <button onclick="forceReloadSyncMobile()" class="sm:hidden bg-indigo-600/20 text-indigo-400 border border-indigo-500/30 hover:bg-indigo-600 hover:text-white text-xs px-3 py-2 rounded-xl font-bold transition flex items-center gap-1">
+                    🔄 Reload Đồng Bộ
+                </button>
+                
                 <button onclick="openFirebaseModal()" id="btn-firebase-status" class="bg-amber-600/20 text-amber-400 border border-amber-500/30 hover:bg-amber-600 hover:text-white text-xs px-3 py-2 rounded-xl font-bold transition">
                     🔥 Cấu Hình Firebase
                 </button>
@@ -252,7 +257,7 @@
                         <input type="date" id="examDate" required class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-xs text-slate-200">
                     </div>
                     <div>
-                        <label class="block text-xs text-slate-400 mb-1">Giờ thi</label>
+                        <label class="block text-xs text-slate-400 mb-1">Giờ thi (chọn giờ & phút)</label>
                         <input type="time" id="examTime" required class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-xs text-slate-200">
                     </div>
                 </div>
@@ -314,10 +319,10 @@
         </div>
     </div>
 
-    <!-- FIREBASE SDK & OPTIMIZED REALTIME LOGIC -->
+    <!-- FIREBASE SDK & CORE LOGIC -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
-        import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-database.js";
+        import { getDatabase, ref, set, onValue, get } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-database.js";
 
         const startDate = new Date('2026-09-07T00:00:00');
 
@@ -332,18 +337,24 @@
         const currentRealWeekNum = getCurrentWeekNumber();
         window.selectedWeekNum = currentRealWeekNum;
 
+        // DÙNG KHUNG GIỜ TỪ 6H TỚI 23H CHO BẢNG MATRIX GIAO DIỆN
         window.hoursList = [];
         for (let i = 6; i <= 23; i++) { window.hoursList.push(String(i).padStart(2, '0') + ":00"); }
 
+        // SINH KHUNG CHỌN THỜI GIAN LINH HOẠT THEO BƯỚC NHẢY 5 PHÚT (TỪ 06:00 TỚI 23:55)
+        window.timeSelectOptions = [];
+        for (let h = 6; h <= 23; h++) {
+            for (let m = 0; m < 60; m += 5) {
+                let timeStr = String(h).padStart(2, '0') + ":" + String(m).padStart(2, '0');
+                window.timeSelectOptions.push(timeStr);
+            }
+        }
+
         const selStart = document.getElementById('taskStartHour');
         const selEnd = document.getElementById('taskEndHour');
-        window.hoursList.forEach((h, index) => {
-            if (index < window.hoursList.length - 1) {
-                let opt1 = document.createElement('option'); opt1.value = h; opt1.innerText = h; selStart.appendChild(opt1);
-            }
-            if (index > 0) {
-                let opt2 = document.createElement('option'); opt2.value = h; opt2.innerText = h; selEnd.appendChild(opt2);
-            }
+        window.timeSelectOptions.forEach((timeStr, index) => {
+            let opt1 = document.createElement('option'); opt1.value = timeStr; opt1.innerText = timeStr; selStart.appendChild(opt1);
+            let opt2 = document.createElement('option'); opt2.value = timeStr; opt2.innerText = timeStr; selEnd.appendChild(opt2);
         });
         selEnd.value = "12:00";
 
@@ -357,9 +368,9 @@
             "Chủ Nhật": [{ id: 22, start: "09:00", end: "11:00", text: "Học tiếng Anh căn bản", done: false, notify: false, advanceMin: 0 }]
         };
 
-        // FIREBASE SYNC ENGINE
+        // FIREBASE INITIALIZATION
         window.db = null;
-        let isLocalUpdate = false; // Cờ chặn vòng lặp ghi đè vô tận
+        let isLocalUpdate = false;
 
         function initFirebase() {
             let cfg = JSON.parse(localStorage.getItem('firebase_config') || '{}');
@@ -369,9 +380,8 @@
                     window.db = getDatabase(app);
                     updateFirebaseButtonUI(true);
 
-                    // Lắng nghe dữ liệu TKB
                     onValue(ref(window.db, 'schedule'), (snapshot) => {
-                        if (isLocalUpdate) return; // Nếu thao tác từ thiết bị này thì không render lại gây giật
+                        if (isLocalUpdate) return;
                         const cloudData = snapshot.val();
                         if (cloudData) {
                             localStorage.setItem('firebase_cached_schedule', JSON.stringify(cloudData));
@@ -379,7 +389,6 @@
                         }
                     });
 
-                    // Lắng nghe dữ liệu Lịch Thi
                     onValue(ref(window.db, 'exams'), (snapshot) => {
                         if (isLocalUpdate) return;
                         const cloudExams = snapshot.val();
@@ -393,6 +402,30 @@
                 updateFirebaseButtonUI(false);
             }
         }
+
+        // HÀM FORCE RELOAD DÀNH RIÊNG CHO MOBILE
+        window.forceReloadSyncMobile = function() {
+            if (!window.db) {
+                alert("Chưa kết nối Firebase! Vui lòng cấu hình Firebase trước.");
+                return;
+            }
+
+            localStorage.removeItem('firebase_cached_schedule');
+            for (let i = 1; i <= 52; i++) {
+                localStorage.removeItem(`matrix_edit_${i}`);
+            }
+
+            get(ref(window.db, 'schedule')).then((snapshot) => {
+                const cloudData = snapshot.val();
+                if (cloudData) {
+                    localStorage.setItem('firebase_cached_schedule', JSON.stringify(cloudData));
+                }
+                window.render();
+                alert("🔄 Đã xóa cache Mobile và đồng bộ dữ liệu mới nhất từ PC thành công!");
+            }).catch((err) => {
+                alert("Lỗi khi kéo dữ liệu từ Firebase: " + err.message);
+            });
+        };
 
         function updateFirebaseButtonUI(connected) {
             let btn = document.getElementById('btn-firebase-status');
@@ -428,7 +461,7 @@
             alert("Đã kết nối Firebase Realtime!");
         };
 
-        // QUẢN LÝ DỮ LIỆU TKB TỐI ƯU HÓA
+        // QUẢN LÝ DỮ LIỆU TUẦN
         window.getWeekData = function(weekNum = window.selectedWeekNum) {
             let cached = JSON.parse(localStorage.getItem('firebase_cached_schedule') || '{}');
             let key = `matrix_edit_${weekNum}`;
@@ -448,7 +481,6 @@
                     initial = { "Thứ Hai": [], "Thứ Ba": [], "Thứ Tư": [], "Thứ Năm": [], "Thứ Sáu": [], "Thứ Bảy": [], "Chủ Nhật": [] };
                 }
                 
-                // Chỉ lưu tạm Local, không chủ động lưu Firebase trong hàm get để tránh lặp
                 localStorage.setItem(key, JSON.stringify(initial));
                 return initial;
             }
@@ -458,16 +490,13 @@
         window.saveWeekData = function(data, weekNum = window.selectedWeekNum) {
             let key = `matrix_edit_${weekNum}`;
             
-            // 1. Cập nhật Cache cục bộ ngay lập tức (Optimistic Update)
             localStorage.setItem(key, JSON.stringify(data));
             let cached = JSON.parse(localStorage.getItem('firebase_cached_schedule') || '{}');
             cached[key] = data;
             localStorage.setItem('firebase_cached_schedule', JSON.stringify(cached));
 
-            // 2. Render giao diện lập tức ($0 độ trễ)
             window.render();
 
-            // 3. Đẩy dữ liệu âm thầm lên Firebase
             if (window.db) {
                 isLocalUpdate = true;
                 set(ref(window.db, `schedule/${key}`), data).finally(() => {
@@ -515,23 +544,34 @@
             for (let i = 0; i < window.hoursList.length - 1; i++) {
                 let currentHour = window.hoursList[i];
                 let nextHour = window.hoursList[i + 1];
+                let currentHourNum = parseInt(currentHour.split(':')[0]);
+
                 let rowHtml = `<tr class="hover:bg-slate-900/40 transition">`;
                 rowHtml += `<td class="p-3.5 border-r border-slate-800 bg-slate-950/40 text-center font-mono text-xs font-bold text-amber-400 align-middle">${currentHour} - ${nextHour}</td>`;
 
                 days.forEach(day => {
                     if (skipCells[day][i]) return;
-                    let task = (weekData[day] || []).find(t => t.start === currentHour);
+                    
+                    // KHÁM PHÁ TASK NẰM TRONG KHUNG GIỜ NÀY
+                    let task = (weekData[day] || []).find(t => {
+                        let tStartH = parseInt(t.start.split(':')[0]);
+                        return tStartH === currentHourNum;
+                    });
 
                     if (task) {
-                        let startIndex = window.hoursList.indexOf(task.start);
-                        let endIndex = window.hoursList.indexOf(task.end);
-                        let spanCount = (endIndex > startIndex) ? (endIndex - startIndex) : 1;
+                        let startH = parseInt(task.start.split(':')[0]);
+                        let endH = parseInt(task.end.split(':')[0]);
+                        let endM = parseInt(task.end.split(':')[1]);
+                        
+                        let totalHours = (endH - startH) + (endM > 0 ? 1 : 0);
+                        let spanCount = totalHours > 0 ? totalHours : 1;
+
                         for (let s = 1; s < spanCount; s++) skipCells[day][i + s] = true;
 
                         rowHtml += `
                             <td rowspan="${spanCount}" onclick="openModalForEdit('${day}', ${task.id})" class="p-3 border-r border-slate-800/60 align-top cursor-pointer bg-slate-900/80 hover:bg-slate-800 transition select-none border-b border-slate-800/60 group">
                                 <div class="flex justify-between items-start mb-1">
-                                    <span class="text-[10px] font-mono text-indigo-400">${task.start}-${task.end}</span>
+                                    <span class="text-[10px] font-mono text-indigo-400 font-bold">${task.start} - ${task.end}</span>
                                     <div class="flex items-center gap-1">
                                         ${task.notify ? '<span class="text-[9px]" title="Đã bật Telegram">✈️</span>' : ''}
                                         <input type="checkbox" ${task.done ? 'checked' : ''} onclick="toggleTaskDone('${day}', ${task.id}, event)" class="w-3.5 h-3.5 rounded cursor-pointer accent-emerald-500">
@@ -814,7 +854,7 @@
                         let msg = task.advanceMin > 0
                             ? `⏰ <b>SẮP ĐẾN GIỜ TKB!</b>\n\n- Công việc: <b>${task.text}</b>\n- Khung giờ: ${task.start} - ${task.end}\n- Bắt đầu sau: <b>${task.advanceMin} phút</b> nữa!`
                             : `⏰ <b>ĐÃ ĐẾN GIỜ TKB!</b>\n\n- Công việc: <b>${task.text}</b>\n- Khung giờ: ${task.start} - ${task.end}\n- Bắt tay vào làm ngay thôi Hưng ơi!`;
-                        
+
                         sendTelegramApi(msg);
                         localStorage.setItem(notiKey, "true");
                     }
@@ -841,7 +881,7 @@
                         let msg = isEarthquake
                             ? `🌋🌋 <b>CHẤN ĐỘNG ĐỊA CẦU - SẮP THI!</b> 🌋🌋\n\n- Môn thi: <b>${ex.subject}</b>\n- Ngày thi: <b>${ex.date}</b> lúc <b>${ex.time}</b>\n- Phòng thi/Ghi chú: ${ex.note || 'Không có'}\n\n⚠️ ĐỨNG DẬY ÔN BÀI NGAY HƯNG ƠI! (Báo 5p/lần)`
                             : `🚨 <b>CẢNH BÁO LỊCH THI MÔN!</b>\n\n- Môn thi: <b>${ex.subject}</b>\n- Ngày thi: <b>${ex.date}</b> lúc <b>${ex.time}</b>\n- Phòng thi/Ghi chú: ${ex.note || 'Không có'}\n\n⚠️ Chuẩn bị bài kỹ càng nhé Hưng!`;
-                        
+
                         sendTelegramApi(msg);
                         localStorage.setItem(`tg_exam_${ex.subject}_${ex.date}`, nowMs.toString());
                     }
@@ -891,8 +931,11 @@
             let notify = document.getElementById('taskNotifyEnable').checked;
             let advanceMin = Number(document.getElementById('taskNotifyAdvance').value);
 
-            if (window.hoursList.indexOf(end) <= window.hoursList.indexOf(start)) {
-                alert("Giờ kết thúc phải lớn hơn giờ bắt đầu!");
+            let startIndex = window.timeSelectOptions.indexOf(start);
+            let endIndex = window.timeSelectOptions.indexOf(end);
+
+            if (endIndex <= startIndex) {
+                alert("Thời gian kết thúc phải lớn hơn thời gian bắt đầu!");
                 return;
             }
 
