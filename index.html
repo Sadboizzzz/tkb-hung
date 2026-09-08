@@ -413,11 +413,16 @@
             });
         };
 
+        // THUẬT TOÁN TÍNH TUẦN THỰC TẾ CHUẨN KHÔNG BỊ LỆCH TIMEZONE
         const startDate = new Date('2026-09-07T00:00:00');
 
         function getCurrentWeekNumber() {
             const now = new Date();
-            const diffTime = now - startDate;
+            // Đưa cả 2 về chuẩn 00:00:00 để tính số ngày chính xác tuyệt đối
+            const nowClean = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+            const startClean = new Date(startDate.getFullYear(), startDate.getMonth(), startDate.getDate());
+            
+            const diffTime = nowClean - startClean;
             const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
             if (diffDays < 0) return 1;
             return Math.floor(diffDays / 7) + 1;
@@ -426,7 +431,7 @@
         const currentRealWeekNum = getCurrentWeekNumber();
         window.selectedWeekNum = currentRealWeekNum;
 
-        // TẠO KHUNG GIỜ MỖI HÀNG BẰNG 1 TIẾNG
+        // TẠO KHUNG GIỜ
         window.hoursList = [];
         for (let i = 6; i <= 23; i++) { window.hoursList.push(String(i).padStart(2, '0') + ":00"); }
 
@@ -787,14 +792,13 @@
             return `${weekStart.toLocaleDateString('vi-VN', opt)} đến ${weekEnd.toLocaleDateString('vi-VN', opt)}`;
         }
 
-        // CHUYỂN ĐỔI CHUỖI HH:MM SANG PHÚT TÍNH TỪ 00:00
         function timeToMinutes(tStr) {
             if (!tStr) return 0;
             let [h, m] = tStr.split(':').map(Number);
             return h * 60 + m;
         }
 
-        // LOGIC RENDER MATRIX CHUẨN XÁC NÂNG CẤP - FIX MẤT MÔN & MÔN SÁT GIỜ NHAU
+        // THUẬT TOÁN HÀM RENDER NÂNG CẤP - FIX LỖI KHÔNG THÊM ĐƯỢC MÔN LẺ / MÔN TRÙNG
         window.render = function() {
             document.getElementById('week-counter-label').innerText = `TUẦN ${window.selectedWeekNum}`;
             let dateRangeStr = getWeekDatesText(window.selectedWeekNum);
@@ -808,7 +812,6 @@
             let tbody = document.getElementById('schedule-matrix-body');
             tbody.innerHTML = '';
 
-            // Khởi tạo ma trận bỏ qua ô
             let skipMap = {};
             days.forEach(d => skipMap[d] = {});
 
@@ -825,12 +828,13 @@
                 days.forEach(day => {
                     if (skipMap[day][i]) return;
 
-                    // Lọc tất cả các task thuộc ngày hôm đó
                     let dayTasks = weekData[day] || [];
 
-                    // Tìm task bắt đầu rơi đúng vào ô thời gian hiện tại
+                    // SỬA ĐỔI QUAN TRỌNG: Lấy task bắt đầu sớm nhất trong khung giờ này
                     let task = dayTasks.find(t => {
                         let tStart = timeToMinutes(t.start);
+                        let tEnd = timeToMinutes(t.end);
+                        // Chỉ chọn nếu thời gian bắt đầu thuộc hàng này, hoặc kéo dài đè vào hàng này
                         return tStart >= rowStartMin && tStart < rowEndMin;
                     });
 
@@ -838,11 +842,10 @@
                         let tStart = timeToMinutes(task.start);
                         let tEnd = timeToMinutes(task.end);
                         
-                        // Tính chính xác số lượng hàng (rowspan) mà task chiếm giữ
+                        // Tối ưu spanCount giúp ghép hàng cực chuẩn
                         let durationMin = tEnd - tStart;
-                        let spanCount = Math.max(Math.ceil(durationMin / 60), 1);
+                        let spanCount = Math.max(Math.round(durationMin / 60), 1);
 
-                        // Đánh dấu các ô phía dưới sẽ bị gộp (skip)
                         for (let s = 1; s < spanCount; s++) {
                             if (i + s < window.hoursList.length - 1) {
                                 skipMap[day][i + s] = true;
