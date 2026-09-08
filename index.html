@@ -101,7 +101,7 @@
                     <table class="w-full border-collapse text-left text-base min-w-[1100px]">
                         <thead>
                             <tr class="bg-slate-950 text-slate-300 text-sm uppercase tracking-wider border-b border-slate-800 font-bold">
-                                <th class="p-4 border-r border-slate-800 w-36 text-center" data-i18n="thTime">Khung Giờ</th>
+                                <th class="p-4 border-r border-slate-800 w-32 text-center" data-i18n="thTime">Khung Giờ</th>
                                 <th class="p-4 border-r border-slate-800" data-i18n="dayMon">Thứ Hai</th>
                                 <th class="p-4 border-r border-slate-800" data-i18n="dayTue">Thứ Ba</th>
                                 <th class="p-4 border-r border-slate-800" data-i18n="dayWed">Thứ Tư</th>
@@ -806,7 +806,7 @@
             return h * 60 + m;
         }
 
-        // LOGIC RENDER MATRIX
+        // LOGIC RENDER MATRIX ĐÃ FIX TỐI ƯU HIỂN THỊ CÁC CÔNG VIỆC SÁT NHAU
         window.render = function() {
             document.getElementById('week-counter-label').innerText = `TUẦN ${window.selectedWeekNum}`;
             let dateRangeStr = getWeekDatesText(window.selectedWeekNum);
@@ -820,9 +820,6 @@
             let tbody = document.getElementById('schedule-matrix-body');
             tbody.innerHTML = '';
 
-            let skipMap = {};
-            days.forEach(d => skipMap[d] = {});
-
             for (let i = 0; i < window.hoursList.length - 1; i++) {
                 let currentHourStr = window.hoursList[i];
                 let nextHourStr = window.hoursList[i + 1];
@@ -831,48 +828,42 @@
                 let rowEndMin = timeToMinutes(nextHourStr);
 
                 let rowHtml = `<tr class="hover:bg-slate-900/40 transition">`;
-                rowHtml += `<td class="p-3 border-r border-slate-800 bg-slate-950/40 text-center font-mono text-sm font-black text-amber-400 align-middle">${currentHourStr} - ${nextHourStr}</td>`;
+                rowHtml += `<td class="p-3 border-r border-slate-800 bg-slate-950/40 text-center font-mono text-sm font-black text-amber-400 align-top pt-4">${currentHourStr} - ${nextHourStr}</td>`;
 
                 days.forEach(day => {
-                    if (skipMap[day][i]) return;
-
                     let dayTasks = weekData[day] || [];
 
-                    let task = dayTasks.find(t => {
+                    // Lấy tất cả các task bắt đầu nằm trong khung giờ hiện tại
+                    let tasksInSlot = dayTasks.filter(t => {
                         let tStart = timeToMinutes(t.start);
                         return tStart >= rowStartMin && tStart < rowEndMin;
                     });
 
-                    if (task) {
-                        let tStart = timeToMinutes(task.start);
-                        let tEnd = timeToMinutes(task.end);
+                    // Sắp xếp các công việc theo mốc thời gian bắt đầu tăng dần
+                    tasksInSlot.sort((a, b) => timeToMinutes(a.start) - timeToMinutes(b.start));
+
+                    if (tasksInSlot.length > 0) {
+                        rowHtml += `<td class="p-1.5 border-r border-slate-800/60 align-top space-y-2">`;
                         
-                        let durationMin = tEnd - tStart;
-                        let spanCount = Math.max(Math.ceil(durationMin / 60), 1);
-
-                        for (let s = 1; s < spanCount; s++) {
-                            if (i + s < window.hoursList.length - 1) {
-                                skipMap[day][i + s] = true;
-                            }
-                        }
-
-                        rowHtml += `
-                            <td rowspan="${spanCount}" onclick="openModalForEdit('${day}', ${task.id})" class="p-2 border-r border-slate-800/60 align-top cursor-pointer transition select-none group">
-                                <div class="bg-gradient-to-br from-slate-900 to-indigo-950/90 hover:from-slate-850 hover:to-indigo-900 border-l-4 ${task.done ? 'border-slate-600' : 'border-emerald-400'} border-y border-r border-slate-800 p-3 rounded-xl shadow-lg transition duration-200">
-                                    <div class="flex justify-between items-center mb-1.5 gap-1">
-                                        <span class="text-xs font-mono font-black text-indigo-300 bg-indigo-950 px-2 py-0.5 rounded-md border border-indigo-500/30">${task.start} - ${task.end}</span>
+                        tasksInSlot.forEach(task => {
+                            rowHtml += `
+                                <div onclick="openModalForEdit('${day}', ${task.id})" class="bg-gradient-to-br from-slate-900 to-indigo-950/90 hover:from-slate-850 hover:to-indigo-900 border-l-4 ${task.done ? 'border-slate-600' : 'border-emerald-400'} border-y border-r border-slate-800 p-2.5 rounded-xl shadow-md transition duration-200 cursor-pointer group">
+                                    <div class="flex justify-between items-center mb-1 gap-1">
+                                        <span class="text-[11px] font-mono font-black text-indigo-300 bg-indigo-950 px-2 py-0.5 rounded-md border border-indigo-500/30">${task.start} - ${task.end}</span>
                                         <div class="flex items-center gap-1.5">
                                             ${task.notify ? '<span class="text-xs" title="Đã bật Telegram">✈️</span>' : ''}
                                             <input type="checkbox" ${task.done ? 'checked' : ''} onclick="toggleTaskDone('${day}', ${task.id}, event)" class="w-4 h-4 rounded cursor-pointer accent-emerald-500">
                                         </div>
                                     </div>
-                                    <div class="text-sm font-bold ${task.done ? 'completed text-slate-400' : 'text-slate-100'} mt-1 leading-snug">${task.text}</div>
-                                    ${task.note ? `<div class="text-xs text-slate-300 italic mt-1.5 flex items-center gap-1 font-medium"><span class="text-amber-400">📌</span> ${task.note}</div>` : ''}
+                                    <div class="text-xs font-bold ${task.done ? 'completed text-slate-400' : 'text-slate-100'} mt-1 leading-snug">${task.text}</div>
+                                    ${task.note ? `<div class="text-[11px] text-slate-300 italic mt-1 flex items-center gap-1 font-medium"><span class="text-amber-400">📌</span> ${task.note}</div>` : ''}
                                 </div>
-                            </td>
-                        `;
+                            `;
+                        });
+
+                        rowHtml += `</td>`;
                     } else {
-                        rowHtml += `<td class="p-3 border-r border-slate-800/60 text-slate-800 text-sm text-center select-none">-</td>`;
+                        rowHtml += `<td class="p-3 border-r border-slate-800/60 text-slate-800 text-sm text-center select-none align-middle">-</td>`;
                     }
                 });
                 rowHtml += `</tr>`;
