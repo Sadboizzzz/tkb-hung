@@ -18,10 +18,18 @@
     </style>
 </head>
 
-<body class="bg-slate-950 text-slate-100 min-h-screen p-3 md:p-6 font-sans antialiased pb-20">
+<body class="bg-slate-950 text-slate-100 min-h-screen p-3 md:p-6 font-sans antialiased pb-24">
 
-    <!-- Iframe YouTube ẩn để phát nhạc -->
-    <div id="youtube-player-container" class="hidden"></div>
+    <!-- Iframe YouTube chứa nhạc nền (Kích thước 1x1px để không bị trình duyệt chặn) -->
+    <div id="youtube-player-container" class="fixed bottom-0 right-0 w-1 h-1 opacity-0 pointer-events-none"></div>
+
+    <!-- Thanh Điều Khiển Nhạc Nền Nổi Trực Quan -->
+    <div id="music-control-bar" class="fixed bottom-3 right-3 bg-slate-900/90 border border-slate-700/80 backdrop-blur-md px-4 py-2.5 rounded-2xl shadow-2xl flex items-center gap-3 z-40 hidden">
+        <span class="text-xs font-bold text-violet-400 flex items-center gap-1">🎵 <span id="music-status-text">Đang phát nhạc</span></span>
+        <button onclick="togglePlayMusic()" id="btn-toggle-play" class="bg-violet-600 hover:bg-violet-500 text-white text-xs px-3 py-1.5 rounded-xl font-bold transition">
+            ⏸️ Tạm dừng
+        </button>
+    </div>
 
     <div class="max-w-7xl mx-auto">
         <!-- Header -->
@@ -61,9 +69,8 @@
             </button>
         </div>
 
-        <!-- SECTION 1: TKB 1 NGÀY CỦA HƯNG -->
+        <!-- SECTION 1: TKB -->
         <div id="section-tkb">
-            <!-- Thanh Công Cụ -->
             <div class="flex flex-col lg:flex-row justify-between items-center mb-4 gap-3 bg-slate-900/60 p-3.5 rounded-xl border border-slate-800">
                 <div class="flex items-center justify-between w-full lg:w-auto gap-3">
                     <button onclick="changeWeek(-1)" class="bg-slate-800 hover:bg-slate-700 px-4 py-2 rounded-lg text-sm font-bold transition">&larr; <span data-i18n="prevWeek">Tuần trước</span></button>
@@ -87,7 +94,6 @@
                 </div>
             </div>
 
-            <!-- BẢNG MATRIX GIAO DIỆN CHỮ TO ĐẸP MẮT -->
             <div class="bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden shadow-2xl">
                 <div class="overflow-x-auto">
                     <table class="w-full border-collapse text-left text-base min-w-[1100px]">
@@ -122,13 +128,12 @@
         </div>
     </div>
 
-    <!-- Modal Cài Đặt (Setting: Ngôn ngữ + Nhạc Youtube + Âm lượng) -->
+    <!-- Modal Cài Đặt (Setting) -->
     <div id="settingsModal" class="fixed inset-0 bg-black/80 hidden justify-center items-center p-4 z-50 backdrop-blur-sm">
         <div class="bg-slate-900 border border-slate-800 p-6 rounded-2xl w-full max-w-md shadow-2xl space-y-5">
             <h3 class="text-lg font-bold text-violet-400 flex items-center gap-2">⚙️ <span data-i18n="settingsTitle">Cài Đặt Hệ Thống</span></h3>
             
             <form onsubmit="handleSaveSettings(event)" class="space-y-4">
-                <!-- Chọn ngôn ngữ -->
                 <div>
                     <label class="block text-xs font-bold text-slate-400 uppercase mb-1.5" data-i18n="lblLanguage">Ngôn Ngữ (Language)</label>
                     <select id="settingLanguageSelect" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-sm text-slate-200 font-bold">
@@ -138,13 +143,11 @@
                     </select>
                 </div>
 
-                <!-- Link Nhạc YouTube -->
                 <div>
                     <label class="block text-xs font-bold text-slate-400 uppercase mb-1.5" data-i18n="lblMusicUrl">Link Nhạc YouTube (Background Music)</label>
                     <input type="text" id="settingMusicUrlInput" placeholder="https://www.youtube.com/watch?v=..." class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-sm text-slate-200">
                 </div>
 
-                <!-- Thanh Kéo Âm Lượng -->
                 <div>
                     <div class="flex justify-between items-center mb-1.5">
                         <label class="text-xs font-bold text-slate-400 uppercase flex items-center gap-1" data-i18n="lblVolume">🔊 Âm Lượng Nhạc</label>
@@ -187,17 +190,14 @@
     <div id="copyWeekModal" class="fixed inset-0 bg-black/80 hidden justify-center items-center p-4 z-50 backdrop-blur-sm">
         <div class="bg-slate-900 border border-slate-800 p-5 rounded-2xl w-full max-w-2xl shadow-2xl space-y-4 max-h-[90vh] overflow-y-auto">
             <h3 class="text-base font-bold text-sky-400 flex items-center gap-2">📋 Copy Lịch Sang Tuần <span id="target-copy-week-label"></span></h3>
-
             <div class="space-y-2">
                 <label class="block text-xs text-slate-400">Chọn tuần nguồn trong quá khứ để copy:</label>
                 <select id="sourceWeekSelect" onchange="previewSourceWeekData()" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-xs text-slate-200 font-bold"></select>
             </div>
-
             <div class="bg-slate-950/80 p-3 rounded-xl border border-slate-800/80 space-y-2">
                 <p class="text-xs font-bold text-amber-400">🔍 Xem trước TKB tuần được chọn:</p>
                 <div id="preview-week-container" class="text-xs space-y-2 max-h-56 overflow-y-auto p-2 bg-slate-900 rounded-lg border border-slate-800"></div>
             </div>
-
             <div class="flex justify-end gap-2 pt-2 border-t border-slate-800">
                 <button type="button" onclick="closeCopyWeekModal()" class="bg-slate-800 hover:bg-slate-700 px-4 py-2 rounded-xl text-xs font-bold" data-i18n="btnCancel">Hủy</button>
                 <button type="button" onclick="confirmCopyWeekData()" class="bg-sky-600 hover:bg-sky-500 px-4 py-2 rounded-xl text-xs font-bold">Xác Nhận Copy Lịch</button>
@@ -376,73 +376,27 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
         import { getDatabase, ref, set, onValue, get } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-database.js";
 
-        // TỪ ĐIỂN ĐA NGÔN NGỮ (VI / ZH / EN)
         const translations = {
             vi: {
-                appTitle: "TKB & LỊCH THI",
-                btnSettings: "Cài Đặt",
-                btnProfile: "Hồ sơ",
-                tabTkb: "TKB 1 Ngày Của Hưng",
-                tabExam: "Lịch Thi & Báo Nhắc",
-                prevWeek: "Tuần trước",
-                nextWeek: "Tuần sau",
-                btnCopyWeek: "Copy Lịch",
-                btnClearWeek: "Xóa Sạch Tuần",
-                btnAddEvent: "Thêm sự kiện",
-                thTime: "Khung Giờ",
-                dayMon: "Thứ Hai", dayTue: "Thứ Ba", dayWed: "Thứ Tư", dayThu: "Thứ Năm", dayFri: "Thứ Sáu", daySat: "Thứ Bảy", daySun: "Chủ Nhật",
-                examListTitle: "Danh Sách Lịch Thi",
-                btnAddExam: "Thêm Lịch Thi",
-                settingsTitle: "Cài Đặt Hệ Thống",
-                lblLanguage: "Ngôn Ngữ (Language)",
-                lblMusicUrl: "Link Nhạc YouTube (Background Music)",
-                lblVolume: "🔊 Âm Lượng Nhạc",
-                btnCancel: "Hủy",
-                btnSave: "Lưu Lại"
+                appTitle: "TKB & LỊCH THI", btnSettings: "Cài Đặt", btnProfile: "Hồ sơ", tabTkb: "TKB 1 Ngày Của Hưng", tabExam: "Lịch Thi & Báo Nhắc",
+                prevWeek: "Tuần trước", nextWeek: "Tuần sau", btnCopyWeek: "Copy Lịch", btnClearWeek: "Xóa Sạch Tuần", btnAddEvent: "Thêm sự kiện",
+                thTime: "Khung Giờ", dayMon: "Thứ Hai", dayTue: "Thứ Ba", dayWed: "Thứ Tư", dayThu: "Thứ Năm", dayFri: "Thứ Sáu", daySat: "Thứ Bảy", daySun: "Chủ Nhật",
+                examListTitle: "Danh Sách Lịch Thi", btnAddExam: "Thêm Lịch Thi", settingsTitle: "Cài Đặt Hệ Thống", lblLanguage: "Ngôn Ngữ (Language)",
+                lblMusicUrl: "Link Nhạc YouTube (Background Music)", lblVolume: "🔊 Âm Lượng Nhạc", btnCancel: "Hủy", btnSave: "Lưu Lại"
             },
             zh: {
-                appTitle: "课程表 & 考试日程",
-                btnSettings: "设置",
-                btnProfile: "个人资料",
-                tabTkb: "阿兴的每日课程表",
-                tabExam: "考试日程 & 提醒",
-                prevWeek: "上一周",
-                nextWeek: "下一周",
-                btnCopyWeek: "复制日程",
-                btnClearWeek: "清空本周",
-                btnAddEvent: "添加日程",
-                thTime: "时间段",
-                dayMon: "星期一", dayTue: "星期二", dayWed: "星期三", dayThu: "星期四", dayFri: "星期五", daySat: "星期六", daySun: "星期日",
-                examListTitle: "考试日程列表",
-                btnAddExam: "添加考试日程",
-                settingsTitle: "系统设置",
-                lblLanguage: "语言 (Language)",
-                lblMusicUrl: "YouTube 背景音乐链接",
-                lblVolume: "🔊 音乐音量",
-                btnCancel: "取消",
-                btnSave: "保存"
+                appTitle: "课程表 & 考试日程", btnSettings: "设置", btnProfile: "个人资料", tabTkb: "阿兴的每日课程表", tabExam: "考试日程 & 提醒",
+                prevWeek: "上一周", nextWeek: "下一周", btnCopyWeek: "复制日程", btnClearWeek: "清空本周", btnAddEvent: "添加日程",
+                thTime: "时间段", dayMon: "星期一", dayTue: "星期二", dayWed: "星期三", dayThu: "星期四", dayFri: "星期五", daySat: "星期六", daySun: "星期日",
+                examListTitle: "考试日程列表", btnAddExam: "添加考试日程", settingsTitle: "系统设置", lblLanguage: "语言 (Language)",
+                lblMusicUrl: "YouTube 背景音乐链接", lblVolume: "🔊 音乐音量", btnCancel: "取消", btnSave: "保存"
             },
             en: {
-                appTitle: "SCHEDULE & EXAMS",
-                btnSettings: "Settings",
-                btnProfile: "Profile",
-                tabTkb: "Hung's Daily Schedule",
-                tabExam: "Exams & Reminders",
-                prevWeek: "Prev Week",
-                nextWeek: "Next Week",
-                btnCopyWeek: "Copy Schedule",
-                btnClearWeek: "Clear Week",
-                btnAddEvent: "Add Event",
-                thTime: "Time Slot",
-                dayMon: "Monday", dayTue: "Tuesday", dayWed: "Wednesday", dayThu: "Thursday", dayFri: "Friday", daySat: "Saturday", daySun: "Sunday",
-                examListTitle: "Exam List",
-                btnAddExam: "Add Exam",
-                settingsTitle: "System Settings",
-                lblLanguage: "Language",
-                lblMusicUrl: "YouTube Music Link",
-                lblVolume: "🔊 Music Volume",
-                btnCancel: "Cancel",
-                btnSave: "Save"
+                appTitle: "SCHEDULE & EXAMS", btnSettings: "Settings", btnProfile: "Profile", tabTkb: "Hung's Daily Schedule", tabExam: "Exams & Reminders",
+                prevWeek: "Prev Week", nextWeek: "Next Week", btnCopyWeek: "Copy Schedule", btnClearWeek: "Clear Week", btnAddEvent: "Add Event",
+                thTime: "Time Slot", dayMon: "Monday", dayTue: "Tuesday", dayWed: "Wednesday", dayThu: "Thursday", dayFri: "Friday", daySat: "Saturday", daySun: "Sunday",
+                examListTitle: "Exam List", btnAddExam: "Add Exam", settingsTitle: "System Settings", lblLanguage: "Language",
+                lblMusicUrl: "YouTube Music Link", lblVolume: "🔊 Music Volume", btnCancel: "Cancel", btnSave: "Save"
             }
         };
 
@@ -528,7 +482,6 @@
                         }
                     });
 
-                    // Lắng nghe cấu hình Settings trên Cloud
                     onValue(ref(window.db, 'settings'), (snapshot) => {
                         if (isLocalUpdate) return;
                         const cloudSettings = snapshot.val();
@@ -543,8 +496,10 @@
             }
         }
 
-        // YOUTUBE PLAYER CONTROLLER
+        // TÁCH YOUTUBE VIDEO ID CHUẨN XÁC
         window.ytPlayer = null;
+        window.isPlayerReady = false;
+
         function extractYouTubeId(url) {
             if (!url) return null;
             let regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
@@ -555,17 +510,50 @@
         window.onYouTubeIframeAPIReady = function() {
             let settings = getSystemSettings();
             let videoId = extractYouTubeId(settings.musicUrl);
+
             if (videoId) {
+                document.getElementById('music-control-bar').classList.remove('hidden');
+                
                 window.ytPlayer = new YT.Player('youtube-player-container', {
-                    height: '0', width: '0', videoId: videoId,
-                    playerVars: { 'autoplay': 1, 'loop': 1, 'playlist': videoId },
+                    height: '1', width: '1', videoId: videoId,
+                    playerVars: { 'autoplay': 1, 'controls': 0, 'loop': 1, 'playlist': videoId },
                     events: {
                         'onReady': (event) => {
+                            window.isPlayerReady = true;
                             event.target.setVolume(settings.volume);
                             event.target.playVideo();
+                        },
+                        'onStateChange': (event) => {
+                            let btn = document.getElementById('btn-toggle-play');
+                            let txt = document.getElementById('music-status-text');
+                            if (event.data === YT.PlayerState.PLAYING) {
+                                btn.innerText = "⏸️ Tạm dừng";
+                                txt.innerText = "Đang phát nhạc";
+                            } else {
+                                btn.innerText = "▶️ Phát nhạc";
+                                txt.innerText = "Đã dừng nhạc";
+                            }
                         }
                     }
                 });
+            }
+        };
+
+        // BỎ CHẶN AUTOPLAY TRÊN BẤT KỲ CÚ CLICK NÀO CỦA NGƯỜI DÙNG
+        document.addEventListener('click', () => {
+            if (window.ytPlayer && window.isPlayerReady && typeof window.ytPlayer.getPlayerState === 'function') {
+                if (window.ytPlayer.getPlayerState() !== YT.PlayerState.PLAYING) {
+                    window.ytPlayer.playVideo();
+                }
+            }
+        }, { once: true });
+
+        window.togglePlayMusic = function() {
+            if (!window.ytPlayer || typeof window.ytPlayer.getPlayerState !== 'function') return;
+            if (window.ytPlayer.getPlayerState() === YT.PlayerState.PLAYING) {
+                window.ytPlayer.pauseVideo();
+            } else {
+                window.ytPlayer.playVideo();
             }
         };
 
@@ -586,8 +574,20 @@
             }
 
             let videoId = extractYouTubeId(settings.musicUrl);
-            if (videoId && window.ytPlayer && typeof window.ytPlayer.loadVideoById === 'function') {
-                window.ytPlayer.loadVideoById(videoId);
+            let bar = document.getElementById('music-control-bar');
+            
+            if (videoId) {
+                if (bar) bar.classList.remove('hidden');
+                if (window.ytPlayer && typeof window.ytPlayer.loadVideoById === 'function') {
+                    window.ytPlayer.loadVideoById(videoId);
+                } else if (!window.ytPlayer && typeof YT !== 'undefined' && YT.Player) {
+                    window.onYouTubeIframeAPIReady();
+                }
+            } else {
+                if (bar) bar.classList.add('hidden');
+                if (window.ytPlayer && typeof window.ytPlayer.stopVideo === 'function') {
+                    window.ytPlayer.stopVideo();
+                }
             }
         }
 
@@ -756,7 +756,7 @@
             return `${weekStart.toLocaleDateString('vi-VN', opt)} đến ${weekEnd.toLocaleDateString('vi-VN', opt)}`;
         }
 
-        // RENDER TKB CHỮ TO RÕ NÉT
+        // RENDER TKB
         window.render = function() {
             document.getElementById('week-counter-label').innerText = `TUẦN ${window.selectedWeekNum}`;
             let dateRangeStr = getWeekDatesText(window.selectedWeekNum);
