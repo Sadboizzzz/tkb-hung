@@ -61,29 +61,26 @@
                 <button onclick="openModalForAdd()" class="w-full sm:w-auto bg-indigo-600 hover:bg-indigo-500 text-xs px-4 py-2.5 rounded-xl font-bold transition shadow-lg shadow-indigo-600/20 text-center">+ Thêm sự kiện lịch</button>
             </div>
 
-            <!-- Desktop View -->
-            <div class="hidden md:block bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden shadow-2xl">
+            <!-- BẢNG THỜI KHÓA BIỂU DẠNG MATRIX -->
+            <div class="bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden shadow-2xl">
                 <div class="overflow-x-auto">
-                    <table class="w-full border-collapse text-left text-sm min-w-[1000px]">
+                    <table class="w-full border-collapse text-left text-sm min-w-[1100px]">
                         <thead>
                             <tr class="bg-slate-950 text-slate-400 text-xs uppercase tracking-wider border-b border-slate-800">
-                                <th class="p-3 border-r border-slate-800 w-32 text-center">Khung Giờ</th>
-                                <th class="p-3 border-r border-slate-800">Thứ Hai</th>
-                                <th class="p-3 border-r border-slate-800">Thứ Ba</th>
-                                <th class="p-3 border-r border-slate-800">Thứ Tư</th>
-                                <th class="p-3 border-r border-slate-800">Thứ Năm</th>
-                                <th class="p-3 border-r border-slate-800">Thứ Sáu</th>
-                                <th class="p-3 border-r border-slate-800">Thứ Bảy</th>
-                                <th class="p-3">Chủ Nhật</th>
+                                <th class="p-3.5 border-r border-slate-800 w-36 text-center">Khung Giờ</th>
+                                <th class="p-3.5 border-r border-slate-800">Thứ Hai</th>
+                                <th class="p-3.5 border-r border-slate-800">Thứ Ba</th>
+                                <th class="p-3.5 border-r border-slate-800">Thứ Tư</th>
+                                <th class="p-3.5 border-r border-slate-800">Thứ Năm</th>
+                                <th class="p-3.5 border-r border-slate-800">Thứ Sáu</th>
+                                <th class="p-3.5 border-r border-slate-800">Thứ Bảy</th>
+                                <th class="p-3.5">Chủ Nhật</th>
                             </tr>
                         </thead>
                         <tbody id="schedule-matrix-body" class="divide-y divide-slate-800/60"></tbody>
                     </table>
                 </div>
             </div>
-
-            <!-- Mobile View -->
-            <div id="mobile-schedule-container" class="md:hidden space-y-4"></div>
         </div>
 
         <!-- SECTION 2: LỊCH THI -->
@@ -337,7 +334,7 @@
             let weekData = getWeekData();
             const days = ["Thứ Hai", "Thứ Ba", "Thứ Tư", "Thứ Năm", "Thứ Sáu", "Thứ Bảy", "Chủ Nhật"];
 
-            // 1. DESKTOP MATRIX
+            // RENDER BẢNG MATRIX DÙNG CHUNG CẢ TRÊN DESKTOP LẪN MOBILE
             let tbody = document.getElementById('schedule-matrix-body');
             tbody.innerHTML = '';
             let skipCells = {};
@@ -347,7 +344,7 @@
                 let currentHour = hoursList[i];
                 let nextHour = hoursList[i + 1];
                 let rowHtml = `<tr class="hover:bg-slate-900/40 transition">`;
-                rowHtml += `<td class="p-3 border-r border-slate-800 bg-slate-950/40 text-center font-mono text-xs font-bold text-amber-400 align-middle">${currentHour} - ${nextHour}</td>`;
+                rowHtml += `<td class="p-3.5 border-r border-slate-800 bg-slate-950/40 text-center font-mono text-xs font-bold text-amber-400 align-middle">${currentHour} - ${nextHour}</td>`;
 
                 days.forEach(day => {
                     if (skipCells[day][i]) return;
@@ -360,7 +357,7 @@
                         for (let s = 1; s < spanCount; s++) skipCells[day][i + s] = true;
 
                         rowHtml += `
-                            <td rowspan="${spanCount}" onclick="openModalForEdit('${day}', ${task.id})" class="p-2.5 border-r border-slate-800/60 align-top cursor-pointer bg-slate-900/80 hover:bg-slate-800 transition select-none border-b border-slate-800/60 group">
+                            <td rowspan="${spanCount}" onclick="openModalForEdit('${day}', ${task.id})" class="p-3 border-r border-slate-800/60 align-top cursor-pointer bg-slate-900/80 hover:bg-slate-800 transition select-none border-b border-slate-800/60 group">
                                 <div class="flex justify-between items-start mb-1">
                                     <span class="text-[10px] font-mono text-indigo-400">${task.start}-${task.end}</span>
                                     <div class="flex items-center gap-1">
@@ -372,46 +369,12 @@
                             </td>
                         `;
                     } else {
-                        rowHtml += `<td class="p-2.5 border-r border-slate-800/60 text-slate-700/30 text-xs text-center">-</td>`;
+                        rowHtml += `<td class="p-3 border-r border-slate-800/60 text-slate-700/30 text-xs text-center">-</td>`;
                     }
                 });
                 rowHtml += `</tr>`;
                 tbody.innerHTML += rowHtml;
             }
-
-            // 2. MOBILE CARD VIEW
-            let mobileContainer = document.getElementById('mobile-schedule-container');
-            mobileContainer.innerHTML = '';
-
-            days.forEach(day => {
-                let tasks = weekData[day] || [];
-                let dayCard = document.createElement('div');
-                dayCard.className = "bg-slate-900 border border-slate-800 rounded-2xl p-3.5 shadow-lg";
-
-                let tasksHtml = tasks.length === 0 
-                    ? `<p class="text-xs text-slate-600 italic py-1">Không có lịch trình</p>`
-                    : tasks.map(t => `
-                        <div onclick="openModalForEdit('${day}', ${t.id})" class="flex items-center justify-between p-2.5 bg-slate-950/60 rounded-xl border border-slate-800/80 active:scale-[0.99] transition">
-                            <div class="flex items-center gap-3">
-                                <input type="checkbox" ${t.done ? 'checked' : ''} onclick="toggleTaskDone('${day}', ${t.id}, event)" class="w-4 h-4 accent-emerald-500 rounded cursor-pointer">
-                                <div>
-                                    <p class="text-xs font-semibold ${t.done ? 'completed text-slate-500' : 'text-slate-100'}">${t.text}</p>
-                                    <p class="text-[10px] font-mono text-indigo-400">${t.start} - ${t.end} ${t.notify ? '• ✈️ Telegram ' + (t.advanceMin || 0) + 'p' : ''}</p>
-                                </div>
-                            </div>
-                            <span class="text-xs text-slate-500">✏️</span>
-                        </div>
-                    `).join('<div class="h-2"></div>');
-
-                dayCard.innerHTML = `
-                    <div class="flex justify-between items-center mb-2.5 pb-2 border-b border-slate-800/80">
-                        <h3 class="font-bold text-xs text-emerald-400 uppercase tracking-wide">${day}</h3>
-                        <span class="text-[10px] text-slate-500 font-mono">${tasks.length} công việc</span>
-                    </div>
-                    <div class="space-y-2">${tasksHtml}</div>
-                `;
-                mobileContainer.appendChild(dayCard);
-            });
 
             renderExams();
             renderUserInfo();
