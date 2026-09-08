@@ -4,9 +4,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>TKB & Lịch Thi - Hưng Telegram Pro</title>
+    <title>TKB & Lịch Thi - Hưng Realtime Cloud</title>
 
-    <link rel="manifest" href="data:application/json;base64,ewogICJuYW1lIjogIlRLQiBD4bunYSBIxrBuZyIsCiAgInNob3J0X25hbWUiOiAiVEtCICBIxrBuZyIsCiAgInN0YXJ0X3VybCI6ICIuIiwKICAiZGlzcGxheSI6ICJzdGFuZGFsb25lIiwKICAiYmFja2dyb3VuZF9jb2xvciI6ICIjMDkxZTJhIiwKICAidGhlbWVfY29sb3IiOiAiIzA5MWUyYSIKZX0=">
+    <link rel="manifest" href="data:application/json;base64,ewogICJuYW1lIjogIlRLQiBD4bunYSBIxrBuZyIsCiAgInNob3J0X25hbWUiOiAiVEtCICBIxrBuZyIsCiAgInNob3J0X3VybCI6ICIuIiwKICAiZGlzcGxheSI6ICJzdGFuZGFsb25lIiwKICAiYmFja2dyb3VuZF9jb2xvciI6ICIjMDkxZTJhIiwKICAidGhlbWVfY29sb3IiOiAiIzA5MWUyYSIKZX0=">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="TKB Hưng">
@@ -25,13 +25,16 @@
         <header class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 bg-slate-900/90 backdrop-blur p-4 rounded-2xl border border-slate-800 shadow-xl gap-3">
             <div>
                 <h1 class="text-lg md:text-2xl font-black text-emerald-400 tracking-wide flex items-center gap-2">
-                    ⚡ TKB & LỊCH THI <span class="text-xs bg-sky-500/10 text-sky-400 px-2 py-0.5 rounded-full font-normal border border-sky-500/20">Telegram Sync</span>
+                    ⚡ TKB & LỊCH THI <span class="text-xs bg-emerald-500/10 text-emerald-400 px-2 py-0.5 rounded-full font-normal border border-emerald-500/20">🔥 Firebase Realtime</span>
                 </h1>
                 <p id="user-info-display" class="text-xs text-slate-400 mt-0.5"></p>
             </div>
-            <div class="flex items-center gap-2 w-full sm:w-auto">
-                <button onclick="openTelegramModal()" id="btn-telegram-status" class="flex-1 sm:flex-initial bg-sky-600/20 text-sky-400 border border-sky-500/30 hover:bg-sky-600 hover:text-white text-xs px-3 py-2 rounded-xl font-bold transition flex items-center justify-center gap-1">
-                    ✈️ Cấu Hình Telegram Bot
+            <div class="flex items-center gap-2 w-full sm:w-auto flex-wrap">
+                <button onclick="openFirebaseModal()" id="btn-firebase-status" class="bg-amber-600/20 text-amber-400 border border-amber-500/30 hover:bg-amber-600 hover:text-white text-xs px-3 py-2 rounded-xl font-bold transition">
+                    🔥 Cấu Hình Firebase
+                </button>
+                <button onclick="openTelegramModal()" id="btn-telegram-status" class="bg-sky-600/20 text-sky-400 border border-sky-500/30 hover:bg-sky-600 hover:text-white text-xs px-3 py-2 rounded-xl font-bold transition">
+                    ✈️ Telegram
                 </button>
                 <button onclick="openUserInfoModal()" class="bg-slate-800 hover:bg-slate-700 text-xs px-3 py-2 rounded-xl font-bold transition">⚙️ Hồ sơ</button>
             </div>
@@ -49,8 +52,9 @@
 
         <!-- SECTION 1: TKB 1 NGÀY CỦA HƯNG -->
         <div id="section-tkb">
-            <div class="flex flex-col sm:flex-row justify-between items-center mb-4 gap-3 bg-slate-900/60 p-3 rounded-xl border border-slate-800">
-                <div class="flex items-center justify-between w-full sm:w-auto gap-2">
+            <!-- Thanh Công Cụ Điều Hướng Tuần & Quản Lý Lịch -->
+            <div class="flex flex-col lg:flex-row justify-between items-center mb-4 gap-3 bg-slate-900/60 p-3 rounded-xl border border-slate-800">
+                <div class="flex items-center justify-between w-full lg:w-auto gap-2">
                     <button onclick="changeWeek(-1)" class="bg-slate-800 hover:bg-slate-700 px-3 py-1.5 rounded-lg text-xs font-bold transition">&larr; Tuần trước</button>
                     <div class="text-center">
                         <span id="week-counter-label" class="font-bold text-sm text-emerald-300 block"></span>
@@ -58,7 +62,18 @@
                     </div>
                     <button onclick="changeWeek(1)" class="bg-slate-800 hover:bg-slate-700 px-3 py-1.5 rounded-lg text-xs font-bold transition">Tuần sau &rarr;</button>
                 </div>
-                <button onclick="openModalForAdd()" class="w-full sm:w-auto bg-indigo-600 hover:bg-indigo-500 text-xs px-4 py-2.5 rounded-xl font-bold transition shadow-lg shadow-indigo-600/20 text-center">+ Thêm sự kiện lịch</button>
+
+                <div class="flex flex-wrap items-center gap-2 w-full lg:w-auto justify-end">
+                    <button onclick="openCopyWeekModal()" class="flex-1 sm:flex-none bg-sky-600/20 hover:bg-sky-600 text-sky-400 hover:text-white border border-sky-500/30 text-xs px-3 py-2 rounded-xl font-bold transition">
+                        📋 Copy Lịch
+                    </button>
+                    <button onclick="clearCurrentWeekData()" class="flex-1 sm:flex-none bg-rose-600/20 hover:bg-rose-600 text-rose-400 hover:text-white border border-rose-500/30 text-xs px-3 py-2 rounded-xl font-bold transition">
+                        🧹 Xóa Sạch Tuần
+                    </button>
+                    <button onclick="openModalForAdd()" class="flex-1 sm:flex-none bg-indigo-600 hover:bg-indigo-500 text-xs px-4 py-2 rounded-xl font-bold transition shadow-lg shadow-indigo-600/20 text-center">
+                        + Thêm sự kiện
+                    </button>
+                </div>
             </div>
 
             <!-- BẢNG THỜI KHÓA BIỂU DẠNG MATRIX -->
@@ -88,7 +103,7 @@
             <div class="flex justify-between items-center mb-4 bg-slate-900/60 p-3 rounded-xl border border-slate-800">
                 <div>
                     <h2 class="font-bold text-sm sm:text-base text-amber-400">Danh Sách Lịch Thi</h2>
-                    <p class="text-[11px] text-slate-400">Tự động đẩy tin nhắn Telegram nhắc trước khi thi</p>
+                    <p class="text-[11px] text-slate-400">Tự động đồng bộ lên Đám Mây Realtime</p>
                 </div>
                 <button onclick="openExamModal()" class="bg-amber-600 hover:bg-amber-500 text-xs px-3.5 py-2 rounded-xl font-bold transition">+ Thêm Lịch Thi</button>
             </div>
@@ -96,19 +111,62 @@
         </div>
     </div>
 
+    <!-- Modal Cấu hình Firebase -->
+    <div id="firebaseModal" class="fixed inset-0 bg-black/80 hidden justify-center items-center p-4 z-50 backdrop-blur-sm">
+        <div class="bg-slate-900 border border-slate-800 p-5 rounded-2xl w-full max-w-md shadow-2xl space-y-4">
+            <h3 class="text-base font-bold text-amber-400 flex items-center gap-2">🔥 Kết Nối Firebase Realtime</h3>
+            <p class="text-xs text-slate-400">Dán `databaseURL` và `apiKey` từ Firebase Console để tự động đồng bộ lịch giữa iPhone và PC.</p>
+            <form onsubmit="handleSaveFirebaseConfig(event)" class="space-y-3">
+                <div>
+                    <label class="block text-xs text-slate-400 mb-1">Database URL</label>
+                    <input type="text" id="fbDbUrlInput" placeholder="https://tkb-hung-default-rtdb.firebaseio.com" required class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-xs text-slate-200">
+                </div>
+                <div>
+                    <label class="block text-xs text-slate-400 mb-1">API Key</label>
+                    <input type="text" id="fbApiKeyInput" placeholder="AIzaSyC..." required class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-xs text-slate-200">
+                </div>
+                <div class="flex justify-end gap-2 pt-2">
+                    <button type="button" onclick="closeFirebaseModal()" class="bg-slate-800 hover:bg-slate-700 px-4 py-2 rounded-xl text-xs font-bold">Hủy</button>
+                    <button type="submit" class="bg-amber-600 hover:bg-amber-500 px-4 py-2 rounded-xl text-xs font-bold">Lưu Cấu Hình</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal Copy Lịch & Xem Trước -->
+    <div id="copyWeekModal" class="fixed inset-0 bg-black/80 hidden justify-center items-center p-4 z-50 backdrop-blur-sm">
+        <div class="bg-slate-900 border border-slate-800 p-5 rounded-2xl w-full max-w-2xl shadow-2xl space-y-4 max-h-[90vh] overflow-y-auto">
+            <h3 class="text-base font-bold text-sky-400 flex items-center gap-2">📋 Copy Lịch Sang Tuần <span id="target-copy-week-label"></span></h3>
+            
+            <div class="space-y-2">
+                <label class="block text-xs text-slate-400">Chọn tuần nguồn trong quá khứ để copy:</label>
+                <select id="sourceWeekSelect" onchange="previewSourceWeekData()" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-xs text-slate-200 font-bold"></select>
+            </div>
+
+            <div class="bg-slate-950/80 p-3 rounded-xl border border-slate-800/80 space-y-2">
+                <p class="text-xs font-bold text-amber-400">🔍 Xem trước TKB tuần được chọn:</p>
+                <div id="preview-week-container" class="text-xs space-y-2 max-h-56 overflow-y-auto p-2 bg-slate-900 rounded-lg border border-slate-800"></div>
+            </div>
+
+            <div class="flex justify-end gap-2 pt-2 border-t border-slate-800">
+                <button type="button" onclick="closeCopyWeekModal()" class="bg-slate-800 hover:bg-slate-700 px-4 py-2 rounded-xl text-xs font-bold">Hủy</button>
+                <button type="button" onclick="confirmCopyWeekData()" class="bg-sky-600 hover:bg-sky-500 px-4 py-2 rounded-xl text-xs font-bold">Xác Nhận Copy Lịch</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Modal Cấu hình Telegram -->
     <div id="telegramModal" class="fixed inset-0 bg-black/80 hidden justify-center items-center p-4 z-50 backdrop-blur-sm">
         <div class="bg-slate-900 border border-slate-800 p-5 rounded-2xl w-full max-w-md shadow-2xl space-y-4">
             <h3 class="text-base font-bold text-sky-400 flex items-center gap-2">✈️ Cấu Hình Telegram Bot</h3>
-            <p class="text-xs text-slate-400">Nhập thông tin Bot để nhận thông báo ting-ting trực tiếp về điện thoại mà không lo bị tắt app.</p>
             <form onsubmit="handleSaveTelegramConfig(event)" class="space-y-3">
                 <div>
-                    <label class="block text-xs text-slate-400 mb-1">Bot Token (từ @BotFather)</label>
-                    <input type="text" id="tgTokenInput" placeholder="123456789:ABCdefGhIJK..." required class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-xs text-slate-200">
+                    <label class="block text-xs text-slate-400 mb-1">Bot Token</label>
+                    <input type="text" id="tgTokenInput" required class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-xs text-slate-200">
                 </div>
                 <div>
-                    <label class="block text-xs text-slate-400 mb-1">Chat ID Cá Nhân (từ @userinfobot)</label>
-                    <input type="text" id="tgChatIdInput" placeholder="987654321" required class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-xs text-slate-200">
+                    <label class="block text-xs text-slate-400 mb-1">Chat ID Cá Nhân</label>
+                    <input type="text" id="tgChatIdInput" required class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-xs text-slate-200">
                 </div>
                 <div class="flex justify-between items-center pt-2">
                     <button type="button" onclick="testTelegramMessage()" class="bg-sky-600/20 text-sky-400 hover:bg-sky-600 hover:text-white px-3 py-2 rounded-xl text-xs font-bold transition">🧪 Bấm Thử Bot</button>
@@ -219,9 +277,10 @@
                         <div>
                             <label class="text-[11px] text-slate-400 block mb-1">Tần suất nhắc:</label>
                             <select id="examNotifyInterval" class="w-full bg-slate-900 text-xs border border-slate-800 rounded-lg p-1.5 text-slate-200">
-                                <option value="5">Mỗi 5 tiếng 1 lần</option>
-                                <option value="3">Mỗi 3 tiếng 1 lần</option>
+                                <option value="0.083">🌋 Chấn động địa cầu (5p/lần)</option>
                                 <option value="1">Mỗi 1 tiếng 1 lần</option>
+                                <option value="3">Mỗi 3 tiếng 1 lần</option>
+                                <option value="5" selected>Mỗi 5 tiếng 1 lần</option>
                             </select>
                         </div>
                     </div>
@@ -255,7 +314,11 @@
         </div>
     </div>
 
-    <script>
+    <!-- FIREBASE SDK v9 -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
+        import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-database.js";
+
         const startDate = new Date('2026-09-07T00:00:00');
 
         function getCurrentWeekNumber() {
@@ -267,15 +330,15 @@
         }
 
         const currentRealWeekNum = getCurrentWeekNumber();
-        let selectedWeekNum = currentRealWeekNum;
+        window.selectedWeekNum = currentRealWeekNum;
 
-        const hoursList = [];
-        for (let i = 6; i <= 23; i++) { hoursList.push(String(i).padStart(2, '0') + ":00"); }
+        window.hoursList = [];
+        for (let i = 6; i <= 23; i++) { window.hoursList.push(String(i).padStart(2, '0') + ":00"); }
 
         const selStart = document.getElementById('taskStartHour');
         const selEnd = document.getElementById('taskEndHour');
-        hoursList.forEach((h, index) => {
-            if (index < hoursList.length - 1) {
+        window.hoursList.forEach((h, index) => {
+            if (index < window.hoursList.length - 1) {
                 let opt1 = document.createElement('option'); opt1.value = h; opt1.innerText = h; selStart.appendChild(opt1);
             }
             if (index > 0) {
@@ -294,28 +357,109 @@
             "Chủ Nhật": [{ id: 22, start: "09:00", end: "11:00", text: "Học tiếng Anh căn bản", done: false, notify: false, advanceMin: 0 }]
         };
 
-        function getWeekData() {
-            let key = `matrix_edit_${selectedWeekNum}`;
-            let data = localStorage.getItem(key);
+        // FIREBASE INITIALIZATION & REALTIME SYNC
+        window.db = null;
+        function initFirebase() {
+            let cfg = JSON.parse(localStorage.getItem('firebase_config') || '{}');
+            if (cfg.databaseURL && cfg.apiKey) {
+                try {
+                    const app = initializeApp(cfg);
+                    window.db = getDatabase(app);
+                    updateFirebaseButtonUI(true);
+
+                    // Lắng nghe thay đổi Realtime toàn bộ cơ sở dữ liệu
+                    onValue(ref(window.db, 'schedule'), (snapshot) => {
+                        const cloudData = snapshot.val();
+                        if (cloudData) {
+                            localStorage.setItem('firebase_cached_schedule', JSON.stringify(cloudData));
+                            render();
+                        }
+                    });
+                } catch(e) { console.error("Firebase err:", e); }
+            } else {
+                updateFirebaseButtonUI(false);
+            }
+        }
+
+        function updateFirebaseButtonUI(connected) {
+            let btn = document.getElementById('btn-firebase-status');
+            if (connected) {
+                btn.className = "bg-emerald-600/20 text-emerald-400 border border-emerald-500/30 text-xs px-3 py-2 rounded-xl font-bold flex items-center justify-center gap-1 cursor-default";
+                btn.innerHTML = "🔥 Cloud Online";
+            } else {
+                btn.className = "bg-amber-600/20 text-amber-400 border border-amber-500/30 hover:bg-amber-600 hover:text-white text-xs px-3 py-2 rounded-xl font-bold transition";
+                btn.innerHTML = "🔥 Cấu Hình Firebase";
+            }
+        }
+
+        window.openFirebaseModal = function() {
+            let cfg = JSON.parse(localStorage.getItem('firebase_config') || '{}');
+            document.getElementById('fbDbUrlInput').value = cfg.databaseURL || '';
+            document.getElementById('fbApiKeyInput').value = cfg.apiKey || '';
+            document.getElementById('firebaseModal').classList.remove('hidden');
+            document.getElementById('firebaseModal').classList.add('flex');
+        };
+
+        window.closeFirebaseModal = function() {
+            document.getElementById('firebaseModal').classList.add('hidden');
+            document.getElementById('firebaseModal').classList.remove('flex');
+        };
+
+        window.handleSaveFirebaseConfig = function(e) {
+            e.preventDefault();
+            let databaseURL = document.getElementById('fbDbUrlInput').value.trim();
+            let apiKey = document.getElementById('fbApiKeyInput').value.trim();
+            localStorage.setItem('firebase_config', JSON.stringify({ databaseURL, apiKey }));
+            closeFirebaseModal();
+            initFirebase();
+            alert("Đã kết nối Firebase Realtime!");
+        };
+
+        // Lấy dữ liệu tuần (kết hợp Cloud & Local)
+        window.getWeekData = function(weekNum = window.selectedWeekNum) {
+            let cached = JSON.parse(localStorage.getItem('firebase_cached_schedule') || '{}');
+            let key = `matrix_edit_${weekNum}`;
+            let data = cached[key] || localStorage.getItem(key);
+
             if (!data) {
-                let initial = JSON.parse(JSON.stringify(defaultWeekData));
-                localStorage.setItem(key, JSON.stringify(initial));
+                let initial;
+                if (weekNum > 1) {
+                    let prevWeekData = window.getWeekData(weekNum - 1);
+                    initial = JSON.parse(JSON.stringify(prevWeekData));
+                    Object.keys(initial).forEach(d => initial[d].forEach(t => t.done = false));
+                } else {
+                    initial = JSON.parse(JSON.stringify(defaultWeekData));
+                }
+                window.saveWeekData(initial, weekNum);
                 return initial;
             }
-            return JSON.parse(data);
-        }
+            return typeof data === 'string' ? JSON.parse(data) : data;
+        };
 
-        function saveWeekData(data) {
-            localStorage.setItem(`matrix_edit_${selectedWeekNum}`, JSON.stringify(data));
+        window.saveWeekData = function(data, weekNum = window.selectedWeekNum) {
+            let key = `matrix_edit_${weekNum}`;
+            localStorage.setItem(key, JSON.stringify(data));
+
+            // Đẩy trực tiếp lên Firebase Realtime Cloud
+            if (window.db) {
+                set(ref(window.db, `schedule/${key}`), data);
+            }
             render();
-        }
+        };
 
-        function toggleTaskDone(day, id, e) {
+        window.clearCurrentWeekData = function() {
+            if (confirm(`Bạn có chắc chắn muốn XÓA SẠCH toàn bộ lịch của Tuần ${window.selectedWeekNum} không?`)) {
+                let emptyData = { "Thứ Hai": [], "Thứ Ba": [], "Thứ Tư": [], "Thứ Năm": [], "Thứ Sáu": [], "Thứ Bảy": [], "Chủ Nhật": [] };
+                window.saveWeekData(emptyData);
+            }
+        };
+
+        window.toggleTaskDone = function(day, id, e) {
             e.stopPropagation();
-            let data = getWeekData();
+            let data = window.getWeekData();
             let task = data[day].find(t => t.id === id);
-            if (task) { task.done = !task.done; saveWeekData(data); }
-        }
+            if (task) { task.done = !task.done; window.saveWeekData(data); }
+        };
 
         function getWeekDatesText(weekNum) {
             let weekStart = new Date(startDate.getTime() + (weekNum - 1) * 7 * 24 * 60 * 60 * 1000);
@@ -324,25 +468,24 @@
             return `${weekStart.toLocaleDateString('vi-VN', opt)} đến ${weekEnd.toLocaleDateString('vi-VN', opt)}`;
         }
 
-        function render() {
-            document.getElementById('week-counter-label').innerText = `TUẦN ${selectedWeekNum}`;
-            let dateRangeStr = getWeekDatesText(selectedWeekNum);
-            document.getElementById('week-title-info').innerText = selectedWeekNum === currentRealWeekNum
+        window.render = function() {
+            document.getElementById('week-counter-label').innerText = `TUẦN ${window.selectedWeekNum}`;
+            let dateRangeStr = getWeekDatesText(window.selectedWeekNum);
+            document.getElementById('week-title-info').innerText = window.selectedWeekNum === currentRealWeekNum
                 ? `🟢 Đang diễn ra (${dateRangeStr})`
                 : `📅 Kế hoạch (${dateRangeStr})`;
 
-            let weekData = getWeekData();
+            let weekData = window.getWeekData();
             const days = ["Thứ Hai", "Thứ Ba", "Thứ Tư", "Thứ Năm", "Thứ Sáu", "Thứ Bảy", "Chủ Nhật"];
 
-            // RENDER BẢNG MATRIX DÙNG CHUNG CẢ TRÊN DESKTOP LẪN MOBILE
             let tbody = document.getElementById('schedule-matrix-body');
             tbody.innerHTML = '';
             let skipCells = {};
             days.forEach(d => skipCells[d] = {});
 
-            for (let i = 0; i < hoursList.length - 1; i++) {
-                let currentHour = hoursList[i];
-                let nextHour = hoursList[i + 1];
+            for (let i = 0; i < window.hoursList.length - 1; i++) {
+                let currentHour = window.hoursList[i];
+                let nextHour = window.hoursList[i + 1];
                 let rowHtml = `<tr class="hover:bg-slate-900/40 transition">`;
                 rowHtml += `<td class="p-3.5 border-r border-slate-800 bg-slate-950/40 text-center font-mono text-xs font-bold text-amber-400 align-middle">${currentHour} - ${nextHour}</td>`;
 
@@ -351,8 +494,8 @@
                     let task = (weekData[day] || []).find(t => t.start === currentHour);
 
                     if (task) {
-                        let startIndex = hoursList.indexOf(task.start);
-                        let endIndex = hoursList.indexOf(task.end);
+                        let startIndex = window.hoursList.indexOf(task.start);
+                        let endIndex = window.hoursList.indexOf(task.end);
                         let spanCount = (endIndex > startIndex) ? (endIndex - startIndex) : 1;
                         for (let s = 1; s < spanCount; s++) skipCells[day][i + s] = true;
 
@@ -379,10 +522,76 @@
             renderExams();
             renderUserInfo();
             updateTelegramButtonUI();
-        }
+        };
+
+        // COPY LỊCH
+        window.openCopyWeekModal = function() {
+            document.getElementById('target-copy-week-label').innerText = window.selectedWeekNum;
+            let sel = document.getElementById('sourceWeekSelect');
+            sel.innerHTML = '';
+
+            let maxWeekToCopy = Math.max(window.selectedWeekNum - 1, 1);
+            for (let w = maxWeekToCopy; w >= 1; w--) {
+                if (w === window.selectedWeekNum) continue;
+                let opt = document.createElement('option');
+                opt.value = w;
+                opt.innerText = `Tuần ${w} (${getWeekDatesText(w)})`;
+                sel.appendChild(opt);
+            }
+
+            if (sel.options.length === 0) {
+                alert("Không có tuần nào trong quá khứ để copy!");
+                return;
+            }
+
+            window.previewSourceWeekData();
+            document.getElementById('copyWeekModal').classList.remove('hidden');
+            document.getElementById('copyWeekModal').classList.add('flex');
+        };
+
+        window.closeCopyWeekModal = function() {
+            document.getElementById('copyWeekModal').classList.add('hidden');
+            document.getElementById('copyWeekModal').classList.remove('flex');
+        };
+
+        window.previewSourceWeekData = function() {
+            let sourceWeekNum = Number(document.getElementById('sourceWeekSelect').value);
+            let sourceData = window.getWeekData(sourceWeekNum);
+            let container = document.getElementById('preview-week-container');
+            container.innerHTML = '';
+
+            const days = ["Thứ Hai", "Thứ Ba", "Thứ Tư", "Thứ Năm", "Thứ Sáu", "Thứ Bảy", "Chủ Nhật"];
+            days.forEach(day => {
+                let tasks = sourceData[day] || [];
+                if (tasks.length > 0) {
+                    let taskListStr = tasks.map(t => `<span class="text-slate-300">• ${t.start}-${t.end}: <b>${t.text}</b></span>`).join('<br>');
+                    container.innerHTML += `
+                        <div class="pb-1 border-b border-slate-800">
+                            <span class="text-emerald-400 font-bold">${day}:</span><br>
+                            ${taskListStr}
+                        </div>
+                    `;
+                }
+            });
+
+            if (container.innerHTML === '') {
+                container.innerHTML = `<span class="text-slate-500 italic">Tuần ${sourceWeekNum} đang trống hoàn toàn.</span>`;
+            }
+        };
+
+        window.confirmCopyWeekData = function() {
+            let sourceWeekNum = Number(document.getElementById('sourceWeekSelect').value);
+            let sourceData = window.getWeekData(sourceWeekNum);
+            let newData = JSON.parse(JSON.stringify(sourceData));
+            Object.keys(newData).forEach(d => newData[d].forEach(t => t.done = false));
+
+            window.saveWeekData(newData);
+            window.closeCopyWeekModal();
+            alert(`Đã áp dụng thành công TKB từ Tuần ${sourceWeekNum} sang Tuần ${window.selectedWeekNum}!`);
+        };
 
         // TAB SWITCH
-        function switchTab(tab) {
+        window.switchTab = function(tab) {
             if (tab === 'tkb') {
                 document.getElementById('section-tkb').classList.remove('hidden');
                 document.getElementById('section-exam').classList.add('hidden');
@@ -394,11 +603,15 @@
                 document.getElementById('tab-btn-exam').className = "flex-1 sm:flex-none px-4 py-2.5 font-bold text-xs sm:text-sm rounded-t-xl transition bg-slate-900 text-amber-400 border-t border-x border-slate-800 text-center";
                 document.getElementById('tab-btn-tkb').className = "flex-1 sm:flex-none px-4 py-2.5 font-bold text-xs sm:text-sm rounded-t-xl transition bg-slate-950 text-slate-400 hover:text-slate-200 text-center";
             }
-        }
+        };
 
         // LỊCH THI
         function getExams() { return JSON.parse(localStorage.getItem('user_exams') || '[]'); }
-        function saveExams(exams) { localStorage.setItem('user_exams', JSON.stringify(exams)); renderExams(); }
+        function saveExams(exams) {
+            localStorage.setItem('user_exams', JSON.stringify(exams));
+            if (window.db) set(ref(window.db, 'exams'), exams);
+            renderExams();
+        }
 
         function renderExams() {
             let exams = getExams();
@@ -412,12 +625,13 @@
 
             exams.sort((a, b) => new Date(`${a.date}T${a.time}`) - new Date(`${b.date}T${b.time}`));
             exams.forEach((ex, idx) => {
+                let intervalLabel = ex.intervalHours <= 0.1 ? '🌋 Chấn động địa cầu (5p/lần)' : `${ex.intervalHours}h/lần`;
                 container.innerHTML += `
                     <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
                         <div class="space-y-1">
                             <div class="flex items-center gap-2">
                                 <h3 class="font-bold text-sm text-amber-300">${ex.subject}</h3>
-                                ${ex.notify ? `<span class="text-[10px] bg-amber-500/10 text-amber-400 px-2 py-0.5 rounded-full border border-amber-500/20">✈️ Báo Telegram trước ${ex.advanceHours}h (${ex.intervalHours}h/lần)</span>` : '<span class="text-[10px] bg-slate-800 text-slate-500 px-2 py-0.5 rounded-full">Tắt Telegram</span>'}
+                                ${ex.notify ? `<span class="text-[10px] bg-amber-500/10 text-amber-400 px-2 py-0.5 rounded-full border border-amber-500/20">✈️ Báo Telegram trước ${ex.advanceHours}h (${intervalLabel})</span>` : '<span class="text-[10px] bg-slate-800 text-slate-500 px-2 py-0.5 rounded-full">Tắt Telegram</span>'}
                             </div>
                             <p class="text-xs text-slate-300 font-mono">📅 Ngày thi: <span class="text-emerald-400">${ex.date}</span> lúc <span class="text-amber-400">${ex.time}</span></p>
                             <p class="text-[11px] text-slate-400">📍 Ghi chú: ${ex.note || 'Không có'}</p>
@@ -428,10 +642,10 @@
             });
         }
 
-        function openExamModal() { document.getElementById('examModal').classList.remove('hidden'); document.getElementById('examModal').classList.add('flex'); }
-        function closeExamModal() { document.getElementById('examModal').classList.add('hidden'); document.getElementById('examModal').classList.remove('flex'); }
+        window.openExamModal = function() { document.getElementById('examModal').classList.remove('hidden'); document.getElementById('examModal').classList.add('flex'); };
+        window.closeExamModal = function() { document.getElementById('examModal').classList.add('hidden'); document.getElementById('examModal').classList.remove('flex'); };
 
-        function handleSaveExam(e) {
+        window.handleSaveExam = function(e) {
             e.preventDefault();
             let exams = getExams();
             exams.push({
@@ -444,14 +658,14 @@
                 intervalHours: Number(document.getElementById('examNotifyInterval').value)
             });
             saveExams(exams);
-            closeExamModal();
-        }
+            window.closeExamModal();
+        };
 
-        function deleteExam(idx) {
+        window.deleteExam = function(idx) {
             let exams = getExams();
             exams.splice(idx, 1);
             saveExams(exams);
-        }
+        };
 
         // HỒ SƠ NGƯỜI DÙNG
         function getUserInfo() { return JSON.parse(localStorage.getItem('user_profile') || '{"name": "Hưng", "goal": "Quyết tâm qua môn & Master Code"}'); }
@@ -459,50 +673,47 @@
             let u = getUserInfo();
             document.getElementById('user-info-display').innerText = `👤 ${u.name} | 🎯 Mục tiêu: ${u.goal}`;
         }
-        function openUserInfoModal() {
+        window.openUserInfoModal = function() {
             let u = getUserInfo();
             document.getElementById('userNameInput').value = u.name;
             document.getElementById('userGoalInput').value = u.goal;
             document.getElementById('userModal').classList.remove('hidden');
             document.getElementById('userModal').classList.add('flex');
-        }
-        function closeUserModal() { document.getElementById('userModal').classList.add('hidden'); document.getElementById('userModal').classList.remove('flex'); }
-        function handleSaveUserInfo(e) {
+        };
+        window.closeUserModal = function() { document.getElementById('userModal').classList.add('hidden'); document.getElementById('userModal').classList.remove('flex'); };
+        window.handleSaveUserInfo = function(e) {
             e.preventDefault();
             localStorage.setItem('user_profile', JSON.stringify({
                 name: document.getElementById('userNameInput').value,
                 goal: document.getElementById('userGoalInput').value
             }));
-            closeUserModal();
+            window.closeUserModal();
             renderUserInfo();
-        }
+        };
 
         // TELEGRAM BOT SYSTEM
-        function getTelegramConfig() {
-            return JSON.parse(localStorage.getItem('telegram_config') || '{"token": "", "chatId": ""}');
-        }
-
+        function getTelegramConfig() { return JSON.parse(localStorage.getItem('telegram_config') || '{"token": "", "chatId": ""}'); }
         function updateTelegramButtonUI() {
             let cfg = getTelegramConfig();
             let btn = document.getElementById('btn-telegram-status');
             if (cfg.token && cfg.chatId) {
-                btn.className = "flex-1 sm:flex-initial bg-emerald-600/20 text-emerald-400 border border-emerald-500/30 text-xs px-3 py-2 rounded-xl font-bold flex items-center justify-center gap-1";
-                btn.innerHTML = "✅ Đã Lắp Telegram Bot";
+                btn.className = "bg-emerald-600/20 text-emerald-400 border border-emerald-500/30 text-xs px-3 py-2 rounded-xl font-bold flex items-center justify-center gap-1 cursor-default";
+                btn.innerHTML = "✅ Đã Lắp Telegram";
             }
         }
 
-        function openTelegramModal() {
+        window.openTelegramModal = function() {
             let cfg = getTelegramConfig();
             document.getElementById('tgTokenInput').value = cfg.token;
             document.getElementById('tgChatIdInput').value = cfg.chatId;
             document.getElementById('telegramModal').classList.remove('hidden');
             document.getElementById('telegramModal').classList.add('flex');
-        }
+        };
 
-        function closeTelegramModal() {
+        window.closeTelegramModal = function() {
             document.getElementById('telegramModal').classList.add('hidden');
             document.getElementById('telegramModal').classList.remove('flex');
-        }
+        };
 
         function sendTelegramApi(message) {
             let cfg = getTelegramConfig();
@@ -515,7 +726,7 @@
             });
         }
 
-        function testTelegramMessage() {
+        window.testTelegramMessage = function() {
             let token = document.getElementById('tgTokenInput').value;
             let chatId = document.getElementById('tgChatIdInput').value;
             if (!token || !chatId) { alert("Vui lòng điền đầy đủ Token và Chat ID!"); return; }
@@ -524,21 +735,21 @@
             sendTelegramApi("🧪 <b>KẾT NỐI THÀNH CÔNG!</b>\n\nBot Telegram đã sẵn sàng gửi thông báo TKB và Lịch thi cho Hưng.")
                 .then(res => res.json())
                 .then(data => {
-                    if (data.ok) alert("Đã gửi tin nhắn thử nghiệm vào Telegram của bạn! Hãy kiểm tra app.");
+                    if (data.ok) alert("Đã gửi tin nhắn thử nghiệm vào Telegram của bạn!");
                     else alert("Lỗi kết nối Bot: " + data.description);
                 })
                 .catch(err => alert("Không thể kết nối Telegram API. Kiểm tra lại Token/Chat ID!"));
-        }
+        };
 
-        function handleSaveTelegramConfig(e) {
+        window.handleSaveTelegramConfig = function(e) {
             e.preventDefault();
             let token = document.getElementById('tgTokenInput').value;
             let chatId = document.getElementById('tgChatIdInput').value;
             localStorage.setItem('telegram_config', JSON.stringify({ token, chatId }));
-            closeTelegramModal();
+            window.closeTelegramModal();
             updateTelegramButtonUI();
             alert("Đã lưu cấu hình Telegram Bot!");
-        }
+        };
 
         function checkTelegramNotifications() {
             let cfg = getTelegramConfig();
@@ -548,8 +759,7 @@
             const daysMap = ["Chủ Nhật", "Thứ Hai", "Thứ Ba", "Thứ Tư", "Thứ Năm", "Thứ Sáu", "Thứ Bảy"];
             const currentDayName = daysMap[now.getDay()];
 
-            // 1. Quét TKB
-            let weekData = getWeekData();
+            let weekData = window.getWeekData();
             let todayTasks = weekData[currentDayName] || [];
 
             todayTasks.forEach(task => {
@@ -574,7 +784,6 @@
                 }
             });
 
-            // 2. Quét Lịch Thi
             let exams = getExams();
             exams.forEach(ex => {
                 if (!ex.notify) return;
@@ -588,9 +797,14 @@
                 if (diffHours > 0 && diffHours <= advanceHours) {
                     let lastNotified = localStorage.getItem(`tg_exam_${ex.subject}_${ex.date}`);
                     let nowMs = now.getTime();
+                    let intervalMs = intervalHours <= 0.1 ? 5 * 60 * 1000 : intervalHours * 60 * 60 * 1000;
 
-                    if (!lastNotified || (nowMs - parseInt(lastNotified)) >= intervalHours * 60 * 60 * 1000) {
-                        let msg = `🚨 <b>CẢNH BÁO LỊCH THI MÔN!</b>\n\n- Môn thi: <b>${ex.subject}</b>\n- Ngày thi: <b>${ex.date}</b> lúc <b>${ex.time}</b>\n- Phòng thi/Ghi chú: ${ex.note || 'Không có'}\n\n⚠️ Chuẩn bị bài kỹ càng nhé Hưng!`;
+                    if (!lastNotified || (nowMs - parseInt(lastNotified)) >= intervalMs) {
+                        let isEarthquake = intervalHours <= 0.1;
+                        let msg = isEarthquake
+                            ? `🌋🌋 <b>CHẤN ĐỘNG ĐỊA CẦU - ĐẮT ĐẦU SẮP THI!</b> 🌋🌋\n\n- Môn thi: <b>${ex.subject}</b>\n- Ngày thi: <b>${ex.date}</b> lúc <b>${ex.time}</b>\n- Phòng thi/Ghi chú: ${ex.note || 'Không có'}\n\n⚠️ ĐỨNG DẬY ÔN BÀI NGAY HƯNG ƠI! (Báo 5p/lần)`
+                            : `🚨 <b>CẢNH BÁO LỊCH THI MÔN!</b>\n\n- Môn thi: <b>${ex.subject}</b>\n- Ngày thi: <b>${ex.date}</b> lúc <b>${ex.time}</b>\n- Phòng thi/Ghi chú: ${ex.note || 'Không có'}\n\n⚠️ Chuẩn bị bài kỹ càng nhé Hưng!`;
+                        
                         sendTelegramApi(msg);
                         localStorage.setItem(`tg_exam_${ex.subject}_${ex.date}`, nowMs.toString());
                     }
@@ -601,7 +815,7 @@
         setInterval(checkTelegramNotifications, 30 * 1000);
 
         // MODAL TKB HELPERS
-        function openModalForAdd() {
+        window.openModalForAdd = function() {
             document.getElementById('modal-title').innerText = "Thêm khoảng thời gian biểu";
             document.getElementById('taskId').value = "";
             document.getElementById('taskForm').reset();
@@ -609,10 +823,10 @@
             document.getElementById('btn-delete-modal').classList.add('hidden');
             document.getElementById('taskModal').classList.remove('hidden');
             document.getElementById('taskModal').classList.add('flex');
-        }
+        };
 
-        function openModalForEdit(day, id) {
-            let data = getWeekData();
+        window.openModalForEdit = function(day, id) {
+            let data = window.getWeekData();
             let task = data[day].find(t => t.id === id);
             if (!task) return;
             document.getElementById('modal-title').innerText = "Chỉnh sửa thời gian biểu";
@@ -626,11 +840,11 @@
             document.getElementById('btn-delete-modal').classList.remove('hidden');
             document.getElementById('taskModal').classList.remove('hidden');
             document.getElementById('taskModal').classList.add('flex');
-        }
+        };
 
-        function closeModal() { document.getElementById('taskModal').classList.add('hidden'); document.getElementById('taskModal').classList.remove('flex'); }
+        window.closeModal = function() { document.getElementById('taskModal').classList.add('hidden'); document.getElementById('taskModal').classList.remove('flex'); };
 
-        function handleSaveTask(e) {
+        window.handleSaveTask = function(e) {
             e.preventDefault();
             let id = document.getElementById('taskId').value;
             let day = document.getElementById('taskDay').value;
@@ -640,13 +854,13 @@
             let notify = document.getElementById('taskNotifyEnable').checked;
             let advanceMin = Number(document.getElementById('taskNotifyAdvance').value);
 
-            if (hoursList.indexOf(end) <= hoursList.indexOf(start)) {
+            if (window.hoursList.indexOf(end) <= window.hoursList.indexOf(start)) {
                 alert("Giờ kết thúc phải lớn hơn giờ bắt đầu!");
                 return;
             }
 
             let numericId = id ? Number(id) : null;
-            let data = getWeekData();
+            let data = window.getWeekData();
 
             if (numericId) {
                 let oldDay = Object.keys(data).find(d => data[d].some(t => t.id === numericId));
@@ -656,26 +870,27 @@
                 data[day].push({ id: Date.now(), start, end, text: content, done: false, notify, advanceMin });
             }
 
-            saveWeekData(data);
-            closeModal();
-        }
+            window.saveWeekData(data);
+            window.closeModal();
+        };
 
-        function deleteCurrentEditingTask() {
+        window.deleteCurrentEditingTask = function() {
             let id = Number(document.getElementById('taskId').value);
             if (confirm("Xóa sự kiện này khỏi lịch?")) {
-                let data = getWeekData();
+                let data = window.getWeekData();
                 Object.keys(data).forEach(d => { data[d] = data[d].filter(t => t.id !== id); });
-                saveWeekData(data);
-                closeModal();
+                window.saveWeekData(data);
+                window.closeModal();
             }
-        }
+        };
 
-        function changeWeek(direction) {
-            selectedWeekNum += direction;
-            if (selectedWeekNum < 1) selectedWeekNum = 1;
+        window.changeWeek = function(direction) {
+            window.selectedWeekNum += direction;
+            if (window.selectedWeekNum < 1) window.selectedWeekNum = 1;
             render();
-        }
+        };
 
+        initFirebase();
         render();
     </script>
 </body>
