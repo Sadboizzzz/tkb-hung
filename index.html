@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>TKB & Lịch Thi - Hưng Realtime Cloud Pro</title>
+    <title>TKB & Lịch Thi - Hưng Realtime Cloud Fast</title>
 
     <link rel="manifest" href="data:application/json;base64,ewogICJuYW1lIjogIlRLQiBD4bunYSBIxrBuZyIsCiAgInNob3J0X25hbWUiOiAiVEtCICBIxrBuZyIsCiAgInNob3J0X3VybCI6ICIuIiwKICAiZGlzcGxheSI6ICJzdGFuZGFsb25lIiwKICAiYmFja2dyb3VuZF9jb2xvciI6ICIjMDkxZTJhIiwKICAidGhlbWVfY29sb3IiOiAiIzA5MWUyYSIKZX0=">
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -25,7 +25,7 @@
         <header class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 bg-slate-900/90 backdrop-blur p-4 rounded-2xl border border-slate-800 shadow-xl gap-3">
             <div>
                 <h1 class="text-lg md:text-2xl font-black text-emerald-400 tracking-wide flex items-center gap-2">
-                    ⚡ TKB & LỊCH THI <span class="text-xs bg-emerald-500/10 text-emerald-400 px-2 py-0.5 rounded-full font-normal border border-emerald-500/20">🔥 Firebase Realtime</span>
+                    ⚡ TKB & LỊCH THI <span class="text-xs bg-emerald-500/10 text-emerald-400 px-2 py-0.5 rounded-full font-normal border border-emerald-500/20">🔥 Firebase Fast Sync</span>
                 </h1>
                 <p id="user-info-display" class="text-xs text-slate-400 mt-0.5"></p>
             </div>
@@ -137,7 +137,7 @@
     <div id="copyWeekModal" class="fixed inset-0 bg-black/80 hidden justify-center items-center p-4 z-50 backdrop-blur-sm">
         <div class="bg-slate-900 border border-slate-800 p-5 rounded-2xl w-full max-w-2xl shadow-2xl space-y-4 max-h-[90vh] overflow-y-auto">
             <h3 class="text-base font-bold text-sky-400 flex items-center gap-2">📋 Copy Lịch Sang Tuần <span id="target-copy-week-label"></span></h3>
-            
+
             <div class="space-y-2">
                 <label class="block text-xs text-slate-400">Chọn tuần nguồn trong quá khứ để copy:</label>
                 <select id="sourceWeekSelect" onchange="previewSourceWeekData()" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-xs text-slate-200 font-bold"></select>
@@ -314,7 +314,7 @@
         </div>
     </div>
 
-    <!-- FIREBASE SDK & CORE APPLICATION LOGIC -->
+    <!-- FIREBASE SDK & OPTIMIZED REALTIME LOGIC -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
         import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-database.js";
@@ -357,8 +357,10 @@
             "Chủ Nhật": [{ id: 22, start: "09:00", end: "11:00", text: "Học tiếng Anh căn bản", done: false, notify: false, advanceMin: 0 }]
         };
 
-        // FIREBASE INITIALIZATION
+        // FIREBASE SYNC ENGINE
         window.db = null;
+        let isLocalUpdate = false; // Cờ chặn vòng lặp ghi đè vô tận
+
         function initFirebase() {
             let cfg = JSON.parse(localStorage.getItem('firebase_config') || '{}');
             if (cfg.databaseURL && cfg.apiKey) {
@@ -367,7 +369,9 @@
                     window.db = getDatabase(app);
                     updateFirebaseButtonUI(true);
 
+                    // Lắng nghe dữ liệu TKB
                     onValue(ref(window.db, 'schedule'), (snapshot) => {
+                        if (isLocalUpdate) return; // Nếu thao tác từ thiết bị này thì không render lại gây giật
                         const cloudData = snapshot.val();
                         if (cloudData) {
                             localStorage.setItem('firebase_cached_schedule', JSON.stringify(cloudData));
@@ -375,7 +379,9 @@
                         }
                     });
 
+                    // Lắng nghe dữ liệu Lịch Thi
                     onValue(ref(window.db, 'exams'), (snapshot) => {
+                        if (isLocalUpdate) return;
                         const cloudExams = snapshot.val();
                         if (cloudExams) {
                             localStorage.setItem('user_exams', JSON.stringify(cloudExams));
@@ -422,7 +428,7 @@
             alert("Đã kết nối Firebase Realtime!");
         };
 
-        // DỮ LIỆU TUẦN & LOGIC CHỈ TỰ ĐỘNG COPY KHI ĐẾN MỐC CHUYỂN TUẦN
+        // QUẢN LÝ DỮ LIỆU TKB TỐI ƯU HÓA
         window.getWeekData = function(weekNum = window.selectedWeekNum) {
             let cached = JSON.parse(localStorage.getItem('firebase_cached_schedule') || '{}');
             let key = `matrix_edit_${weekNum}`;
@@ -432,7 +438,6 @@
                 let initial;
                 let realNowWeek = getCurrentWeekNumber();
 
-                // Chỉ tự động copy nếu tuần được xem đã diễn ra hoặc đang diễn ra (đã qua mốc 00:00 sáng Thứ Hai)
                 if (weekNum > 1 && weekNum <= realNowWeek) {
                     let prevWeekData = window.getWeekData(weekNum - 1);
                     initial = JSON.parse(JSON.stringify(prevWeekData));
@@ -440,11 +445,11 @@
                 } else if (weekNum === 1) {
                     initial = JSON.parse(JSON.stringify(defaultWeekData));
                 } else {
-                    // Tuần trong tương lai (chưa tới mốc 00:00) thì để trống
                     initial = { "Thứ Hai": [], "Thứ Ba": [], "Thứ Tư": [], "Thứ Năm": [], "Thứ Sáu": [], "Thứ Bảy": [], "Chủ Nhật": [] };
                 }
                 
-                window.saveWeekData(initial, weekNum);
+                // Chỉ lưu tạm Local, không chủ động lưu Firebase trong hàm get để tránh lặp
+                localStorage.setItem(key, JSON.stringify(initial));
                 return initial;
             }
             return typeof data === 'string' ? JSON.parse(data) : data;
@@ -452,12 +457,23 @@
 
         window.saveWeekData = function(data, weekNum = window.selectedWeekNum) {
             let key = `matrix_edit_${weekNum}`;
+            
+            // 1. Cập nhật Cache cục bộ ngay lập tức (Optimistic Update)
             localStorage.setItem(key, JSON.stringify(data));
+            let cached = JSON.parse(localStorage.getItem('firebase_cached_schedule') || '{}');
+            cached[key] = data;
+            localStorage.setItem('firebase_cached_schedule', JSON.stringify(cached));
 
-            if (window.db) {
-                set(ref(window.db, `schedule/${key}`), data);
-            }
+            // 2. Render giao diện lập tức ($0 độ trễ)
             window.render();
+
+            // 3. Đẩy dữ liệu âm thầm lên Firebase
+            if (window.db) {
+                isLocalUpdate = true;
+                set(ref(window.db, `schedule/${key}`), data).finally(() => {
+                    setTimeout(() => { isLocalUpdate = false; }, 300);
+                });
+            }
         };
 
         window.clearCurrentWeekData = function() {
@@ -622,8 +638,14 @@
         function getExams() { return JSON.parse(localStorage.getItem('user_exams') || '[]'); }
         function saveExams(exams) {
             localStorage.setItem('user_exams', JSON.stringify(exams));
-            if (window.db) set(ref(window.db, 'exams'), exams);
             window.renderExams();
+
+            if (window.db) {
+                isLocalUpdate = true;
+                set(ref(window.db, 'exams'), exams).finally(() => {
+                    setTimeout(() => { isLocalUpdate = false; }, 300);
+                });
+            }
         }
 
         window.renderExams = function() {
