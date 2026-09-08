@@ -102,13 +102,13 @@
                         <thead>
                             <tr class="bg-slate-950 text-slate-300 text-sm uppercase tracking-wider border-b border-slate-800 font-bold">
                                 <th class="p-4 border-r border-slate-800 w-28 text-center" data-i18n="thTime">Buổi</th>
-                                <th class="p-4 border-r border-slate-800" data-i18n="dayMon">Thứ Hai</th>
-                                <th class="p-4 border-r border-slate-800" data-i18n="dayTue">Thứ Ba</th>
-                                <th class="p-4 border-r border-slate-800" data-i18n="dayWed">Thứ Tư</th>
-                                <th class="p-4 border-r border-slate-800" data-i18n="dayThu">Thứ Năm</th>
-                                <th class="p-4 border-r border-slate-800" data-i18n="dayFri">Thứ Sáu</th>
-                                <th class="p-4 border-r border-slate-800" data-i18n="daySat">Thứ Bảy</th>
-                                <th class="p-4" data-i18n="daySun">Chủ Nhật</th>
+                                <th class="p-4 border-r border-slate-800 text-center" data-i18n="dayMon">Thứ Hai</th>
+                                <th class="p-4 border-r border-slate-800 text-center" data-i18n="dayTue">Thứ Ba</th>
+                                <th class="p-4 border-r border-slate-800 text-center" data-i18n="dayWed">Thứ Tư</th>
+                                <th class="p-4 border-r border-slate-800 text-center" data-i18n="dayThu">Thứ Năm</th>
+                                <th class="p-4 border-r border-slate-800 text-center" data-i18n="dayFri">Thứ Sáu</th>
+                                <th class="p-4 border-r border-slate-800 text-center" data-i18n="daySat">Thứ Bảy</th>
+                                <th class="p-4 text-center" data-i18n="daySun">Chủ Nhật</th>
                             </tr>
                         </thead>
                         <tbody id="schedule-matrix-body" class="divide-y divide-slate-800/60"></tbody>
@@ -429,7 +429,7 @@
         const currentRealWeekNum = getCurrentWeekNumber();
         window.selectedWeekNum = currentRealWeekNum;
 
-        // DANH SÁCH KHUNG BUỔI MỚI (SÁNG / TRƯA / CHIỀU / TỐI)
+        // DANH SÁCH KHUNG BUỔI (SÁNG / TRƯA / CHIỀU / TỐI)
         window.sessionsList = [
             { id: "sang", label: "🌅 Sáng", startMin: 6 * 60, endMin: 11 * 60 + 59 },
             { id: "trua", label: "☀️ Trưa", startMin: 12 * 60, endMin: 13 * 60 + 59 },
@@ -810,7 +810,7 @@
             return h * 60 + m;
         }
 
-        // LOGIC RENDER MATRIX MỚI THEO KHUNG BUỔI (SÁNG / TRƯA / CHIỀU / TỐI)
+        // LOGIC RENDER MATRIX (CARD CÔNG VIỆC TRÀN Ô VÀ CĂN GIỮA NỘI DUNG)
         window.render = function() {
             document.getElementById('week-counter-label').innerText = `TUẦN ${window.selectedWeekNum}`;
             let dateRangeStr = getWeekDatesText(window.selectedWeekNum);
@@ -826,7 +826,7 @@
 
             window.sessionsList.forEach(session => {
                 let rowHtml = `<tr class="hover:bg-slate-900/40 transition">`;
-                rowHtml += `<td class="p-3 border-r border-slate-800 bg-slate-950/60 text-center font-bold text-sm text-amber-400 align-top pt-4 select-none">${session.label}</td>`;
+                rowHtml += `<td class="p-3 border-r border-slate-800 bg-slate-950/60 text-center font-bold text-sm text-amber-400 align-middle select-none">${session.label}</td>`;
 
                 days.forEach(day => {
                     let dayTasks = weekData[day] || [];
@@ -841,25 +841,27 @@
                     tasksInSession.sort((a, b) => timeToMinutes(a.start) - timeToMinutes(b.start));
 
                     if (tasksInSession.length > 0) {
-                        rowHtml += `<td class="p-1.5 border-r border-slate-800/60 align-top space-y-2 min-h-[90px]">`;
+                        rowHtml += `<td class="p-1 border-r border-slate-800/60 align-top">`;
+                        rowHtml += `<div class="flex flex-col gap-2 h-full justify-center">`;
                         
                         tasksInSession.forEach(task => {
                             rowHtml += `
-                                <div onclick="openModalForEdit('${day}', ${task.id})" class="bg-gradient-to-br from-slate-900 to-indigo-950/90 hover:from-slate-850 hover:to-indigo-900 border-l-4 ${task.done ? 'border-slate-600' : 'border-emerald-400'} border-y border-r border-slate-800 p-2.5 rounded-xl shadow-md transition duration-200 cursor-pointer group">
-                                    <div class="flex justify-between items-center mb-1 gap-1">
+                                <div onclick="openModalForEdit('${day}', ${task.id})" class="bg-gradient-to-br from-slate-900 to-indigo-950/90 hover:from-slate-850 hover:to-indigo-900 border-l-4 ${task.done ? 'border-slate-600' : 'border-emerald-400'} border-y border-r border-slate-800 p-2.5 rounded-xl shadow-md transition duration-200 cursor-pointer group w-full h-full flex flex-col justify-center items-center text-center">
+                                    <div class="flex justify-between items-center mb-1 gap-1 w-full">
+                                        <div class="w-4"></div> <!-- Khoảng trống cân bằng bên trái -->
                                         <span class="text-[11px] font-mono font-black text-indigo-300 bg-indigo-950 px-2 py-0.5 rounded-md border border-indigo-500/30">${task.start} - ${task.end}</span>
-                                        <div class="flex items-center gap-1.5">
+                                        <div class="flex items-center gap-1">
                                             ${task.notify ? '<span class="text-xs" title="Đã bật Telegram">✈️</span>' : ''}
                                             <input type="checkbox" ${task.done ? 'checked' : ''} onclick="toggleTaskDone('${day}', ${task.id}, event)" class="w-4 h-4 rounded cursor-pointer accent-emerald-500">
                                         </div>
                                     </div>
-                                    <div class="text-xs font-bold ${task.done ? 'completed text-slate-400' : 'text-slate-100'} mt-1 leading-snug">${task.text}</div>
-                                    ${task.note ? `<div class="text-[11px] text-slate-300 italic mt-1 flex items-center gap-1 font-medium"><span class="text-amber-400">📌</span> ${task.note}</div>` : ''}
+                                    <div class="text-xs font-bold ${task.done ? 'completed text-slate-400' : 'text-slate-100'} mt-1 leading-snug w-full text-center">${task.text}</div>
+                                    ${task.note ? `<div class="text-[11px] text-slate-300 italic mt-1 flex items-center justify-center gap-1 font-medium w-full text-center"><span class="text-amber-400">📌</span> ${task.note}</div>` : ''}
                                 </div>
                             `;
                         });
 
-                        rowHtml += `</td>`;
+                        rowHtml += `</div></td>`;
                     } else {
                         rowHtml += `<td class="p-3 border-r border-slate-800/60 text-slate-800 text-sm text-center select-none align-middle min-h-[90px]">-</td>`;
                     }
