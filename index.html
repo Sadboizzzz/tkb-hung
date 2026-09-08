@@ -4,9 +4,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>TKB & Lịch Thi - Hưng Realtime Cloud</title>
+    <title>TKB & Lịch Thi - Hưng Realtime Cloud Pro</title>
 
-    <link rel="manifest" href="data:application/json;base64,ewogICJuYW1lIjogIlRLQiBD4bunYSBIxrBuZyIsCiAgInNob3J0X25hbWUiOiAiVEtCICBIxrBuZyIsCiAgInNob3J0X3VybCI6ICIuIiwKICAiZGlzcGxheSI6ICJzdGFuZGFsb25lIiwKICAiYmFja2dyb3VuZF9jb2xvciI6ICIjMDkxZTJhIiwKICAidGhlbWVfY29sb3IiOiAiIzA5MWUyYSIKZX0=">
+    <link rel="manifest" href="data:application/json;base64,ewogICJuYW1lIjogIlRLQiBD4bunYSBIxrBuZyIsCiAgInNob3J0X25hbWUiOiAiVEtCICBIxrBuZyIsCiAgInN0YXJ0X3VybCI6ICIuIiwKICAiZGlzcGxheSI6ICJzdGFuZGFsb25lIiwKICAiYmFja2dyb3VuZF9jb2xvciI6ICIjMDkxZTJhIiwKICAidGhlbWVfY29sb3IiOiAiIzA5MWUyYSIKZX0=">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="TKB Hưng">
@@ -52,7 +52,7 @@
 
         <!-- SECTION 1: TKB 1 NGÀY CỦA HƯNG -->
         <div id="section-tkb">
-            <!-- Thanh Công Cụ Điều Hướng Tuần & Quản Lý Lịch -->
+            <!-- Thanh Công Cụ -->
             <div class="flex flex-col lg:flex-row justify-between items-center mb-4 gap-3 bg-slate-900/60 p-3 rounded-xl border border-slate-800">
                 <div class="flex items-center justify-between w-full lg:w-auto gap-2">
                     <button onclick="changeWeek(-1)" class="bg-slate-800 hover:bg-slate-700 px-3 py-1.5 rounded-lg text-xs font-bold transition">&larr; Tuần trước</button>
@@ -76,7 +76,7 @@
                 </div>
             </div>
 
-            <!-- BẢNG THỜI KHÓA BIỂU DẠNG MATRIX -->
+            <!-- BẢNG MATRIX -->
             <div class="bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden shadow-2xl">
                 <div class="overflow-x-auto">
                     <table class="w-full border-collapse text-left text-sm min-w-[1100px]">
@@ -103,7 +103,7 @@
             <div class="flex justify-between items-center mb-4 bg-slate-900/60 p-3 rounded-xl border border-slate-800">
                 <div>
                     <h2 class="font-bold text-sm sm:text-base text-amber-400">Danh Sách Lịch Thi</h2>
-                    <p class="text-[11px] text-slate-400">Tự động đồng bộ lên Đám Mây Realtime</p>
+                    <p class="text-[11px] text-slate-400">Đồng bộ Firebase Realtime + Nhắc Telegram</p>
                 </div>
                 <button onclick="openExamModal()" class="bg-amber-600 hover:bg-amber-500 text-xs px-3.5 py-2 rounded-xl font-bold transition">+ Thêm Lịch Thi</button>
             </div>
@@ -119,7 +119,7 @@
             <form onsubmit="handleSaveFirebaseConfig(event)" class="space-y-3">
                 <div>
                     <label class="block text-xs text-slate-400 mb-1">Database URL</label>
-                    <input type="text" id="fbDbUrlInput" placeholder="https://tkb-hung-default-rtdb.firebaseio.com" required class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-xs text-slate-200">
+                    <input type="text" id="fbDbUrlInput" placeholder="https://tkb-hung-default-rtdb.asia-southeast1.firebasedatabase.app" required class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-xs text-slate-200">
                 </div>
                 <div>
                     <label class="block text-xs text-slate-400 mb-1">API Key</label>
@@ -133,7 +133,7 @@
         </div>
     </div>
 
-    <!-- Modal Copy Lịch & Xem Trước -->
+    <!-- Modal Copy Lịch -->
     <div id="copyWeekModal" class="fixed inset-0 bg-black/80 hidden justify-center items-center p-4 z-50 backdrop-blur-sm">
         <div class="bg-slate-900 border border-slate-800 p-5 rounded-2xl w-full max-w-2xl shadow-2xl space-y-4 max-h-[90vh] overflow-y-auto">
             <h3 class="text-base font-bold text-sky-400 flex items-center gap-2">📋 Copy Lịch Sang Tuần <span id="target-copy-week-label"></span></h3>
@@ -155,7 +155,7 @@
         </div>
     </div>
 
-    <!-- Modal Cấu hình Telegram -->
+    <!-- Modal Telegram -->
     <div id="telegramModal" class="fixed inset-0 bg-black/80 hidden justify-center items-center p-4 z-50 backdrop-blur-sm">
         <div class="bg-slate-900 border border-slate-800 p-5 rounded-2xl w-full max-w-md shadow-2xl space-y-4">
             <h3 class="text-base font-bold text-sky-400 flex items-center gap-2">✈️ Cấu Hình Telegram Bot</h3>
@@ -227,7 +227,7 @@
                     </div>
                 </div>
                 <div class="flex justify-between items-center pt-2">
-                    <button type="button" id="btn-delete-modal" onclick="deleteCurrentEditingTask()" class="bg-rose-600/20 hover:bg-rose-600 text-rose-400 hover:text-white px-3 py-2 rounded-xl text-xs font-bold transition hidden">Xóa lịch</button>
+                    <button type="button" id="btn-delete-modal" onclick="deleteCurrentEditingTask()" class="bg-rose-600/20 hover:bg-rose-600 text-rose-400 hover:text-white px-3 py-2 rounded-xl text-xs font-bold transition hidden">Xóa lịch này</button>
                     <div class="flex gap-2 ml-auto">
                         <button type="button" onclick="closeModal()" class="bg-slate-800 hover:bg-slate-700 px-4 py-2 rounded-xl text-xs font-bold">Hủy</button>
                         <button type="submit" class="bg-indigo-600 hover:bg-indigo-500 px-4 py-2 rounded-xl text-xs font-bold">Lưu lại</button>
@@ -314,7 +314,7 @@
         </div>
     </div>
 
-    <!-- FIREBASE SDK v9 -->
+    <!-- FIREBASE SDK & CORE APPLICATION LOGIC -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
         import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-database.js";
@@ -357,7 +357,7 @@
             "Chủ Nhật": [{ id: 22, start: "09:00", end: "11:00", text: "Học tiếng Anh căn bản", done: false, notify: false, advanceMin: 0 }]
         };
 
-        // FIREBASE INITIALIZATION & REALTIME SYNC
+        // FIREBASE INITIALIZATION
         window.db = null;
         function initFirebase() {
             let cfg = JSON.parse(localStorage.getItem('firebase_config') || '{}');
@@ -367,15 +367,24 @@
                     window.db = getDatabase(app);
                     updateFirebaseButtonUI(true);
 
-                    // Lắng nghe thay đổi Realtime toàn bộ cơ sở dữ liệu
+                    // Lắng nghe dữ liệu TKB Realtime
                     onValue(ref(window.db, 'schedule'), (snapshot) => {
                         const cloudData = snapshot.val();
                         if (cloudData) {
                             localStorage.setItem('firebase_cached_schedule', JSON.stringify(cloudData));
-                            render();
+                            window.render();
                         }
                     });
-                } catch(e) { console.error("Firebase err:", e); }
+
+                    // Lắng nghe dữ liệu Lịch thi Realtime
+                    onValue(ref(window.db, 'exams'), (snapshot) => {
+                        const cloudExams = snapshot.val();
+                        if (cloudExams) {
+                            localStorage.setItem('user_exams', JSON.stringify(cloudExams));
+                            window.renderExams();
+                        }
+                    });
+                } catch(e) { console.error("Firebase Err:", e); }
             } else {
                 updateFirebaseButtonUI(false);
             }
@@ -410,12 +419,12 @@
             let databaseURL = document.getElementById('fbDbUrlInput').value.trim();
             let apiKey = document.getElementById('fbApiKeyInput').value.trim();
             localStorage.setItem('firebase_config', JSON.stringify({ databaseURL, apiKey }));
-            closeFirebaseModal();
+            window.closeFirebaseModal();
             initFirebase();
             alert("Đã kết nối Firebase Realtime!");
         };
 
-        // Lấy dữ liệu tuần (kết hợp Cloud & Local)
+        // DỮ LIỆU TUẦN & LƯU LẠI
         window.getWeekData = function(weekNum = window.selectedWeekNum) {
             let cached = JSON.parse(localStorage.getItem('firebase_cached_schedule') || '{}');
             let key = `matrix_edit_${weekNum}`;
@@ -440,13 +449,14 @@
             let key = `matrix_edit_${weekNum}`;
             localStorage.setItem(key, JSON.stringify(data));
 
-            // Đẩy trực tiếp lên Firebase Realtime Cloud
+            // Đẩy trực tiếp lên Firebase Realtime
             if (window.db) {
                 set(ref(window.db, `schedule/${key}`), data);
             }
-            render();
+            window.render();
         };
 
+        // HÀM XÓA SẠCH LỊCH TRONG TUẦN
         window.clearCurrentWeekData = function() {
             if (confirm(`Bạn có chắc chắn muốn XÓA SẠCH toàn bộ lịch của Tuần ${window.selectedWeekNum} không?`)) {
                 let emptyData = { "Thứ Hai": [], "Thứ Ba": [], "Thứ Tư": [], "Thứ Năm": [], "Thứ Sáu": [], "Thứ Bảy": [], "Chủ Nhật": [] };
@@ -519,7 +529,7 @@
                 tbody.innerHTML += rowHtml;
             }
 
-            renderExams();
+            window.renderExams();
             renderUserInfo();
             updateTelegramButtonUI();
         };
@@ -605,15 +615,15 @@
             }
         };
 
-        // LỊCH THI
+        // QUẢN LÝ LỊCH THI (THÊM / XÓA LỊCH THI)
         function getExams() { return JSON.parse(localStorage.getItem('user_exams') || '[]'); }
         function saveExams(exams) {
             localStorage.setItem('user_exams', JSON.stringify(exams));
             if (window.db) set(ref(window.db, 'exams'), exams);
-            renderExams();
+            window.renderExams();
         }
 
-        function renderExams() {
+        window.renderExams = function() {
             let exams = getExams();
             let container = document.getElementById('exam-cards-container');
             container.innerHTML = '';
@@ -640,7 +650,7 @@
                     </div>
                 `;
             });
-        }
+        };
 
         window.openExamModal = function() { document.getElementById('examModal').classList.remove('hidden'); document.getElementById('examModal').classList.add('flex'); };
         window.closeExamModal = function() { document.getElementById('examModal').classList.add('hidden'); document.getElementById('examModal').classList.remove('flex'); };
@@ -661,10 +671,13 @@
             window.closeExamModal();
         };
 
+        // HÀM XÓA CỤ THỂ 1 MÔN THI
         window.deleteExam = function(idx) {
-            let exams = getExams();
-            exams.splice(idx, 1);
-            saveExams(exams);
+            if (confirm("Bạn có chắc chắn muốn xóa môn thi này khỏi danh sách?")) {
+                let exams = getExams();
+                exams.splice(idx, 1);
+                saveExams(exams);
+            }
         };
 
         // HỒ SƠ NGƯỜI DÙNG
@@ -802,7 +815,7 @@
                     if (!lastNotified || (nowMs - parseInt(lastNotified)) >= intervalMs) {
                         let isEarthquake = intervalHours <= 0.1;
                         let msg = isEarthquake
-                            ? `🌋🌋 <b>CHẤN ĐỘNG ĐỊA CẦU - ĐẮT ĐẦU SẮP THI!</b> 🌋🌋\n\n- Môn thi: <b>${ex.subject}</b>\n- Ngày thi: <b>${ex.date}</b> lúc <b>${ex.time}</b>\n- Phòng thi/Ghi chú: ${ex.note || 'Không có'}\n\n⚠️ ĐỨNG DẬY ÔN BÀI NGAY HƯNG ƠI! (Báo 5p/lần)`
+                            ? `🌋🌋 <b>CHẤN ĐỘNG ĐỊA CẦU - SẮP THI!</b> 🌋🌋\n\n- Môn thi: <b>${ex.subject}</b>\n- Ngày thi: <b>${ex.date}</b> lúc <b>${ex.time}</b>\n- Phòng thi/Ghi chú: ${ex.note || 'Không có'}\n\n⚠️ ĐỨNG DẬY ÔN BÀI NGAY HƯNG ƠI! (Báo 5p/lần)`
                             : `🚨 <b>CẢNH BÁO LỊCH THI MÔN!</b>\n\n- Môn thi: <b>${ex.subject}</b>\n- Ngày thi: <b>${ex.date}</b> lúc <b>${ex.time}</b>\n- Phòng thi/Ghi chú: ${ex.note || 'Không có'}\n\n⚠️ Chuẩn bị bài kỹ càng nhé Hưng!`;
                         
                         sendTelegramApi(msg);
@@ -874,9 +887,10 @@
             window.closeModal();
         };
 
+        // HÀM XÓA 1 CÔNG VIỆC CỤ THỂ TRONG TKB
         window.deleteCurrentEditingTask = function() {
             let id = Number(document.getElementById('taskId').value);
-            if (confirm("Xóa sự kiện này khỏi lịch?")) {
+            if (confirm("Bạn có chắc muốn xóa lịch này?")) {
                 let data = window.getWeekData();
                 Object.keys(data).forEach(d => { data[d] = data[d].filter(t => t.id !== id); });
                 window.saveWeekData(data);
@@ -887,11 +901,11 @@
         window.changeWeek = function(direction) {
             window.selectedWeekNum += direction;
             if (window.selectedWeekNum < 1) window.selectedWeekNum = 1;
-            render();
+            window.render();
         };
 
         initFirebase();
-        render();
+        window.render();
     </script>
 </body>
 
