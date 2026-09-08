@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thời Khóa Biểu & Lịch Thi - TKB 1 ngày của Hưng</title>
+    <!-- Web App Manifest cho iOS/PWA -->
+    <link rel="manifest"
+        href="data:application/json;base64,ewogICJuYW1lIjogIlRLQiBD4bunYSBIxrBuZyIsCiAgInNob3J0X25hbWUiOiAiVEtCICBIxrBuZyIsCiAgInN0YXJ0X3VybCI6ICIuIiwKICAiZGlzcGxheSI6ICJzdGFuZGFsb25lIiwKICAiYmFja2dyb3VuZF9jb2xvciI6ICIjMGYxNzJhIiwKICAidGhlbWVfY29sb3IiOiAiIzBmMTcyYSIKZX0=">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="TKB Hưng">
+
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <style>
+        .completed {
+            text-decoration: line-through;
+            opacity: 0.4;
+        }
+    </style>
+</head>
+
+<body class="bg-slate-950 text-slate-100 min-h-screen p-4 md:p-6 font-sans">
+
+    <div class="max-w-7xl mx-auto">
+        <!-- Header -->
+        <header
+            class="flex flex-col md:flex-row justify-between items-center mb-6 bg-slate-900 p-5 rounded-2xl border border-slate-800 shadow-xl gap-4">
+            <div>
+                <h1 class="text-xl md:text-2xl font-black text-emerald-400 tracking-wider">🗓️ QUẢN LÝ LỊCH CÁ NHÂN</h1>
+                <p id="user-info-display" class="text-xs text-slate-400 mt-1"></p>
+                <p id="week-title-info" class="text-xs md:text-sm text-slate-300 mt-0.5 font-medium"></p>
+            </div>
+            <div class="flex items-center gap-2">
+                <button onclick="requestNotificationPermission()"
+                    class="bg-amber-600 hover:bg-amber-500 text-xs px-3 py-2 rounded-xl font-bold transition">🔔 Bật
+                    Thông Báo</button>
+                <button onclick="openUserInfoModal()"
+                    class="bg-slate-800 hover:bg-slate-700 text-xs px-3 py-2 rounded-xl font-bold transition">⚙️ Hồ sơ
+                    Hưng</button>
+            </div>
+        </header>
+
+        <!-- Thanh chuyển Tab Navigation -->
+        <div class="flex border-b border-slate-800 mb-6 gap-2">
+            <button id="tab-btn-tkb" onclick="switchTab('tkb')"
+                class="px-5 py-2.5 font-bold text-sm rounded-t-xl transition bg-slate-900 text-emerald-400 border-t border-x border-slate-800">
+                📌 TKB 1 Ngày Của Hưng
+            </button>
+            <button id="tab-btn-exam" onclick="switchTab('exam')"
+                class="px-5 py-2.5 font-bold text-sm rounded-t-xl transition bg-slate-950 text-slate-400 hover:text-slate-200">
+                📝 Lịch Thi
+            </button>
+        </div>
+
+        <!-- SECTION 1: TKB 1 NGÀY CỦA HƯNG -->
+        <div id="section-tkb">
+            <div
+                class="flex flex-wrap justify-between items-center mb-6 gap-4 bg-slate-900/60 p-4 rounded-xl border border-slate-800">
+                <div class="flex items-center gap-3">
+                    <button onclick="changeWeek(-1)"
+                        class="bg-slate-800 hover:bg-slate-700 px-3 py-1.5 rounded-lg text-sm transition">&larr; Tuần
+                        trước</button>
+                    <span id="week-counter-label" class="font-bold text-base text-emerald-300 px-2"></span>
+                    <button onclick="changeWeek(1)"
+                        class="bg-slate-800 hover:bg-slate-700 px-3 py-1.5 rounded-lg text-sm transition">Tuần sau
+                        &rarr;</button>
+                </div>
+                <button onclick="openModalForAdd()"
+                    class="bg-indigo-600 hover:bg-indigo-500 text-sm px-4 py-2 rounded-xl font-bold transition shadow-lg shadow-indigo-600/20">+
+                    Thêm sự kiện lịch</button>
+            </div>
+
+            <!-- BẢNG THỜI KHÓA BIỂU -->
+            <div class="bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden shadow-2xl">
+                <div class="overflow-x-auto">
+                    <table class="w-full border-collapse text-left text-sm min-w-[1100px]">
+                        <thead>
+                            <tr
+                                class="bg-slate-950 text-slate-400 text-xs uppercase tracking-wider border-b border-slate-800">
+                                <th class="p-3.5 border-r border-slate-800 w-36 text-center">Khung Giờ</th>
+                                <th class="p-3.5 border-r border-slate-800">Thứ Hai</th>
+                                <th class="p-3.5 border-r border-slate-800">Thứ Ba</th>
+                                <th class="p-3.5 border-r border-slate-800">Thứ Tư</th>
+                                <th class="p-3.5 border-r border-slate-800">Thứ Năm</th>
+                                <th class="p-3.5 border-r border-slate-800">Thứ Sáu</th>
+                                <th class="p-3.5 border-r border-slate-800">Thứ Bảy</th>
+                                <th class="p-3.5">Chủ Nhật</th>
+                            </tr>
+                        </thead>
+                        <tbody id="schedule-matrix-body" class="divide-y divide-slate-800/60">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- SECTION 2: LỊCH THI -->
+        <div id="section-exam" class="hidden">
+            <div class="flex justify-between items-center mb-6 bg-slate-900/60 p-4 rounded-xl border border-slate-800">
+                <h2 class="font-bold text-lg text-amber-400"> Danh Sách Lịch Thi Môn Học</h2>
+                <button onclick="openExamModal()"
+                    class="bg-amber-600 hover:bg-amber-500 text-sm px-4 py-2 rounded-xl font-bold transition">+ Thêm
+                    Lịch Thi</button>
+            </div>
+
+            <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 overflow-x-auto">
+                <table class="w-full text-left text-sm">
+                    <thead>
+                        <tr class="text-xs uppercase text-slate-400 border-b border-slate-800">
+                            <th class="p-3">Môn Thi</th>
+                            <th class="p-3">Ngày Thi</th>
+                            <th class="p-3">Giờ Thi</th>
+                            <th class="p-3">Phòng Thi / Ghi Chú</th>
+                            <th class="p-3 text-right">Thao Tác</th>
+                        </tr>
+                    </thead>
+                    <tbody id="exam-list-body" class="divide-y divide-slate-800">
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Thêm/Sửa TKB -->
+    <div id="taskModal" class="fixed inset-0 bg-black/70 hidden justify-center items-center p-4 z-50">
+        <div class="bg-slate-900 border border-slate-800 p-6 rounded-2xl w-full max-w-md shadow-2xl">
+            <h3 id="modal-title" class="text-lg font-bold mb-4 text-emerald-400">Thêm khoảng thời gian biểu</h3>
+            <form id="taskForm" onsubmit="handleSaveTask(event)" class="space-y-4">
+                <input type="hidden" id="taskId">
+                <div>
+                    <label class="block text-xs text-slate-400 mb-1">Chọn ngày</label>
+                    <select id="taskDay"
+                        class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-sm text-slate-200">
+                        <option value="Thứ Hai">Thứ Hai</option>
+                        <option value="Thứ Ba">Thứ Ba</option>
+                        <option value="Thứ Tư">Thứ Tư</option>
+                        <option value="Thứ Năm">Thứ Năm</option>
+                        <option value="Thứ Sáu">Thứ Sáu</option>
+                        <option value="Thứ Bảy">Thứ Bảy</option>
+                        <option value="Chủ Nhật">Chủ Nhật</option>
+                    </select>
+                </div>
+                <div class="grid grid-cols-2 gap-2">
+                    <div>
+                        <label class="block text-xs text-slate-400 mb-1">Bắt đầu từ giờ</label>
+                        <select id="taskStartHour"
+                            class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-sm text-slate-200"></select>
+                    </div>
+                    <div>
+                        <label class="block text-xs text-slate-400 mb-1">Kết thúc đến giờ</label>
+                        <select id="taskEndHour"
+                            class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-sm text-slate-200"></select>
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-xs text-slate-400 mb-1">Nội dung công việc</label>
+                    <input type="text" id="taskContent" required placeholder="Nội dung..."
+                        class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-sm text-slate-200">
+                </div>
+                <div class="flex justify-between items-center pt-2">
+                    <button type="button" id="btn-delete-modal" onclick="deleteCurrentEditingTask()"
+                        class="bg-rose-600/20 hover:bg-rose-600 text-rose-400 hover:text-white px-3 py-2 rounded-xl text-sm transition hidden">Xóa</button>
+                    <div class="flex gap-2 ml-auto">
+                        <button type="button" onclick="closeModal()"
+                            class="bg-slate-800 hover:bg-slate-700 px-4 py-2 rounded-xl text-sm">Hủy</button>
+                        <button type="submit"
+                            class="bg-indigo-600 hover:bg-indigo-500 px-4 py-2 rounded-xl text-sm font-bold">Lưu
+                            lại</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal Thêm Lịch Thi -->
+    <div id="examModal" class="fixed inset-0 bg-black/70 hidden justify-center items-center p-4 z-50">
+        <div class="bg-slate-900 border border-slate-800 p-6 rounded-2xl w-full max-w-md shadow-2xl">
+            <h3 class="text-lg font-bold mb-4 text-amber-400">Thêm Môn Thi Mới</h3>
+            <form onsubmit="handleSaveExam(event)" class="space-y-4">
+                <div>
+                    <label class="block text-xs text-slate-400 mb-1">Tên môn thi</label>
+                    <input type="text" id="examSubject" required placeholder="Cấu trúc dữ liệu..."
+                        class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-sm">
+                </div>
+                <div class="grid grid-cols-2 gap-2">
+                    <div>
+                        <label class="block text-xs text-slate-400 mb-1">Ngày thi</label>
+                        <input type="date" id="examDate" required
+                            class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-sm text-slate-200">
+                    </div>
+                    <div>
+                        <label class="block text-xs text-slate-400 mb-1">Giờ thi</label>
+                        <input type="time" id="examTime" required
+                            class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-sm text-slate-200">
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-xs text-slate-400 mb-1">Phòng thi / Ghi chú</label>
+                    <input type="text" id="examNote" placeholder="Phòng A102..."
+                        class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-sm">
+                </div>
+                <div class="flex justify-end gap-2 pt-2">
+                    <button type="button" onclick="closeExamModal()"
+                        class="bg-slate-800 hover:bg-slate-700 px-4 py-2 rounded-xl text-sm">Hủy</button>
+                    <button type="submit"
+                        class="bg-amber-600 hover:bg-amber-500 px-4 py-2 rounded-xl text-sm font-bold">Lưu Lịch
+                        Thi</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal Hồ Sơ Người Dùng -->
+    <div id="userModal" class="fixed inset-0 bg-black/70 hidden justify-center items-center p-4 z-50">
+        <div class="bg-slate-900 border border-slate-800 p-6 rounded-2xl w-full max-w-md shadow-2xl">
+            <h3 class="text-lg font-bold mb-4 text-emerald-400">Cập Nhật Hồ Sơ Hưng</h3>
+            <form onsubmit="handleSaveUserInfo(event)" class="space-y-4">
+                <div>
+                    <label class="block text-xs text-slate-400 mb-1">Họ tên</label>
+                    <input type="text" id="userNameInput" required
+                        class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-sm">
+                </div>
+                <div>
+                    <label class="block text-xs text-slate-400 mb-1">Mục tiêu cá nhân</label>
+                    <input type="text" id="userGoalInput"
+                        class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-sm">
+                </div>
+                <div class="flex justify-end gap-2 pt-2">
+                    <button type="button" onclick="closeUserModal()"
+                        class="bg-slate-800 hover:bg-slate-700 px-4 py-2 rounded-xl text-sm">Hủy</button>
+                    <button type="submit"
+                        class="bg-emerald-600 hover:bg-emerald-500 px-4 py-2 rounded-xl text-sm font-bold">Lưu Thông
+                        Tin</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        const startDate = new Date('2026-09-07T00:00:00'); // Thứ Hai, 07/09/2026 là Tuần 1
+
+        function getCurrentWeekNumber() {
+            const now = new Date();
+            const diffTime = now - startDate;
+            const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+            if (diffDays < 0) return 1;
+            return Math.floor(diffDays / 7) + 1;
+        }
+
+        const currentRealWeekNum = getCurrentWeekNumber();
+        let selectedWeekNum = currentRealWeekNum;
+
+        const hoursList = [];
+        for (let i = 6; i <= 23; i++) {
+            hoursList.push(String(i).padStart(2, '0') + ":00");
+        }
+
+        const selStart = document.getElementById('taskStartHour');
+        const selEnd = document.getElementById('taskEndHour');
+        hoursList.forEach((h, index) => {
+            if (index < hoursList.length - 1) {
+                let opt1 = document.createElement('option');
+                opt1.value = h; opt1.innerText = h;
+                selStart.appendChild(opt1);
+            }
+            if (index > 0) {
+                let opt2 = document.createElement('option');
+                opt2.value = h; opt2.innerText = h;
+                selEnd.appendChild(opt2);
+            }
+        });
+        selEnd.value = "12:00";
+
+        const defaultWeekData = {
+            "Thứ Hai": [{ id: 1, start: "09:00", end: "10:00", text: "Học CNXHKH (ngồi im)", done: false }],
+            "Thứ Ba": [{ id: 5, start: "07:00", end: "12:00", text: "Học DSA trên trường", done: false }],
+            "Thứ Tư": [{ id: 8, start: "08:00", end: "11:00", text: "Giải bài tập LeetCode / thuật toán", done: false }],
+            "Thứ Năm": [{ id: 13, start: "09:00", end: "11:00", text: "Học Lập trình trên web", done: false }],
+            "Thứ Sáu": [{ id: 16, start: "09:00", end: "11:00", text: "Tiếng Anh giao tiếp trên trường", done: false }],
+            "Thứ Bảy": [{ id: 19, start: "07:00", end: "09:00", text: "Học Hệ điều hành", done: false }],
+            "Chủ Nhật": [{ id: 22, start: "09:00", end: "11:00", text: "Học tiếng Anh căn bản", done: false }]
+        };
+
+        // Bỏ việc tự động xóa tuần cũ -> Lưu trữ lịch sử toàn bộ tuần
+        function getWeekData() {
+            let key = `matrix_edit_${selectedWeekNum}`;
+            let data = localStorage.getItem(key);
+            if (!data) {
+                let initial = JSON.parse(JSON.stringify(defaultWeekData));
+                localStorage.setItem(key, JSON.stringify(initial));
+                return initial;
+            }
+            return JSON.parse(data);
+        }
+
+        function saveWeekData(data) {
+            localStorage.setItem(`matrix_edit_${selectedWeekNum}`, JSON.stringify(data));
+            render();
+        }
+
+        function toggleTaskDone(day, id, e) {
+            e.stopPropagation();
+            let data = getWeekData();
+            let task = data[day].find(t => t.id === id);
+            if (task) {
+                task.done = !task.done;
+                saveWeekData(data);
+            }
+        }
+
+        function getWeekDatesText(weekNum) {
+            let weekStart = new Date(startDate.getTime() + (weekNum - 1) * 7 * 24 * 60 * 60 * 1000);
+            let weekEnd = new Date(weekStart.getTime() + 6 * 24 * 60 * 60 * 1000);
+            let opt = { day: '2-digit', month: '2-digit', year: 'numeric' };
+            return `${weekStart.toLocaleDateString('vi-VN', opt)} đến ${weekEnd.toLocaleDateString('vi-VN', opt)}`;
+        }
+
+        function getDateOfSpecificDayInWeek(weekNum, dayName) {
+            const dayMap = { "Thứ Hai": 0, "Thứ Ba": 1, "Thứ Tư": 2, "Thứ Năm": 3, "Thứ Sáu": 4, "Thứ Bảy": 5, "Chủ Nhật": 6 };
+            let weekStart = new Date(startDate.getTime() + (weekNum - 1) * 7 * 24 * 60 * 60 * 1000);
+            let targetDate = new Date(weekStart.getTime() + dayMap[dayName] * 24 * 60 * 60 * 1000);
+            return targetDate.toLocaleDateString('vi-VN');
+        }
+
+        function render() {
+            // Tự động điều chỉnh tuần đang chọn đúng theo thời gian thực nếu vừa qua tuần mới
+            document.getElementById('week-counter-label').innerText = `TUẦN ${selectedWeekNum}`;
+            let dateRangeStr = getWeekDatesText(selectedWeekNum);
+            document.getElementById('week-title-info').innerText = selectedWeekNum === currentRealWeekNum
+                ? `🟢 Đang diễn ra (${dateRangeStr})`
+                : `📅 Kế hoạch (${dateRangeStr})`;
+
+            let weekData = getWeekData();
+            let tbody = document.getElementById('schedule-matrix-body');
+            tbody.innerHTML = '';
+
+            const days = ["Thứ Hai", "Thứ Ba", "Thứ Tư", "Thứ Năm", "Thứ Sáu", "Thứ Bảy", "Chủ Nhật"];
+            let skipCells = {};
+            days.forEach(d => skipCells[d] = {});
+
+            for (let i = 0; i < hoursList.length - 1; i++) {
+                let currentHour = hoursList[i];
+                let nextHour = hoursList[i + 1];
+                let rowHtml = `<tr class="hover:bg-slate-900/40 transition">`;
+
+                rowHtml += `<td class="p-3.5 border-r border-slate-800 bg-slate-950/40 text-center font-mono text-xs font-bold text-amber-400 align-middle">${currentHour} - ${nextHour}</td>`;
+
+                days.forEach(day => {
+                    if (skipCells[day][i]) return;
+
+                    let task = (weekData[day] || []).find(t => t.start === currentHour);
+
+                    if (task) {
+                        let startIndex = hoursList.indexOf(task.start);
+                        let endIndex = hoursList.indexOf(task.end);
+                        let spanCount = (endIndex > startIndex) ? (endIndex - startIndex) : 1;
+
+                        for (let s = 1; s < spanCount; s++) {
+                            skipCells[day][i + s] = true;
+                        }
+
+                        rowHtml += `
+                            <td rowspan="${spanCount}" onclick="openModalForEdit('${day}', ${task.id})" class="p-3 border-r border-slate-800/60 align-top cursor-pointer bg-slate-900/80 hover:bg-slate-800 transition select-none border-b border-slate-800/60 group">
+                                <div class="flex justify-between items-start mb-1">
+                                    <span class="text-[10px] font-mono text-indigo-400">${task.start} - ${task.end}</span>
+                                    <div class="flex items-center gap-1.5">
+                                        <input type="checkbox" ${task.done ? 'checked' : ''} onclick="toggleTaskDone('${day}', ${task.id}, event)" class="w-4 h-4 rounded cursor-pointer accent-emerald-500">
+                                        <span class="text-[10px] text-slate-500 group-hover:text-amber-300">✏️</span>
+                                    </div>
+                                </div>
+                                <div class="text-xs text-slate-100 ${task.done ? 'completed text-slate-500 font-normal' : 'font-medium'}">
+                                    ${task.text}
+                                </div>
+                            </td>
+                        `;
+                    } else {
+                        rowHtml += `<td class="p-3 border-r border-slate-800/60 align-top text-slate-700/30 text-xs text-center">-</td>`;
+                    }
+                });
+
+                rowHtml += `</tr>`;
+                tbody.innerHTML += rowHtml;
+            }
+            renderExams();
+            renderUserInfo();
+        }
+
+        // TAB SYSTEM
+        function switchTab(tab) {
+            if (tab === 'tkb') {
+                document.getElementById('section-tkb').classList.remove('hidden');
+                document.getElementById('section-exam').classList.add('hidden');
+                document.getElementById('tab-btn-tkb').className = "px-5 py-2.5 font-bold text-sm rounded-t-xl transition bg-slate-900 text-emerald-400 border-t border-x border-slate-800";
+                document.getElementById('tab-btn-exam').className = "px-5 py-2.5 font-bold text-sm rounded-t-xl transition bg-slate-950 text-slate-400 hover:text-slate-200";
+            } else {
+                document.getElementById('section-tkb').classList.add('hidden');
+                document.getElementById('section-exam').classList.remove('hidden');
+                document.getElementById('tab-btn-exam').className = "px-5 py-2.5 font-bold text-sm rounded-t-xl transition bg-slate-900 text-amber-400 border-t border-x border-slate-800";
+                document.getElementById('tab-btn-tkb').className = "px-5 py-2.5 font-bold text-sm rounded-t-xl transition bg-slate-950 text-slate-400 hover:text-slate-200";
+            }
+        }
+
+        // QUẢN LÝ LỊCH THI
+        function getExams() {
+            return JSON.parse(localStorage.getItem('user_exams') || '[]');
+        }
+
+        function saveExams(exams) {
+            localStorage.setItem('user_exams', JSON.stringify(exams));
+            renderExams();
+        }
+
+        function renderExams() {
+            let exams = getExams();
+            let tbody = document.getElementById('exam-list-body');
+            tbody.innerHTML = '';
+            if (exams.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="5" class="p-4 text-center text-slate-500">Chưa có lịch thi nào được lập.</td></tr>`;
+                return;
+            }
+            exams.sort((a, b) => new Date(`${a.date}T${a.time}`) - new Date(`${b.date}T${b.time}`));
+            exams.forEach((ex, idx) => {
+                tbody.innerHTML += `
+                    <tr class="hover:bg-slate-800/40">
+                        <td class="p-3 font-bold text-amber-300">${ex.subject}</td>
+                        <td class="p-3">${ex.date}</td>
+                        <td class="p-3 font-mono text-emerald-400">${ex.time}</td>
+                        <td class="p-3 text-slate-400">${ex.note || '-'}</td>
+                        <td class="p-3 text-right"><button onclick="deleteExam(${idx})" class="text-rose-400 hover:text-rose-300 text-xs font-bold">Xóa</button></td>
+                    </tr>
+                `;
+            });
+        }
+
+        function openExamModal() { document.getElementById('examModal').classList.remove('hidden'); document.getElementById('examModal').classList.add('flex'); }
+        function closeExamModal() { document.getElementById('examModal').classList.add('hidden'); document.getElementById('examModal').classList.remove('flex'); }
+
+        function handleSaveExam(e) {
+            e.preventDefault();
+            let exams = getExams();
+            exams.push({
+                subject: document.getElementById('examSubject').value,
+                date: document.getElementById('examDate').value,
+                time: document.getElementById('examTime').value,
+                note: document.getElementById('examNote').value
+            });
+            saveExams(exams);
+            closeExamModal();
+        }
+
+        function deleteExam(idx) {
+            let exams = getExams();
+            exams.splice(idx, 1);
+            saveExams(exams);
+        }
+
+        // HỒ SƠ NGUỜI DÙNG
+        function getUserInfo() {
+            return JSON.parse(localStorage.getItem('user_profile') || '{"name": "Hưng", "goal": "Quyết tâm qua môn & Master Code"}');
+        }
+
+        function renderUserInfo() {
+            let u = getUserInfo();
+            document.getElementById('user-info-display').innerText = `👤 ${u.name} | 🎯 Target: ${u.goal}`;
+        }
+
+        function openUserInfoModal() {
+            let u = getUserInfo();
+            document.getElementById('userNameInput').value = u.name;
+            document.getElementById('userGoalInput').value = u.goal;
+            document.getElementById('userModal').classList.remove('hidden');
+            document.getElementById('userModal').classList.add('flex');
+        }
+        function closeUserModal() { document.getElementById('userModal').classList.add('hidden'); document.getElementById('userModal').classList.remove('flex'); }
+
+        function handleSaveUserInfo(e) {
+            e.preventDefault();
+            let u = {
+                name: document.getElementById('userNameInput').value,
+                goal: document.getElementById('userGoalInput').value
+            };
+            localStorage.setItem('user_profile', JSON.stringify(u));
+            closeUserModal();
+            renderUserInfo();
+        }
+
+        // HỆ THỐNG THÔNG BÁO VÀ TỰ ĐỘNG LÊN LỊCH REMINDER
+        function requestNotificationPermission() {
+            if ("Notification" in window) {
+                Notification.requestPermission().then(permission => {
+                    if (permission === "granted") {
+                        alert("Đã bật thông báo thành công!");
+                        checkAndSendNotifications();
+                    }
+                });
+            } else {
+                alert("Trình duyệt không hỗ trợ thông báo.");
+            }
+        }
+
+        function checkAndSendNotifications() {
+            if (!("Notification" in window) || Notification.permission !== "granted") return;
+
+            const now = new Date();
+            const daysMap = ["Chủ Nhật", "Thứ Hai", "Thứ Ba", "Thứ Tư", "Thứ Năm", "Thứ Sáu", "Thứ Bảy"];
+            const currentDayName = daysMap[now.getDay()];
+            const currentHourStr = String(now.getHours()).padStart(2, '0') + ":00";
+
+            // 1. Kiểm tra TKB quá giờ chưa tick
+            let weekData = getWeekData();
+            let todayTasks = weekData[currentDayName] || [];
+            todayTasks.forEach(task => {
+                if (task.start <= currentHourStr && !task.done) {
+                    new Notification("⚠️ TKB Chưa Hoàn Thành!", {
+                        body: `Hưng ơi, công việc "${task.text}" (${task.start} - ${task.end}) chưa được đánh dấu hoàn thành!`,
+                        icon: "https://cdn-icons-png.flaticon.com/512/3652/3652191.png"
+                    });
+                }
+            });
+
+            // 2. Nhắc Lịch Thi trước 1 ngày (mỗi 5 tiếng nhắc 1 lần)
+            let exams = getExams();
+            exams.forEach(ex => {
+                let examDateTime = new Date(`${ex.date}T${ex.time}`);
+                let diffHours = (examDateTime - now) / (1000 * 60 * 60);
+
+                // Kiểm tra nằm trong khoảng 24 tiếng trước giờ thi
+                if (diffHours > 0 && diffHours <= 24) {
+                    let lastNotified = localStorage.getItem(`notified_exam_${ex.subject}_${ex.date}`);
+                    let nowTimestamp = now.getTime();
+                    // Nhắc lại mỗi 5 tiếng (5 * 60 * 60 * 1000 ms)
+                    if (!lastNotified || (nowTimestamp - parseInt(lastNotified)) >= 5 * 60 * 60 * 1000) {
+                        new Notification("🚨 SẮP ĐẾN GIỜ THI!", {
+                            body: `Môn thi [${ex.subject}] sẽ diễn ra vào lúc ${ex.time} ngày ${ex.date}. Chuẩn bị bài kỹ nhé!`,
+                            icon: "https://cdn-icons-png.flaticon.com/512/2232/2232688.png"
+                        });
+                        localStorage.setItem(`notified_exam_${ex.subject}_${ex.date}`, nowTimestamp.toString());
+                    }
+                }
+            });
+        }
+
+        // Chạy kiểm tra thông báo mỗi 15 phút
+        setInterval(checkAndSendNotifications, 15 * 60 * 1000);
+
+        // MODAL TKB HELPERS
+        function checkOverlap(day, start, end, excludeId = null) {
+            let data = getWeekData();
+            let tasks = data[day] || [];
+            let s1 = hoursList.indexOf(start);
+            let e1 = hoursList.indexOf(end);
+            for (let t of tasks) {
+                if (excludeId && t.id === excludeId) continue;
+                let s2 = hoursList.indexOf(t.start);
+                let e2 = hoursList.indexOf(t.end);
+                if (Math.max(s1, s2) < Math.min(e1, e2)) return t;
+            }
+            return null;
+        }
+
+        function openModalForAdd() {
+            document.getElementById('modal-title').innerText = "Thêm khoảng thời gian biểu";
+            document.getElementById('taskId').value = "";
+            document.getElementById('taskForm').reset();
+            document.getElementById('btn-delete-modal').classList.add('hidden');
+            document.getElementById('taskModal').classList.remove('hidden');
+            document.getElementById('taskModal').classList.add('flex');
+        }
+
+        function openModalForEdit(day, id) {
+            let data = getWeekData();
+            let task = data[day].find(t => t.id === id);
+            if (!task) return;
+            document.getElementById('modal-title').innerText = "Chỉnh sửa lịch trình";
+            document.getElementById('taskId').value = task.id;
+            document.getElementById('taskDay').value = day;
+            document.getElementById('taskStartHour').value = task.start;
+            document.getElementById('taskEndHour').value = task.end;
+            document.getElementById('taskContent').value = task.text;
+            document.getElementById('btn-delete-modal').classList.remove('hidden');
+            document.getElementById('taskModal').classList.remove('hidden');
+            document.getElementById('taskModal').classList.add('flex');
+        }
+
+        function closeModal() { document.getElementById('taskModal').classList.add('hidden'); document.getElementById('taskModal').classList.remove('flex'); }
+
+        function handleSaveTask(e) {
+            e.preventDefault();
+            let id = document.getElementById('taskId').value;
+            let day = document.getElementById('taskDay').value;
+            let start = document.getElementById('taskStartHour').value;
+            let end = document.getElementById('taskEndHour').value;
+            let content = document.getElementById('taskContent').value;
+
+            if (hoursList.indexOf(end) <= hoursList.indexOf(start)) {
+                alert("Giờ kết thúc phải lớn hơn giờ bắt đầu!");
+                return;
+            }
+
+            let numericId = id ? Number(id) : null;
+            let overlappingTask = checkOverlap(day, start, end, numericId);
+
+            if (overlappingTask) {
+                let exactDateStr = getDateOfSpecificDayInWeek(selectedWeekNum, day);
+                alert(`⚠️ TRÙNG LỊCH!\n\n- Tuần: ${selectedWeekNum}\n- Ngày: ${exactDateStr} (${day})\n- Trùng việc: "${overlappingTask.text}" (${overlappingTask.start} - ${overlappingTask.end})`);
+                return;
+            }
+
+            let data = getWeekData();
+            if (numericId) {
+                let oldDay = Object.keys(data).find(d => data[d].some(t => t.id === numericId));
+                if (oldDay) data[oldDay] = data[oldDay].filter(t => t.id !== numericId);
+                data[day].push({ id: numericId, start: start, end: end, text: content, done: false });
+            } else {
+                data[day].push({ id: Date.now(), start: start, end: end, text: content, done: false });
+            }
+
+            saveWeekData(data);
+            closeModal();
+        }
+
+        function deleteCurrentEditingTask() {
+            let id = Number(document.getElementById('taskId').value);
+            if (confirm("Bạn có chắc muốn xóa sự kiện này không?")) {
+                let data = getWeekData();
+                Object.keys(data).forEach(d => { data[d] = data[d].filter(t => t.id !== id); });
+                saveWeekData(data);
+                closeModal();
+            }
+        }
+
+        function changeWeek(direction) {
+            selectedWeekNum += direction;
+            if (selectedWeekNum < 1) selectedWeekNum = 1;
+            render();
+        }
+
+        render();
+    </script>
+</body>
+
+</html>
